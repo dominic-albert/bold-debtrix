@@ -7,13 +7,15 @@ import React, {
 } from 'react';
 import { supabase } from '../lib/supabase'; // ✅ Import Supabase client
 
+// 👤 User type (name and avatar are optional)
 interface User {
   id: string;
   email: string;
-  name?: string; // ✅ name is optional
+  name?: string;
   avatar?: string;
 }
 
+// 🔐 AuthContext type
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
@@ -22,12 +24,15 @@ interface AuthContextType {
   loading: boolean;
 }
 
+// 🧠 Create context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// 🏗️ AuthProvider component
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // 🌐 Check session & listen to auth state
   useEffect(() => {
     const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -54,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  // 🔐 Login with Supabase
   const login = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -67,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // ✍️ Signup and create profile
   const signup = async (email: string, password: string, name: string) => {
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -88,11 +95,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // 🚪 Logout
   const logout = async () => {
     await supabase.auth.signOut();
     setUser(null);
   };
 
+  // 📥 Fetch profile from Supabase
   const fetchUserProfile = async (id: string, email: string) => {
     const { data: profile } = await supabase
       .from('profiles')
@@ -115,10 +124,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useAuth() {
+// 🎯 useAuth Hook (Vite-friendly export)
+const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}
+};
+
+export { useAuth };
