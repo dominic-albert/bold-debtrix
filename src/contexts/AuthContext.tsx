@@ -1,9 +1,16 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from 'react';
+import { supabase } from '../lib/supabase'; // ✅ Import Supabase client
 
 interface User {
   id: string;
   email: string;
-  name: string;
+  name?: string; // ✅ name is optional
   avatar?: string;
 }
 
@@ -11,7 +18,7 @@ interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   loading: boolean;
 }
 
@@ -22,47 +29,83 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session
-    const savedUser = localStorage.getItem('debtrix_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        await fetchUserProfile(session.user.id, session.user.email);
+      }
+      setLoading(false);
+    };
+
+    getSession();
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (session?.user) {
+          fetchUserProfile(session.user.id, session.user.email);
+        } else {
+          setUser(null);
+        }
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const mockUser: User = {
-      id: '1',
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      name: email.split('@')[0],
-      avatar: `https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400`
-    };
-    
-    setUser(mockUser);
-    localStorage.setItem('debtrix_user', JSON.stringify(mockUser));
+      password,
+    });
+
+    if (error) throw new Error(error.message);
+
+    if (data.user) {
+      await fetchUserProfile(data.user.id, data.user.email);
+    }
   };
 
   const signup = async (email: string, password: string, name: string) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const mockUser: User = {
-      id: '1',
+    const { data, error } = await supabase.auth.signUp({
       email,
-      name,
-      avatar: `https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400`
-    };
-    
-    setUser(mockUser);
-    localStorage.setItem('debtrix_user', JSON.stringify(mockUser));
+      password,
+      options: {
+        data: { full_name: name },
+      },
+    });
+
+    if (error) throw new Error(error.message);
+
+    if (data.user) {
+      await supabase.from('profiles').insert({
+        id: data.user.id,
+        full_name: name,
+      });
+
+      await fetchUserProfile(data.user.id, data.user.email);
+    }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
-    localStorage.removeItem('debtrix_user');
+  };
+
+  const fetchUserProfile = async (id: string, email: string) => {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, avatar_url')
+      .eq('id', id)
+      .single();
+
+    setUser({
+      id,
+      email,
+      name: profile?.full_name,
+      avatar: profile?.avatar_url,
+    });
   };
 
   return (
