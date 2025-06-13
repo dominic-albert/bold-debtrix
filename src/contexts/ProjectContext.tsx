@@ -52,22 +52,45 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const [loadingProjects, setLoadingProjects] = useState(true);
 
   const refreshProjects = async () => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      setLoadingProjects(false);
+      return;
+    }
+    
     setLoadingProjects(true);
     try {
+      // Test Supabase connection first
+      const { data: testData, error: testError } = await supabase
+        .from('projects')
+        .select('count')
+        .limit(1);
+
+      if (testError) {
+        console.error('Supabase connection test failed:', testError);
+        throw new Error(`Database connection failed: ${testError.message}`);
+      }
+
       const { data: projectData, error } = await supabase
         .from('projects')
         .select('*')
         .eq('owner_id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching projects:', error);
+        throw error;
+      }
 
       const projectsWithDebts = await Promise.all(
         (projectData || []).map(async (proj) => {
-          const { data: uxDebtsData } = await supabase
+          const { data: uxDebtsData, error: debtsError } = await supabase
             .from('ux_debts')
             .select('*')
             .eq('project_id', proj.id);
+
+          if (debtsError) {
+            console.error('Error fetching UX debts for project:', proj.id, debtsError);
+            // Continue with empty debts array instead of failing
+          }
 
           return {
             ...proj,
@@ -93,7 +116,14 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
         setCurrentProject(updatedCurrent || null);
       }
     } catch (err) {
-      toast.error('Failed to load projects.');
+      console.error('Failed to load projects:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load projects';
+      toast.error(`Connection error: ${errorMessage}`);
+      
+      // Check if it's a network/connection error
+      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
+        toast.error('Unable to connect to database. Please check your internet connection and Supabase configuration.');
+      }
     } finally {
       setLoadingProjects(false);
     }
@@ -115,7 +145,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
       toast.success('Project added!');
       await refreshProjects();
-    } catch {
+    } catch (err) {
+      console.error('Failed to add project:', err);
       toast.error('Failed to add project.');
     }
   };
@@ -131,7 +162,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
       toast.success('Project updated.');
       await refreshProjects();
-    } catch {
+    } catch (err) {
+      console.error('Failed to update project:', err);
       toast.error('Failed to update project.');
     }
   };
@@ -144,7 +176,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
       toast.success('Project deleted.');
       if (currentProject?.id === id) setCurrentProject(null);
       await refreshProjects();
-    } catch {
+    } catch (err) {
+      console.error('Failed to delete project:', err);
       toast.error('Failed to delete project.');
     }
   };
@@ -176,7 +209,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
       toast.success('UX Debt added!');
       await refreshProjects();
-    } catch {
+    } catch (err) {
+      console.error('Failed to add UX debt:', err);
       toast.error('Failed to add UX debt.');
     }
   };
@@ -209,7 +243,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
       toast.success('UX Debt updated.');
       await refreshProjects();
-    } catch {
+    } catch (err) {
+      console.error('Failed to update UX debt:', err);
       toast.error('Failed to update UX debt.');
     }
   };
@@ -221,7 +256,8 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
       toast.success('UX Debt deleted.');
       await refreshProjects();
-    } catch {
+    } catch (err) {
+      console.error('Failed to delete UX debt:', err);
       toast.error('Failed to delete UX debt.');
     }
   };
