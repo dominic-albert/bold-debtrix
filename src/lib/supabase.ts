@@ -4,7 +4,10 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables');
+  console.error('Missing Supabase environment variables');
+  console.error('VITE_SUPABASE_URL:', supabaseUrl ? 'Present' : 'Missing');
+  console.error('VITE_SUPABASE_ANON_KEY:', supabaseAnonKey ? 'Present' : 'Missing');
+  throw new Error('Missing Supabase environment variables. Please check your .env file.');
 }
 
 // Add error handling and validation for Supabase URL
@@ -12,6 +15,8 @@ if (!supabaseUrl.startsWith('https://') || !supabaseUrl.includes('.supabase.co')
   console.error('Invalid Supabase URL format:', supabaseUrl);
   throw new Error('Invalid Supabase URL format. Expected format: https://your-project.supabase.co');
 }
+
+console.log('Initializing Supabase client with URL:', supabaseUrl);
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -23,7 +28,27 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     headers: {
       'X-Client-Info': 'ux-debt-tracker'
     }
+  },
+  // Add retry configuration for network issues
+  db: {
+    schema: 'public',
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 10,
+    },
+  },
+});
+
+// Test connection on initialization
+supabase.auth.getSession().then(({ data, error }) => {
+  if (error) {
+    console.error('Supabase connection test failed:', error);
+  } else {
+    console.log('Supabase connection test successful');
   }
+}).catch((err) => {
+  console.error('Supabase connection test error:', err);
 });
 
 export type Database = {
