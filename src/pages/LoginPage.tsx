@@ -140,11 +140,11 @@ function LoginPage() {
           </div>
         </div>
 
-        {/* Demo Credentials */}
+        {/* Authentication Info */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">Demo Account</h3>
+          <h3 className="text-sm font-medium text-blue-800 mb-2">Authentication Required</h3>
           <p className="text-sm text-blue-600">
-            Use any email and password to access the demo
+            You must first create an account using the Sign Up page before you can log in.
           </p>
         </div>
       </div>

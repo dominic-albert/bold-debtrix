@@ -178,9 +178,6 @@ function DashboardPage() {
                         <Calendar className="w-3 h-3" />
                         Updated {project.updatedAt.toLocaleDateString()}
                       </div>
-                      <div>
-                        {project.teamMembers.length} member{project.teamMembers.length !== 1 ? 's' : ''}
-                      </div>
                     </div>
                   </div>
                 </Link>

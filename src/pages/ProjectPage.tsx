@@ -10,7 +10,6 @@ import {
   AlertTriangle,
   CheckCircle2,
   Clock,
-  Users,
   Calendar
 } from 'lucide-react';
 import { useProject } from '../contexts/ProjectContext';
@@ -88,10 +87,6 @@ function ProjectPage() {
                 <p className="text-gray-600 mb-4">{project.description}</p>
                 
                 <div className="flex items-center gap-6 text-sm text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <Users className="w-4 h-4" />
-                    {project.teamMembers.length} member{project.teamMembers.length !== 1 ? 's' : ''}
-                  </div>
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
                     Updated {project.updatedAt.toLocaleDateString()}
