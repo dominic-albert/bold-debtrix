@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { X, AlertTriangle, Upload, Link as LinkIcon } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useProject } from '../contexts/ProjectContext';
 import { useAuth } from '../contexts/AuthContext';
+import { uxDebtSchema, type UXDebtFormData } from '../lib/validations';
 
 interface CreateDebtModalProps {
   isOpen: boolean;
@@ -15,72 +18,67 @@ const debtTypes = [
   'Performance',
   'Visual',
   'Usability'
-];
+] as const;
 
 const severityLevels = [
   { value: 'Low', color: 'text-green-600 bg-green-50 border-green-200' },
   { value: 'Medium', color: 'text-yellow-600 bg-yellow-50 border-yellow-200' },
   { value: 'High', color: 'text-orange-600 bg-orange-50 border-orange-200' },
   { value: 'Critical', color: 'text-red-600 bg-red-50 border-red-200' }
-];
+] as const;
 
 const statusOptions = [
   'Open',
   'In Progress',
   'Resolved'
-];
+] as const;
 
 function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
   const { addUXDebt } = useProject();
   const { user } = useAuth();
-  const [loading, setLoading] = useState(false);
   
-  const [formData, setFormData] = useState({
-    title: '',
-    screen: '',
-    type: debtTypes[0],
-    severity: 'Medium',
-    status: 'Open',
-    description: '',
-    recommendation: '',
-    figmaUrl: '',
-    assignee: '',
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+    watch
+  } = useForm<UXDebtFormData>({
+    resolver: zodResolver(uxDebtSchema),
+    defaultValues: {
+      title: '',
+      screen: '',
+      type: 'Heuristic',
+      severity: 'Medium',
+      status: 'Open',
+      description: '',
+      recommendation: '',
+      figmaUrl: '',
+      assignee: '',
+    }
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
+  const onSubmit = async (data: UXDebtFormData) => {
     try {
-      addUXDebt(projectId, {
-        ...formData,
-        loggedBy: user?.name || 'Unknown User',
-        type: formData.type as any,
-        severity: formData.severity as any,
-        status: formData.status as any,
+      await addUXDebt(projectId, {
+        ...data,
+        loggedBy: user?.name || user?.email || 'Unknown User',
+        type: data.type as any,
+        severity: data.severity as any,
+        status: data.status as any,
       });
       
-      // Reset form
-      setFormData({
-        title: '',
-        screen: '',
-        type: debtTypes[0],
-        severity: 'Medium',
-        status: 'Open',
-        description: '',
-        recommendation: '',
-        figmaUrl: '',
-        assignee: '',
-      });
-      
+      // Reset form and close modal
+      reset();
       onClose();
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error('Failed to create UX debt:', error);
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleClose = () => {
+    reset();
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -91,14 +89,14 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">Log UX Debt</h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-96 overflow-y-auto">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6 max-h-96 overflow-y-auto">
           {/* Title and Screen */}
           <div className="grid md:grid-cols-2 gap-4">
             <div>
@@ -107,12 +105,17 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
               </label>
               <input
                 type="text"
-                value={formData.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                {...register('title')}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 transition-colors ${
+                  errors.title 
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                    : 'border-gray-300 focus:border-purple-500'
+                }`}
                 placeholder="Brief description of the issue"
-                required
               />
+              {errors.title && (
+                <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -120,12 +123,17 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
               </label>
               <input
                 type="text"
-                value={formData.screen}
-                onChange={(e) => handleInputChange('screen', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                {...register('screen')}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 transition-colors ${
+                  errors.screen 
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                    : 'border-gray-300 focus:border-purple-500'
+                }`}
                 placeholder="Where is this issue located?"
-                required
               />
+              {errors.screen && (
+                <p className="mt-1 text-sm text-red-600">{errors.screen.message}</p>
+              )}
             </div>
           </div>
 
@@ -136,30 +144,40 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
                 Type <span className="text-red-500">*</span>
               </label>
               <select
-                value={formData.type}
-                onChange={(e) => handleInputChange('type', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                required
+                {...register('type')}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 transition-colors ${
+                  errors.type 
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                    : 'border-gray-300 focus:border-purple-500'
+                }`}
               >
                 {debtTypes.map(type => (
                   <option key={type} value={type}>{type}</option>
                 ))}
               </select>
+              {errors.type && (
+                <p className="mt-1 text-sm text-red-600">{errors.type.message}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Severity <span className="text-red-500">*</span>
               </label>
               <select
-                value={formData.severity}
-                onChange={(e) => handleInputChange('severity', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                required
+                {...register('severity')}
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 transition-colors ${
+                  errors.severity 
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                    : 'border-gray-300 focus:border-purple-500'
+                }`}
               >
                 {severityLevels.map(level => (
                   <option key={level.value} value={level.value}>{level.value}</option>
                 ))}
               </select>
+              {errors.severity && (
+                <p className="mt-1 text-sm text-red-600">{errors.severity.message}</p>
+              )}
             </div>
           </div>
 
@@ -170,8 +188,7 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
                 Status
               </label>
               <select
-                value={formData.status}
-                onChange={(e) => handleInputChange('status', e.target.value)}
+                {...register('status')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               >
                 {statusOptions.map(status => (
@@ -185,8 +202,7 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
               </label>
               <input
                 type="text"
-                value={formData.assignee}
-                onChange={(e) => handleInputChange('assignee', e.target.value)}
+                {...register('assignee')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 placeholder="Who should fix this?"
               />
@@ -199,13 +215,18 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
               Description <span className="text-red-500">*</span>
             </label>
             <textarea
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
+              {...register('description')}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 resize-none transition-colors ${
+                errors.description 
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                  : 'border-gray-300 focus:border-purple-500'
+              }`}
               placeholder="Detailed description of the UX issue..."
-              required
             />
+            {errors.description && (
+              <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
+            )}
           </div>
 
           {/* Recommendation */}
@@ -214,13 +235,18 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
               Recommendation <span className="text-red-500">*</span>
             </label>
             <textarea
-              value={formData.recommendation}
-              onChange={(e) => handleInputChange('recommendation', e.target.value)}
+              {...register('recommendation')}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 resize-none transition-colors ${
+                errors.recommendation 
+                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                  : 'border-gray-300 focus:border-purple-500'
+              }`}
               placeholder="How should this be fixed?"
-              required
             />
+            {errors.recommendation && (
+              <p className="mt-1 text-sm text-red-600">{errors.recommendation.message}</p>
+            )}
           </div>
 
           {/* Figma URL */}
@@ -234,11 +260,17 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
               </div>
               <input
                 type="url"
-                value={formData.figmaUrl}
-                onChange={(e) => handleInputChange('figmaUrl', e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                {...register('figmaUrl')}
+                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 transition-colors ${
+                  errors.figmaUrl 
+                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
+                    : 'border-gray-300 focus:border-purple-500'
+                }`}
                 placeholder="https://figma.com/..."
               />
+              {errors.figmaUrl && (
+                <p className="mt-1 text-sm text-red-600">{errors.figmaUrl.message}</p>
+              )}
             </div>
           </div>
 
@@ -274,17 +306,17 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
         <div className="flex gap-3 p-6 border-t border-gray-200">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
           >
             Cancel
           </button>
           <button
-            onClick={handleSubmit}
-            disabled={loading}
+            onClick={handleSubmit(onSubmit)}
+            disabled={isSubmitting}
             className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
-            {loading ? (
+            {isSubmitting ? (
               <div className="flex items-center justify-center">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                 Creating...
