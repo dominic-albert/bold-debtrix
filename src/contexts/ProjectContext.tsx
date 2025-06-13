@@ -151,15 +151,24 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
   const addUXDebt = async (projectId: string, debtData: Omit<UXDebt, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
+      const insertData = {
+        project_id: projectId,
+        title: debtData.title,
+        screen: debtData.screen,
+        type: debtData.type,
+        severity: debtData.severity,
+        status: debtData.status,
+        assignee: debtData.assignee,
+        logged_by: debtData.loggedBy,
+        description: debtData.description,
+        recommendation: debtData.recommendation,
+        figma_url: debtData.figmaUrl,
+        screenshot_url: debtData.screenshot_url,
+      };
+
       const { data, error } = await supabase
         .from('ux_debts')
-        .insert({
-          ...debtData,
-          project_id: projectId,
-          logged_by: debtData.loggedBy,
-          figma_url: debtData.figmaUrl,
-          screenshot_url: debtData.screenshot_url,
-        })
+        .insert(insertData)
         .select()
         .single();
 
@@ -174,15 +183,26 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
 
   const updateUXDebt = async (projectId: string, debtId: string, debtData: Partial<UXDebt>) => {
     try {
+      const updateData: any = {
+        updated_at: new Date().toISOString(),
+      };
+
+      // Map camelCase properties to snake_case database columns
+      if (debtData.title !== undefined) updateData.title = debtData.title;
+      if (debtData.screen !== undefined) updateData.screen = debtData.screen;
+      if (debtData.type !== undefined) updateData.type = debtData.type;
+      if (debtData.severity !== undefined) updateData.severity = debtData.severity;
+      if (debtData.status !== undefined) updateData.status = debtData.status;
+      if (debtData.assignee !== undefined) updateData.assignee = debtData.assignee;
+      if (debtData.loggedBy !== undefined) updateData.logged_by = debtData.loggedBy;
+      if (debtData.description !== undefined) updateData.description = debtData.description;
+      if (debtData.recommendation !== undefined) updateData.recommendation = debtData.recommendation;
+      if (debtData.figmaUrl !== undefined) updateData.figma_url = debtData.figmaUrl;
+      if (debtData.screenshot_url !== undefined) updateData.screenshot_url = debtData.screenshot_url;
+
       const { error } = await supabase
         .from('ux_debts')
-        .update({
-          ...debtData,
-          logged_by: debtData.loggedBy,
-          figma_url: debtData.figmaUrl,
-          screenshot_url: debtData.screenshot_url,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', debtId);
 
       if (error) throw error;
