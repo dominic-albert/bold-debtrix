@@ -2,7 +2,45 @@
 
 A comprehensive platform for identifying, tracking, and resolving UX debt across your products. Keep your user experience polished and your team aligned.
 
-## 🚀 Features
+## 🚀 Quick Setup Guide
+
+### 1. Create Supabase Project
+
+1. Go to [supabase.com](https://supabase.com) and create a new project
+2. Wait for the project to be fully set up (this takes a few minutes)
+3. Go to **Settings** → **API** in your Supabase dashboard
+4. Copy your **Project URL** and **anon public** key
+
+### 2. Configure Environment Variables
+
+1. Create a `.env` file in the root directory:
+```env
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+### 3. Set Up Database Schema
+
+1. In your Supabase dashboard, go to **SQL Editor**
+2. Copy and paste the migration file content from `supabase/migrations/20250614174953_misty_union.sql`
+3. Click **Run** to execute the migration
+
+### 4. Configure Authentication
+
+1. In Supabase dashboard, go to **Authentication** → **Settings**
+2. Under **Site URL**, add your domain: `https://your-domain.netlify.app`
+3. Under **Redirect URLs**, add: `https://your-domain.netlify.app/**`
+4. **Disable email confirmation** for testing (optional):
+   - Go to **Authentication** → **Settings** → **Email**
+   - Turn off "Enable email confirmations"
+
+### 5. Test the Setup
+
+1. Run `npm run dev`
+2. Try creating a new account
+3. Check your Supabase dashboard to see if the user was created
+
+## 🔧 Features
 
 ### Core Features
 - **Project Management**: Create and organize multiple UX projects
@@ -42,7 +80,8 @@ src/
 ├── hooks/              # Custom React hooks
 ├── lib/                # Utility functions and configurations
 ├── pages/              # Page components
-└── types/              # TypeScript type definitions
+├── types/              # TypeScript type definitions
+└── supabase/           # Database migrations
 ```
 
 ## 🚀 Getting Started
@@ -72,95 +111,33 @@ src/
    
    Fill in your Supabase credentials:
    ```env
-   VITE_SUPABASE_URL=your_supabase_project_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_SUPABASE_URL=https://your-project-id.supabase.co
+   VITE_SUPABASE_ANON_KEY=your-anon-key
    ```
 
 4. **Set up Supabase database**
    - Create a new Supabase project
-   - Run the SQL migrations in `supabase/migrations/`
-   - Enable Row Level Security (RLS)
+   - Run the SQL migration in `supabase/migrations/20250614174953_misty_union.sql`
+   - Configure authentication settings
 
 5. **Start development server**
    ```bash
    npm run dev
    ```
 
-### Database Setup
+## 📊 Database Schema
 
-Create the following tables in your Supabase database:
+The application uses the following database structure:
 
-```sql
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+### Tables
+- **profiles**: User profile information
+- **projects**: UX projects owned by users
+- **ux_debts**: Individual UX debt items within projects
 
--- Profiles table
-CREATE TABLE profiles (
-  id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  full_name TEXT NOT NULL,
-  avatar_url TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Projects table
-CREATE TABLE projects (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  title TEXT NOT NULL,
-  description TEXT NOT NULL,
-  color TEXT NOT NULL,
-  owner_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- UX Debts table
-CREATE TABLE ux_debts (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  project_id UUID REFERENCES projects(id) ON DELETE CASCADE NOT NULL,
-  title TEXT NOT NULL,
-  screen TEXT NOT NULL,
-  type TEXT CHECK (type IN ('Heuristic', 'Accessibility', 'Performance', 'Visual', 'Usability')) NOT NULL,
-  severity TEXT CHECK (severity IN ('Low', 'Medium', 'High', 'Critical')) NOT NULL,
-  status TEXT CHECK (status IN ('Open', 'In Progress', 'Resolved')) NOT NULL DEFAULT 'Open',
-  description TEXT NOT NULL,
-  recommendation TEXT NOT NULL,
-  logged_by TEXT NOT NULL,
-  assignee TEXT,
-  figma_url TEXT,
-  screenshot_url TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Enable RLS
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
-ALTER TABLE ux_debts ENABLE ROW LEVEL SECURITY;
-
--- RLS Policies
-CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
-
-CREATE POLICY "Users can view own projects" ON projects FOR SELECT USING (auth.uid() = owner_id);
-CREATE POLICY "Users can create projects" ON projects FOR INSERT WITH CHECK (auth.uid() = owner_id);
-CREATE POLICY "Users can update own projects" ON projects FOR UPDATE USING (auth.uid() = owner_id);
-CREATE POLICY "Users can delete own projects" ON projects FOR DELETE USING (auth.uid() = owner_id);
-
-CREATE POLICY "Users can view debts in own projects" ON ux_debts FOR SELECT USING (
-  EXISTS (SELECT 1 FROM projects WHERE projects.id = ux_debts.project_id AND projects.owner_id = auth.uid())
-);
-CREATE POLICY "Users can create debts in own projects" ON ux_debts FOR INSERT WITH CHECK (
-  EXISTS (SELECT 1 FROM projects WHERE projects.id = ux_debts.project_id AND projects.owner_id = auth.uid())
-);
-CREATE POLICY "Users can update debts in own projects" ON ux_debts FOR UPDATE USING (
-  EXISTS (SELECT 1 FROM projects WHERE projects.id = ux_debts.project_id AND projects.owner_id = auth.uid())
-);
-CREATE POLICY "Users can delete debts in own projects" ON ux_debts FOR DELETE USING (
-  EXISTS (SELECT 1 FROM projects WHERE projects.id = ux_debts.project_id AND projects.owner_id = auth.uid())
-);
-```
+### Security
+- Row Level Security (RLS) enabled on all tables
+- Users can only access their own data
+- Automatic profile creation on user signup
 
 ## 🧪 Testing
 
@@ -179,29 +156,15 @@ npm run test:coverage
 
 ### Netlify (Recommended)
 
-1. **Build the project**
-   ```bash
-   npm run build
-   ```
+1. **Connect your repository to Netlify**
+2. **Set build settings**:
+   - Build command: `npm ci && npm run build`
+   - Publish directory: `dist`
+3. **Add environment variables** in Netlify dashboard:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
 
-2. **Deploy to Netlify**
-   - Connect your repository to Netlify
-   - Set build command: `npm run build`
-   - Set publish directory: `dist`
-   - Add environment variables in Netlify dashboard
-
-3. **Configure redirects**
-   The `netlify.toml` file is already configured for SPA routing.
-
-### Manual Deployment
-
-1. **Build for production**
-   ```bash
-   npm run build
-   ```
-
-2. **Serve the `dist` folder**
-   The built files will be in the `dist` directory.
+The `netlify.toml` file is already configured for SPA routing.
 
 ## 🔧 Configuration
 
@@ -215,12 +178,31 @@ npm run test:coverage
 | `VITE_APP_URL` | Application URL | No |
 | `VITE_SUPPORT_EMAIL` | Support email address | No |
 
-### Feature Flags
+### Supabase Setup Checklist
 
-Enable/disable features using environment variables:
+- [ ] Create Supabase project
+- [ ] Run database migration
+- [ ] Configure authentication settings
+- [ ] Set up environment variables
+- [ ] Test user registration and login
+- [ ] Deploy to production
 
-- `VITE_ENABLE_ANALYTICS`: Enable analytics features
-- `VITE_ENABLE_NOTIFICATIONS`: Enable notification features
+## 🆘 Troubleshooting
+
+### Common Issues
+
+1. **"Missing Supabase environment variables"**
+   - Make sure your `.env` file exists and has the correct variables
+   - Check that your Supabase URL format is correct
+
+2. **Authentication not working**
+   - Verify your Supabase project is fully set up
+   - Check authentication settings in Supabase dashboard
+   - Ensure database migration has been run
+
+3. **Database errors**
+   - Run the migration file in Supabase SQL editor
+   - Check that RLS policies are properly set up
 
 ## 📝 Contributing
 
