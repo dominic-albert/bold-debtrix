@@ -23,6 +23,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
   logout: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
   loading: boolean;
   error: string | null;
 }
@@ -47,6 +48,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error('Error fetching profile:', error);
+        // If profile doesn't exist, create it
+        if (error.code === 'PGRST116') {
+          const { data: newProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert({
+              id: authUser.id,
+              email: authUser.email!,
+              full_name: authUser.user_metadata?.full_name || authUser.email!.split('@')[0],
+              avatar_url: authUser.user_metadata?.avatar_url || null,
+            })
+            .select()
+            .single();
+
+          if (createError) {
+            console.error('Error creating profile:', createError);
+            return null;
+          }
+
+          return {
+            id: authUser.id,
+            email: authUser.email!,
+            name: newProfile.full_name,
+            avatar: newProfile.avatar_url,
+          };
+        }
         return null;
       }
 
@@ -111,7 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim().toLowerCase(),
         password,
       });
 
@@ -125,7 +151,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         toast.success('Welcome back!');
       }
     } catch (err: any) {
-      const errorMessage = err.message || 'Login failed';
+      let errorMessage = 'Login failed';
+      
+      if (err.message?.includes('Invalid login credentials') || err.message?.includes('invalid_credentials')) {
+        errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+      } else if (err.message?.includes('Email not confirmed')) {
+        errorMessage = 'Please check your email and click the confirmation link before signing in.';
+      } else if (err.message?.includes('Too many requests')) {
+        errorMessage = 'Too many login attempts. Please wait a moment before trying again.';
+      } else if (err.message?.includes('User not found')) {
+        errorMessage = 'No account found with this email address. Please sign up first.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
       setError(errorMessage);
       toast.error(errorMessage);
       throw new Error(errorMessage);
@@ -141,11 +180,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: email.trim().toLowerCase(),
         password,
         options: {
           data: {
-            full_name: name,
+            full_name: name.trim(),
           },
         },
       });
@@ -155,16 +194,71 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       if (data.user) {
-        // Profile will be created automatically by the trigger
-        toast.success('Account created successfully! Please check your email to verify your account.');
+        // Check if email confirmation is disabled
+        if (data.user.email_confirmed_at) {
+          // User is immediately confirmed, proceed with login
+          const userProfile = await fetchUserProfile(data.user);
+          setUser(userProfile);
+          toast.success('Account created successfully! Welcome to Debtrix!');
+        } else {
+          // Email confirmation is enabled
+          toast.success('Account created! Please check your email to verify your account before signing in.');
+        }
       }
     } catch (err: any) {
-      const errorMessage = err.message || 'Signup failed';
+      let errorMessage = 'Signup failed';
+      
+      if (err.message?.includes('User already registered') || err.message?.includes('user_already_exists')) {
+        errorMessage = 'An account with this email already exists. Try signing in instead, or use a different email address.';
+      } else if (err.message?.includes('Password should be at least')) {
+        errorMessage = 'Password must be at least 6 characters long.';
+      } else if (err.message?.includes('Invalid email')) {
+        errorMessage = 'Please enter a valid email address.';
+      } else if (err.message?.includes('Signup is disabled')) {
+        errorMessage = 'Account registration is currently disabled. Please contact support.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
       setError(errorMessage);
       toast.error(errorMessage);
       throw new Error(errorMessage);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // 🔄 Reset password function
+  const resetPassword = async (email: string) => {
+    try {
+      setError(null);
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        email.trim().toLowerCase(),
+        {
+          redirectTo: `${window.location.origin}/reset-password`,
+        }
+      );
+
+      if (error) {
+        throw error;
+      }
+
+      toast.success('Password reset email sent! Check your inbox for instructions.');
+    } catch (err: any) {
+      let errorMessage = 'Failed to send reset email';
+      
+      if (err.message?.includes('User not found')) {
+        errorMessage = 'No account found with this email address.';
+      } else if (err.message?.includes('Invalid email')) {
+        errorMessage = 'Please enter a valid email address.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
     }
   };
 
@@ -191,7 +285,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, loading, error }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, resetPassword, loading, error }}>
       {children}
     </AuthContext.Provider>
   );

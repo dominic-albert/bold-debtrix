@@ -25,14 +25,15 @@ VITE_SUPABASE_ANON_KEY=your-anon-key-here
 2. Copy and paste the migration file content from `supabase/migrations/20250614174953_misty_union.sql`
 3. Click **Run** to execute the migration
 
-### 4. Configure Authentication
+### 4. Configure Authentication (IMPORTANT!)
 
 1. In Supabase dashboard, go to **Authentication** → **Settings**
 2. Under **Site URL**, add your domain: `https://your-domain.netlify.app`
 3. Under **Redirect URLs**, add: `https://your-domain.netlify.app/**`
-4. **Disable email confirmation** for testing (optional):
+4. **CRITICAL: Disable email confirmation for testing**:
    - Go to **Authentication** → **Settings** → **Email**
-   - Turn off "Enable email confirmations"
+   - Turn OFF "Enable email confirmations"
+   - This prevents the "User already registered" error when testing
 
 ### 5. Test the Setup
 
@@ -118,7 +119,7 @@ src/
 4. **Set up Supabase database**
    - Create a new Supabase project
    - Run the SQL migration in `supabase/migrations/20250614174953_misty_union.sql`
-   - Configure authentication settings
+   - Configure authentication settings (disable email confirmation for testing)
 
 5. **Start development server**
    ```bash
@@ -183,6 +184,7 @@ The `netlify.toml` file is already configured for SPA routing.
 - [ ] Create Supabase project
 - [ ] Run database migration
 - [ ] Configure authentication settings
+- [ ] **DISABLE email confirmation for testing**
 - [ ] Set up environment variables
 - [ ] Test user registration and login
 - [ ] Deploy to production
@@ -195,14 +197,50 @@ The `netlify.toml` file is already configured for SPA routing.
    - Make sure your `.env` file exists and has the correct variables
    - Check that your Supabase URL format is correct
 
-2. **Authentication not working**
+2. **"User already registered" error**
+   - **SOLUTION**: Disable email confirmation in Supabase dashboard
+   - Go to Authentication → Settings → Email
+   - Turn OFF "Enable email confirmations"
+   - This is the most common cause of signup issues
+
+3. **"Invalid login credentials" error**
+   - Make sure you have successfully created an account first
+   - Check that email confirmation is disabled (see above)
+   - Verify your email and password are correct
+   - Try the "Forgot password?" link if needed
+
+4. **Authentication not working**
    - Verify your Supabase project is fully set up
    - Check authentication settings in Supabase dashboard
    - Ensure database migration has been run
+   - Make sure email confirmation is disabled for testing
 
-3. **Database errors**
+5. **Database errors**
    - Run the migration file in Supabase SQL editor
    - Check that RLS policies are properly set up
+
+### Authentication Troubleshooting Steps
+
+If you're having authentication issues:
+
+1. **Check Supabase Dashboard**:
+   - Go to Authentication → Users
+   - See if your user was created
+   - Check if email is confirmed
+
+2. **Disable Email Confirmation**:
+   - Go to Authentication → Settings → Email
+   - Turn OFF "Enable email confirmations"
+   - This is crucial for testing
+
+3. **Clear Browser Data**:
+   - Clear cookies and local storage
+   - Try in an incognito window
+
+4. **Check Console Errors**:
+   - Open browser developer tools
+   - Look for specific error messages
+   - Check network tab for failed requests
 
 ## 📝 Contributing
 

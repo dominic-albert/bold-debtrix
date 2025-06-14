@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CheckCircle, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { CheckCircle, Mail, Lock, User, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 function SignupPage() {
@@ -21,14 +21,27 @@ function SignupPage() {
     setLoading(true);
     setError('');
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
+    // Client-side validation
+    if (!name.trim()) {
+      setError('Please enter your full name');
+      setLoading(false);
+      return;
+    }
+
+    if (!email.trim()) {
+      setError('Please enter your email address');
       setLoading(false);
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
       setLoading(false);
       return;
     }
@@ -36,8 +49,8 @@ function SignupPage() {
     try {
       await signup(email, password, name);
       navigate('/dashboard');
-    } catch (err) {
-      setError('Failed to create account');
+    } catch (err: any) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -64,8 +77,20 @@ function SignupPage() {
         <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
-                {error}
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm flex items-start space-x-2">
+                <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Signup Failed</p>
+                  <p className="mt-1">{error}</p>
+                  {error.includes('already exists') && (
+                    <p className="mt-2 text-xs">
+                      Already have an account?{' '}
+                      <Link to="/login" className="text-red-700 hover:text-red-800 font-medium underline">
+                        Sign in here
+                      </Link>
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
@@ -123,7 +148,7 @@ function SignupPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
-                  placeholder="Create a password"
+                  placeholder="Create a password (min. 6 characters)"
                   required
                 />
                 <button
@@ -209,12 +234,17 @@ function SignupPage() {
           </div>
         </div>
 
-        {/* Free Trial Info */}
-        <div className="mt-6 bg-emerald-50 border border-emerald-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-emerald-800 mb-2">14-Day Free Trial</h3>
-          <p className="text-sm text-emerald-600">
-            No credit card required. Start tracking UX debt immediately.
+        {/* Troubleshooting Info */}
+        <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <h3 className="text-sm font-medium text-amber-800 mb-2">Having trouble signing up?</h3>
+          <p className="text-sm text-amber-600 mb-2">
+            If you're getting a "User already registered" error:
           </p>
+          <ul className="text-sm text-amber-600 space-y-1">
+            <li>• Try signing in with your existing account instead</li>
+            <li>• Use a different email address</li>
+            <li>• Contact support if you believe this is an error</li>
+          </ul>
         </div>
       </div>
     </div>
