@@ -4,7 +4,6 @@ import {
   Plus, 
   Search, 
   Filter, 
-  MoreHorizontal, 
   AlertTriangle,
   CheckCircle2,
   Clock,
@@ -13,10 +12,14 @@ import {
 import { useProject } from '../contexts/ProjectContext';
 import Navbar from '../components/Navbar';
 import CreateProjectModal from '../components/CreateProjectModal';
+import EditProjectModal from '../components/EditProjectModal';
+import ProjectOptionsMenu from '../components/ProjectOptionsMenu';
 
 function DashboardPage() {
   const { projects } = useProject();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingProject, setEditingProject] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredProjects = projects.filter(project =>
@@ -37,6 +40,11 @@ function DashboardPage() {
     const inProgress = project.uxDebts.filter((debt: any) => debt.status === 'In Progress').length;
     const resolved = project.uxDebts.filter((debt: any) => debt.status === 'Resolved').length;
     return { open, inProgress, resolved };
+  };
+
+  const handleEditProject = (project: any) => {
+    setEditingProject(project);
+    setShowEditModal(true);
   };
 
   return (
@@ -101,86 +109,88 @@ function DashboardPage() {
               const statusStats = getStatusStats(project);
               
               return (
-                <Link
+                <div
                   key={project.id}
-                  to={`/project/${project.id}`}
-                  className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 transform hover:scale-105 group"
+                  className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 transform hover:scale-105 group relative"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className={`w-3 h-3 rounded-full ${project.color} group-hover:scale-110 transition-transform`}></div>
-                    <button className="text-gray-400 hover:text-gray-600 transition-colors">
-                      <MoreHorizontal className="w-5 h-5" />
-                    </button>
+                    <ProjectOptionsMenu 
+                      project={project} 
+                      onEdit={() => handleEditProject(project)}
+                    />
                   </div>
 
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
-                    {project.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4 line-clamp-2">
-                    {project.description}
-                  </p>
+                  <Link to={`/project/${project.id}`} className="block">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4 line-clamp-2">
+                      {project.description}
+                    </p>
 
-                  {/* Stats */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500">Total Issues</span>
-                      <span className="font-medium text-gray-900">
-                        {project.uxDebts.length}
-                      </span>
-                    </div>
+                    {/* Stats */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500">Total Issues</span>
+                        <span className="font-medium text-gray-900">
+                          {project.uxDebts.length}
+                        </span>
+                      </div>
 
-                    {/* Severity Distribution */}
-                    <div className="flex items-center gap-2">
-                      {severityStats.critical > 0 && (
-                        <div className="flex items-center gap-1 text-xs">
-                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                          <span className="text-red-600 font-medium">{severityStats.critical}</span>
-                        </div>
-                      )}
-                      {severityStats.high > 0 && (
-                        <div className="flex items-center gap-1 text-xs">
-                          <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                          <span className="text-orange-600 font-medium">{severityStats.high}</span>
-                        </div>
-                      )}
-                      {severityStats.medium > 0 && (
-                        <div className="flex items-center gap-1 text-xs">
-                          <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                          <span className="text-yellow-600 font-medium">{severityStats.medium}</span>
-                        </div>
-                      )}
-                      {severityStats.low > 0 && (
-                        <div className="flex items-center gap-1 text-xs">
-                          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                          <span className="text-green-600 font-medium">{severityStats.low}</span>
-                        </div>
-                      )}
-                    </div>
+                      {/* Severity Distribution */}
+                      <div className="flex items-center gap-2">
+                        {severityStats.critical > 0 && (
+                          <div className="flex items-center gap-1 text-xs">
+                            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                            <span className="text-red-600 font-medium">{severityStats.critical}</span>
+                          </div>
+                        )}
+                        {severityStats.high > 0 && (
+                          <div className="flex items-center gap-1 text-xs">
+                            <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                            <span className="text-orange-600 font-medium">{severityStats.high}</span>
+                          </div>
+                        )}
+                        {severityStats.medium > 0 && (
+                          <div className="flex items-center gap-1 text-xs">
+                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                            <span className="text-yellow-600 font-medium">{severityStats.medium}</span>
+                          </div>
+                        )}
+                        {severityStats.low > 0 && (
+                          <div className="flex items-center gap-1 text-xs">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span className="text-green-600 font-medium">{severityStats.low}</span>
+                          </div>
+                        )}
+                      </div>
 
-                    {/* Status Progress */}
-                    <div className="flex items-center gap-4 text-xs">
-                      <div className="flex items-center gap-1 text-red-600">
-                        <AlertTriangle className="w-3 h-3" />
-                        <span>{statusStats.open}</span>
+                      {/* Status Progress */}
+                      <div className="flex items-center gap-4 text-xs">
+                        <div className="flex items-center gap-1 text-red-600">
+                          <AlertTriangle className="w-3 h-3" />
+                          <span>{statusStats.open}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-yellow-600">
+                          <Clock className="w-3 h-3" />
+                          <span>{statusStats.inProgress}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-green-600">
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>{statusStats.resolved}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1 text-yellow-600">
-                        <Clock className="w-3 h-3" />
-                        <span>{statusStats.inProgress}</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-green-600">
-                        <CheckCircle2 className="w-3 h-3" />
-                        <span>{statusStats.resolved}</span>
-                      </div>
-                    </div>
 
-                    <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        Updated {new Date(project.updated_at).toLocaleDateString()}
+                      <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          Updated {new Date(project.updated_at).toLocaleDateString()}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                </div>
               );
             })}
           </div>
@@ -191,6 +201,17 @@ function DashboardPage() {
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
       />
+
+      {editingProject && (
+        <EditProjectModal
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingProject(null);
+          }}
+          project={editingProject}
+        />
+      )}
     </div>
   );
 }

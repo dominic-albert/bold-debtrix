@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   AlertTriangle, 
   CheckCircle2, 
   Clock, 
-  MoreHorizontal, 
   ExternalLink,
   Calendar,
   User
 } from 'lucide-react';
 import { useProject } from '../contexts/ProjectContext';
+import DebtOptionsMenu from './DebtOptionsMenu';
+import EditDebtModal from './EditDebtModal';
 
 interface DebtListViewProps {
   searchTerm: string;
@@ -16,6 +17,8 @@ interface DebtListViewProps {
 
 function DebtListView({ searchTerm }: DebtListViewProps) {
   const { currentProject } = useProject();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingDebt, setEditingDebt] = useState(null);
 
   if (!currentProject) return null;
 
@@ -53,6 +56,11 @@ function DebtListView({ searchTerm }: DebtListViewProps) {
     }
   };
 
+  const handleEditDebt = (debt: any) => {
+    setEditingDebt(debt);
+    setShowEditModal(true);
+  };
+
   if (filteredDebts.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
@@ -66,103 +74,119 @@ function DebtListView({ searchTerm }: DebtListViewProps) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Issue
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Screen
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Type
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Severity
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Logged By
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-              </th>
-              <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredDebts.map((debt) => (
-              <tr key={debt.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4">
-                  <div>
-                    <div className="font-medium text-gray-900 mb-1">{debt.title}</div>
-                    <div className="text-sm text-gray-600 line-clamp-2">
-                      {debt.description}
-                    </div>
-                    {debt.figma_url && (
-                      <a
-                        href={debt.figma_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 mt-1"
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                        Figma
-                      </a>
-                    )}
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {debt.screen}
-                </td>
-                <td className="px-6 py-4">
-                  <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-blue-50 text-blue-700">
-                    {debt.type}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getSeverityColor(debt.severity)}`}>
-                    {debt.severity}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <div className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(debt.status)}`}>
-                    {getStatusIcon(debt.status)}
-                    {debt.status}
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                      <User className="w-3 h-3 text-white" />
-                    </div>
-                    <span className="text-sm text-gray-900">{debt.logged_by}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-1 text-sm text-gray-600">
-                    <Calendar className="w-3 h-3" />
-                    {debt.created_at.toLocaleDateString()}
-                  </div>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <button className="text-gray-400 hover:text-gray-600 transition-colors">
-                    <MoreHorizontal className="w-5 h-5" />
-                  </button>
-                </td>
+    <>
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Issue
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Screen
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Type
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Severity
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Logged By
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredDebts.map((debt) => (
+                <tr key={debt.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4">
+                    <div>
+                      <div className="font-medium text-gray-900 mb-1">{debt.title}</div>
+                      <div className="text-sm text-gray-600 line-clamp-2">
+                        {debt.description}
+                      </div>
+                      {debt.figma_url && (
+                        <a
+                          href={debt.figma_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 mt-1"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          Figma
+                        </a>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900">
+                    {debt.screen}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-blue-50 text-blue-700">
+                      {debt.type}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getSeverityColor(debt.severity)}`}>
+                      {debt.severity}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(debt.status)}`}>
+                      {getStatusIcon(debt.status)}
+                      {debt.status}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                        <User className="w-3 h-3 text-white" />
+                      </div>
+                      <span className="text-sm text-gray-900">{debt.logged_by}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-1 text-sm text-gray-600">
+                      <Calendar className="w-3 h-3" />
+                      {debt.created_at.toLocaleDateString()}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <DebtOptionsMenu 
+                      debt={debt} 
+                      projectId={currentProject.id}
+                      onEdit={() => handleEditDebt(debt)}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+
+      {editingDebt && (
+        <EditDebtModal
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingDebt(null);
+          }}
+          debt={editingDebt}
+          projectId={currentProject.id}
+        />
+      )}
+    </>
   );
 }
 
