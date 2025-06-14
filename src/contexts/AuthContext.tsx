@@ -5,9 +5,8 @@ import React, {
   useEffect,
   ReactNode,
 } from 'react';
-import { supabase } from '../lib/supabase'; // ✅ Import Supabase client
 
-// 👤 User type (name and avatar are optional)
+// 👤 User type (simplified for demo)
 interface User {
   id: string;
   email: string;
@@ -28,169 +27,98 @@ interface AuthContextType {
 // 🧠 Create context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// 🏗️ AuthProvider component
+// 🏗️ AuthProvider component - Using mock data for demo
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 🌐 Check session & listen to auth state
+  // 🌐 Check for existing session on mount
   useEffect(() => {
-    const getSession = async () => {
+    const checkSession = () => {
       try {
-        setError(null);
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-          setError('Failed to get session. Please check your connection.');
-          setLoading(false);
-          return;
-        }
-
-        if (session?.user) {
-          await fetchUserProfile(session.user.id, session.user.email || '');
+        const savedUser = localStorage.getItem('debtrix_user');
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
         }
       } catch (err) {
-        console.error('Auth initialization error:', err);
-        setError('Failed to initialize authentication. Please check your connection to Supabase.');
+        console.error('Error loading saved user:', err);
+        localStorage.removeItem('debtrix_user');
       } finally {
         setLoading(false);
       }
     };
 
-    getSession();
-
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        try {
-          setError(null);
-          if (session?.user) {
-            await fetchUserProfile(session.user.id, session.user.email || '');
-          } else {
-            setUser(null);
-          }
-        } catch (err) {
-          console.error('Auth state change error:', err);
-          setError('Authentication error occurred.');
-        }
-      }
-    );
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
+    checkSession();
   }, []);
 
-  // 🔐 Login with Supabase
+  // 🔐 Login function (mock implementation)
   const login = async (email: string, password: string) => {
     try {
       setError(null);
-      const { data, error: loginError } = await supabase.auth.signInWithPassword({
+      setLoading(true);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock user data
+      const mockUser: User = {
+        id: '1',
         email,
-        password,
-      });
-
-      if (loginError) throw new Error(loginError.message);
-
-      if (data.user) {
-        await fetchUserProfile(data.user.id, data.user.email || '');
-      }
+        name: email.split('@')[0],
+        avatar: `https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400`
+      };
+      
+      setUser(mockUser);
+      localStorage.setItem('debtrix_user', JSON.stringify(mockUser));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
       setError(errorMessage);
       throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ✍️ Signup and create profile
+  // ✍️ Signup function (mock implementation)
   const signup = async (email: string, password: string, name: string) => {
     try {
       setError(null);
-      const { data, error: signupError } = await supabase.auth.signUp({
+      setLoading(true);
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock user data
+      const mockUser: User = {
+        id: '1',
         email,
-        password,
-        options: {
-          data: { full_name: name },
-        },
-      });
-
-      if (signupError) throw new Error(signupError.message);
-
-      if (data.user) {
-        // Create profile with error handling
-        const { error: profileError } = await supabase.from('profiles').insert({
-          id: data.user.id,
-          email: data.user.email || '',
-          full_name: name,
-        });
-
-        if (profileError) {
-          console.error('Profile creation error:', profileError);
-          // Don't throw here as the user account was created successfully
-        }
-
-        await fetchUserProfile(data.user.id, data.user.email || '');
-      }
+        name,
+        avatar: `https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=400`
+      };
+      
+      setUser(mockUser);
+      localStorage.setItem('debtrix_user', JSON.stringify(mockUser));
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Signup failed';
       setError(errorMessage);
       throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 🚪 Logout
+  // 🚪 Logout function
   const logout = async () => {
     try {
       setError(null);
-      const { error: logoutError } = await supabase.auth.signOut();
-      if (logoutError) {
-        console.error('Logout error:', logoutError);
-      }
       setUser(null);
+      localStorage.removeItem('debtrix_user');
     } catch (err) {
       console.error('Logout error:', err);
       // Still clear the user state even if logout fails
       setUser(null);
-    }
-  };
-
-  // 📥 Fetch profile from Supabase with better error handling
-  const fetchUserProfile = async (id: string, email: string) => {
-    try {
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('full_name, avatar_url')
-        .eq('id', id)
-        .single();
-
-      if (profileError) {
-        console.error('Profile fetch error:', profileError);
-        // Set user with basic info even if profile fetch fails
-        setUser({
-          id,
-          email,
-          name: undefined,
-          avatar: undefined,
-        });
-        return;
-      }
-
-      setUser({
-        id,
-        email,
-        name: profile?.full_name,
-        avatar: profile?.avatar_url,
-      });
-    } catch (err) {
-      console.error('Fetch user profile error:', err);
-      // Set user with basic info even if profile fetch fails
-      setUser({
-        id,
-        email,
-        name: undefined,
-        avatar: undefined,
-      });
+      localStorage.removeItem('debtrix_user');
     }
   };
 
@@ -201,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// 🎯 useAuth Hook (Vite-friendly export)
+// 🎯 useAuth Hook
 const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

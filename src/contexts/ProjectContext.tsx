@@ -1,11 +1,4 @@
-// ProjectContext.tsx
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { supabase, Database } from '../lib/supabase';
-import { useAuth } from './AuthContext';
-import toast from 'react-hot-toast';
-
-export type ProjectRow = Database['public']['Tables']['projects']['Row'];
-export type UXDebtRow = Database['public']['Tables']['ux_debts']['Row'];
+import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export interface UXDebt {
   id: string;
@@ -17,248 +10,215 @@ export interface UXDebt {
   loggedBy: string;
   description: string;
   recommendation: string;
-  screenshot_url?: string;
+  screenshot?: string;
   assignee?: string;
   figmaUrl?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface Project extends Omit<ProjectRow, 'created_at' | 'updated_at'> {
+export interface Project {
+  id: string;
+  title: string;
+  description: string;
+  color: string;
+  owner_id: string;
+  uxDebts: UXDebt[];
+  teamMembers: string[];
   createdAt: Date;
   updatedAt: Date;
-  uxDebts: UXDebt[];
 }
 
 interface ProjectContextType {
   projects: Project[];
   currentProject: Project | null;
-  loadingProjects: boolean;
   setCurrentProject: (project: Project | null) => void;
-  addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'uxDebts'>) => Promise<void>;
-  updateProject: (id: string, project: Partial<Project>) => Promise<void>;
-  deleteProject: (id: string) => Promise<void>;
-  addUXDebt: (projectId: string, debt: Omit<UXDebt, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
-  updateUXDebt: (projectId: string, debtId: string, debt: Partial<UXDebt>) => Promise<void>;
-  deleteUXDebt: (projectId: string, debtId: string) => Promise<void>;
+  addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  updateProject: (id: string, project: Partial<Project>) => void;
+  deleteProject: (id: string) => void;
+  addUXDebt: (projectId: string, debt: Omit<UXDebt, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  updateUXDebt: (projectId: string, debtId: string, debt: Partial<UXDebt>) => void;
+  deleteUXDebt: (projectId: string, debtId: string) => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
 export function ProjectProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>([
+    {
+      id: '1',
+      title: 'E-commerce Redesign',
+      description: 'Complete overhaul of the checkout process and product pages',
+      color: 'bg-purple-500',
+      owner_id: '1',
+      uxDebts: [
+        {
+          id: '1',
+          title: 'Checkout button too small on mobile',
+          screen: 'Checkout Page',
+          type: 'Usability',
+          severity: 'High',
+          status: 'Open',
+          loggedBy: 'Sarah Chen',
+          description: 'Users are having difficulty tapping the checkout button on mobile devices',
+          recommendation: 'Increase button size to minimum 44px height following iOS HIG',
+          createdAt: new Date('2024-01-15'),
+          updatedAt: new Date('2024-01-15'),
+        },
+        {
+          id: '2',
+          title: 'Missing alt text on product images',
+          screen: 'Product Gallery',
+          type: 'Accessibility',
+          severity: 'Medium',
+          status: 'In Progress',
+          loggedBy: 'Mike Johnson',
+          description: 'Screen readers cannot interpret product images',
+          recommendation: 'Add descriptive alt text to all product images',
+          createdAt: new Date('2024-01-12'),
+          updatedAt: new Date('2024-01-16'),
+        }
+      ],
+      teamMembers: ['Sarah Chen', 'Mike Johnson', 'Alex Rivera'],
+      createdAt: new Date('2024-01-10'),
+      updatedAt: new Date('2024-01-16'),
+    },
+    {
+      id: '2',
+      title: 'Dashboard Analytics',
+      description: 'User engagement tracking and reporting interface',
+      color: 'bg-blue-500',
+      owner_id: '1',
+      uxDebts: [
+        {
+          id: '3',
+          title: 'Chart loading too slow',
+          screen: 'Analytics Dashboard',
+          type: 'Performance',
+          severity: 'Medium',
+          status: 'Open',
+          loggedBy: 'Alex Rivera',
+          description: 'Charts take over 3 seconds to load with large datasets',
+          recommendation: 'Implement data virtualization and lazy loading',
+          createdAt: new Date('2024-01-14'),
+          updatedAt: new Date('2024-01-14'),
+        }
+      ],
+      teamMembers: ['Alex Rivera', 'Sarah Chen'],
+      createdAt: new Date('2024-01-08'),
+      updatedAt: new Date('2024-01-14'),
+    }
+  ]);
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
-  const [loadingProjects, setLoadingProjects] = useState(true);
 
-  const refreshProjects = async () => {
-    if (!user?.id) {
-      setLoadingProjects(false);
-      return;
-    }
-    
-    setLoadingProjects(true);
-    try {
-      // Test Supabase connection first
-      const { data: testData, error: testError } = await supabase
-        .from('projects')
-        .select('count')
-        .limit(1);
+  const addProject = (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newProject: Project = {
+      ...projectData,
+      id: Date.now().toString(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    setProjects(prev => [...prev, newProject]);
+  };
 
-      if (testError) {
-        console.error('Supabase connection test failed:', testError);
-        throw new Error(`Database connection failed: ${testError.message}`);
-      }
-
-      const { data: projectData, error } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('owner_id', user.id);
-
-      if (error) {
-        console.error('Error fetching projects:', error);
-        throw error;
-      }
-
-      const projectsWithDebts = await Promise.all(
-        (projectData || []).map(async (proj) => {
-          const { data: uxDebtsData, error: debtsError } = await supabase
-            .from('ux_debts')
-            .select('*')
-            .eq('project_id', proj.id);
-
-          if (debtsError) {
-            console.error('Error fetching UX debts for project:', proj.id, debtsError);
-            // Continue with empty debts array instead of failing
-          }
-
-          return {
-            ...proj,
-            createdAt: new Date(proj.created_at),
-            updatedAt: new Date(proj.updated_at),
-            uxDebts: (uxDebtsData || []).map((debt) => ({
-              ...debt,
-              loggedBy: debt.logged_by,
-              figmaUrl: debt.figma_url,
-              screenshot_url: debt.screenshot_url,
-              createdAt: new Date(debt.created_at),
-              updatedAt: new Date(debt.updated_at),
-            })),
-          } as Project;
-        })
-      );
-
-      setProjects(projectsWithDebts);
-
-      // Update current project from refreshed data if it exists
-      if (currentProject) {
-        const updatedCurrent = projectsWithDebts.find(p => p.id === currentProject.id);
-        setCurrentProject(updatedCurrent || null);
-      }
-    } catch (err) {
-      console.error('Failed to load projects:', err);
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load projects';
-      toast.error(`Connection error: ${errorMessage}`);
-      
-      // Check if it's a network/connection error
-      if (errorMessage.includes('Failed to fetch') || errorMessage.includes('NetworkError')) {
-        toast.error('Unable to connect to database. Please check your internet connection and Supabase configuration.');
-      }
-    } finally {
-      setLoadingProjects(false);
+  const updateProject = (id: string, projectData: Partial<Project>) => {
+    setProjects(prev =>
+      prev.map(project =>
+        project.id === id
+          ? { ...project, ...projectData, updatedAt: new Date() }
+          : project
+      )
+    );
+    if (currentProject?.id === id) {
+      setCurrentProject(prev => prev ? { ...prev, ...projectData, updatedAt: new Date() } : null);
     }
   };
 
-  useEffect(() => {
-    refreshProjects();
-  }, [user]);
-
-  const addProject = async (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'uxDebts'>) => {
-    try {
-      const { data, error } = await supabase
-        .from('projects')
-        .insert({ ...projectData, owner_id: user?.id })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      toast.success('Project added!');
-      await refreshProjects();
-    } catch (err) {
-      console.error('Failed to add project:', err);
-      toast.error('Failed to add project.');
+  const deleteProject = (id: string) => {
+    setProjects(prev => prev.filter(project => project.id !== id));
+    if (currentProject?.id === id) {
+      setCurrentProject(null);
     }
   };
 
-  const updateProject = async (id: string, projectData: Partial<Project>) => {
-    try {
-      const { error } = await supabase
-        .from('projects')
-        .update({ ...projectData, updated_at: new Date().toISOString() })
-        .eq('id', id);
+  const addUXDebt = (projectId: string, debtData: Omit<UXDebt, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newDebt: UXDebt = {
+      ...debtData,
+      id: Date.now().toString(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
 
-      if (error) throw error;
+    setProjects(prev =>
+      prev.map(project =>
+        project.id === projectId
+          ? {
+              ...project,
+              uxDebts: [...project.uxDebts, newDebt],
+              updatedAt: new Date()
+            }
+          : project
+      )
+    );
 
-      toast.success('Project updated.');
-      await refreshProjects();
-    } catch (err) {
-      console.error('Failed to update project:', err);
-      toast.error('Failed to update project.');
+    if (currentProject?.id === projectId) {
+      setCurrentProject(prev => prev ? {
+        ...prev,
+        uxDebts: [...prev.uxDebts, newDebt],
+        updatedAt: new Date()
+      } : null);
     }
   };
 
-  const deleteProject = async (id: string) => {
-    try {
-      const { error } = await supabase.from('projects').delete().eq('id', id);
-      if (error) throw error;
+  const updateUXDebt = (projectId: string, debtId: string, debtData: Partial<UXDebt>) => {
+    setProjects(prev =>
+      prev.map(project =>
+        project.id === projectId
+          ? {
+              ...project,
+              uxDebts: project.uxDebts.map(debt =>
+                debt.id === debtId
+                  ? { ...debt, ...debtData, updatedAt: new Date() }
+                  : debt
+              ),
+              updatedAt: new Date()
+            }
+          : project
+      )
+    );
 
-      toast.success('Project deleted.');
-      if (currentProject?.id === id) setCurrentProject(null);
-      await refreshProjects();
-    } catch (err) {
-      console.error('Failed to delete project:', err);
-      toast.error('Failed to delete project.');
+    if (currentProject?.id === projectId) {
+      setCurrentProject(prev => prev ? {
+        ...prev,
+        uxDebts: prev.uxDebts.map(debt =>
+          debt.id === debtId
+            ? { ...debt, ...debtData, updatedAt: new Date() }
+            : debt
+        ),
+        updatedAt: new Date()
+      } : null);
     }
   };
 
-  const addUXDebt = async (projectId: string, debtData: Omit<UXDebt, 'id' | 'createdAt' | 'updatedAt'>) => {
-    try {
-      const insertData = {
-        project_id: projectId,
-        title: debtData.title,
-        screen: debtData.screen,
-        type: debtData.type,
-        severity: debtData.severity,
-        status: debtData.status,
-        assignee: debtData.assignee,
-        logged_by: debtData.loggedBy,
-        description: debtData.description,
-        recommendation: debtData.recommendation,
-        figma_url: debtData.figmaUrl,
-        screenshot_url: debtData.screenshot_url,
-      };
+  const deleteUXDebt = (projectId: string, debtId: string) => {
+    setProjects(prev =>
+      prev.map(project =>
+        project.id === projectId
+          ? {
+              ...project,
+              uxDebts: project.uxDebts.filter(debt => debt.id !== debtId),
+              updatedAt: new Date()
+            }
+          : project
+      )
+    );
 
-      const { data, error } = await supabase
-        .from('ux_debts')
-        .insert(insertData)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      toast.success('UX Debt added!');
-      await refreshProjects();
-    } catch (err) {
-      console.error('Failed to add UX debt:', err);
-      toast.error('Failed to add UX debt.');
-    }
-  };
-
-  const updateUXDebt = async (projectId: string, debtId: string, debtData: Partial<UXDebt>) => {
-    try {
-      const updateData: any = {
-        updated_at: new Date().toISOString(),
-      };
-
-      // Map camelCase properties to snake_case database columns
-      if (debtData.title !== undefined) updateData.title = debtData.title;
-      if (debtData.screen !== undefined) updateData.screen = debtData.screen;
-      if (debtData.type !== undefined) updateData.type = debtData.type;
-      if (debtData.severity !== undefined) updateData.severity = debtData.severity;
-      if (debtData.status !== undefined) updateData.status = debtData.status;
-      if (debtData.assignee !== undefined) updateData.assignee = debtData.assignee;
-      if (debtData.loggedBy !== undefined) updateData.logged_by = debtData.loggedBy;
-      if (debtData.description !== undefined) updateData.description = debtData.description;
-      if (debtData.recommendation !== undefined) updateData.recommendation = debtData.recommendation;
-      if (debtData.figmaUrl !== undefined) updateData.figma_url = debtData.figmaUrl;
-      if (debtData.screenshot_url !== undefined) updateData.screenshot_url = debtData.screenshot_url;
-
-      const { error } = await supabase
-        .from('ux_debts')
-        .update(updateData)
-        .eq('id', debtId);
-
-      if (error) throw error;
-
-      toast.success('UX Debt updated.');
-      await refreshProjects();
-    } catch (err) {
-      console.error('Failed to update UX debt:', err);
-      toast.error('Failed to update UX debt.');
-    }
-  };
-
-  const deleteUXDebt = async (projectId: string, debtId: string) => {
-    try {
-      const { error } = await supabase.from('ux_debts').delete().eq('id', debtId);
-      if (error) throw error;
-
-      toast.success('UX Debt deleted.');
-      await refreshProjects();
-    } catch (err) {
-      console.error('Failed to delete UX debt:', err);
-      toast.error('Failed to delete UX debt.');
+    if (currentProject?.id === projectId) {
+      setCurrentProject(prev => prev ? {
+        ...prev,
+        uxDebts: prev.uxDebts.filter(debt => debt.id !== debtId),
+        updatedAt: new Date()
+      } : null);
     }
   };
 
@@ -266,7 +226,6 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
     <ProjectContext.Provider value={{
       projects,
       currentProject,
-      loadingProjects,
       setCurrentProject,
       addProject,
       updateProject,
