@@ -25,16 +25,15 @@ function CreateProjectModal({ isOpen, onClose }: CreateProjectModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!title.trim() || !description.trim()) return;
+
     setLoading(true);
 
     try {
-      addProject({
-        title,
-        description,
+      await addProject({
+        title: title.trim(),
+        description: description.trim(),
         color: selectedColor,
-        owner_id: '1',
-        uxDebts: [],
-        teamMembers: [],
       });
       
       // Reset form
@@ -42,6 +41,8 @@ function CreateProjectModal({ isOpen, onClose }: CreateProjectModalProps) {
       setDescription('');
       setSelectedColor(colorOptions[0].value);
       onClose();
+    } catch (error) {
+      // Error is handled in the context
     } finally {
       setLoading(false);
     }
@@ -129,7 +130,7 @@ function CreateProjectModal({ isOpen, onClose }: CreateProjectModalProps) {
             </button>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !title.trim() || !description.trim()}
               className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               {loading ? (

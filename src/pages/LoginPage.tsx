@@ -21,8 +21,8 @@ function LoginPage() {
     try {
       await login(email, password);
       navigate('/dashboard');
-    } catch (err) {
-      setError('Invalid email or password');
+    } catch (err: any) {
+      setError(err.message || 'Invalid email or password');
     } finally {
       setLoading(false);
     }
@@ -142,9 +142,9 @@ function LoginPage() {
 
         {/* Authentication Info */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">Authentication Required</h3>
+          <h3 className="text-sm font-medium text-blue-800 mb-2">Supabase Authentication</h3>
           <p className="text-sm text-blue-600">
-            You must first create an account using the Sign Up page before you can log in.
+            This app uses real Supabase authentication. Create an account to get started.
           </p>
         </div>
       </div>

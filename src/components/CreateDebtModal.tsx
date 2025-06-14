@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, AlertTriangle, Upload, Link as LinkIcon } from 'lucide-react';
+import { X, Upload, Link as LinkIcon } from 'lucide-react';
 import { useProject } from '../contexts/ProjectContext';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -43,21 +43,28 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
     status: 'Open',
     description: '',
     recommendation: '',
-    figmaUrl: '',
+    figma_url: '',
     assignee: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
+
     setLoading(true);
 
     try {
-      addUXDebt(projectId, {
-        ...formData,
-        loggedBy: user?.name || 'Unknown User',
+      await addUXDebt(projectId, {
+        title: formData.title.trim(),
+        screen: formData.screen.trim(),
         type: formData.type as any,
         severity: formData.severity as any,
         status: formData.status as any,
+        description: formData.description.trim(),
+        recommendation: formData.recommendation.trim(),
+        logged_by: user.name,
+        assignee: formData.assignee.trim() || undefined,
+        figma_url: formData.figma_url.trim() || undefined,
       });
       
       // Reset form
@@ -69,11 +76,13 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
         status: 'Open',
         description: '',
         recommendation: '',
-        figmaUrl: '',
+        figma_url: '',
         assignee: '',
       });
       
       onClose();
+    } catch (error) {
+      // Error is handled in the context
     } finally {
       setLoading(false);
     }
@@ -84,6 +93,11 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
   };
 
   if (!isOpen) return null;
+
+  const isFormValid = formData.title.trim() && 
+                     formData.screen.trim() && 
+                     formData.description.trim() && 
+                     formData.recommendation.trim();
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
@@ -234,8 +248,8 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
               </div>
               <input
                 type="url"
-                value={formData.figmaUrl}
-                onChange={(e) => handleInputChange('figmaUrl', e.target.value)}
+                value={formData.figma_url}
+                onChange={(e) => handleInputChange('figma_url', e.target.value)}
                 className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 placeholder="https://figma.com/..."
               />
@@ -281,7 +295,7 @@ function CreateDebtModal({ isOpen, onClose, projectId }: CreateDebtModalProps) {
           </button>
           <button
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || !isFormValid}
             className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {loading ? (
