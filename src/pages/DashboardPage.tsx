@@ -176,7 +176,7 @@ function DashboardPage() {
                     <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        Updated {project.updatedAt.toLocaleDateString()}
+                        Updated {new Date(project.updated_at).toLocaleDateString()}
                       </div>
                     </div>
                   </div>

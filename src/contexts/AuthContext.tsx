@@ -99,7 +99,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setError(error.message);
         } else if (session?.user) {
           const userProfile = await fetchUserProfile(session.user);
-          setUser(userProfile);
+          if (userProfile) {
+            setUser(userProfile);
+          } else {
+            console.error('Failed to fetch or create user profile');
+            setUser(null);
+          }
         }
       } catch (err) {
         console.error('Error in getSession:', err);
@@ -118,7 +123,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         if (session?.user) {
           const userProfile = await fetchUserProfile(session.user);
-          setUser(userProfile);
+          if (userProfile) {
+            setUser(userProfile);
+          } else {
+            console.error('Failed to fetch or create user profile');
+            setUser(null);
+          }
         } else {
           setUser(null);
         }
@@ -147,8 +157,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (data.user) {
         const userProfile = await fetchUserProfile(data.user);
-        setUser(userProfile);
-        toast.success('Welcome back!');
+        if (userProfile) {
+          setUser(userProfile);
+          toast.success('Welcome back!');
+        } else {
+          throw new Error('Failed to load user profile. Please try again.');
+        }
       }
     } catch (err: any) {
       let errorMessage = 'Login failed';
@@ -161,6 +175,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         errorMessage = 'Too many login attempts. Please wait a moment before trying again.';
       } else if (err.message?.includes('User not found')) {
         errorMessage = 'No account found with this email address. Please sign up first.';
+      } else if (err.message?.includes('Failed to load user profile')) {
+        errorMessage = 'Failed to load user profile. Please try again.';
       } else if (err.message) {
         errorMessage = err.message;
       }
@@ -198,8 +214,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (data.user.email_confirmed_at) {
           // User is immediately confirmed, proceed with login
           const userProfile = await fetchUserProfile(data.user);
-          setUser(userProfile);
-          toast.success('Account created successfully! Welcome to Debtrix!');
+          if (userProfile) {
+            setUser(userProfile);
+            toast.success('Account created successfully! Welcome to Debtrix!');
+          } else {
+            throw new Error('Account created but failed to load profile. Please try signing in.');
+          }
         } else {
           // Email confirmation is enabled
           toast.success('Account created! Please check your email to verify your account before signing in.');
@@ -216,6 +236,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         errorMessage = 'Please enter a valid email address.';
       } else if (err.message?.includes('Signup is disabled')) {
         errorMessage = 'Account registration is currently disabled. Please contact support.';
+      } else if (err.message?.includes('Account created but failed to load profile')) {
+        errorMessage = 'Account created but failed to load profile. Please try signing in.';
       } else if (err.message) {
         errorMessage = err.message;
       }
