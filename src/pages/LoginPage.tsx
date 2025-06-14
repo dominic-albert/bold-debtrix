@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CheckCircle, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { CheckCircle, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 function LoginPage() {
@@ -22,7 +22,20 @@ function LoginPage() {
       await login(email, password);
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Invalid email or password');
+      // Provide more user-friendly error messages
+      let errorMessage = 'An error occurred during login';
+      
+      if (err.message?.includes('Invalid login credentials') || err.message?.includes('invalid_credentials')) {
+        errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+      } else if (err.message?.includes('Email not confirmed')) {
+        errorMessage = 'Please check your email and click the confirmation link before signing in.';
+      } else if (err.message?.includes('Too many requests')) {
+        errorMessage = 'Too many login attempts. Please wait a moment before trying again.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -49,8 +62,20 @@ function LoginPage() {
         <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-lg">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
-                {error}
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm flex items-start space-x-2">
+                <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-medium">Login Failed</p>
+                  <p className="mt-1">{error}</p>
+                  {error.includes('Invalid email or password') && (
+                    <p className="mt-2 text-xs">
+                      Don't have an account?{' '}
+                      <Link to="/signup" className="text-red-700 hover:text-red-800 font-medium underline">
+                        Sign up here
+                      </Link>
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
@@ -142,10 +167,15 @@ function LoginPage() {
 
         {/* Authentication Info */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">Supabase Authentication</h3>
-          <p className="text-sm text-blue-600">
-            This app uses real Supabase authentication. Create an account to get started.
+          <h3 className="text-sm font-medium text-blue-800 mb-2">Getting Started</h3>
+          <p className="text-sm text-blue-600 mb-2">
+            This app uses Supabase authentication. If you're seeing login errors:
           </p>
+          <ul className="text-sm text-blue-600 space-y-1">
+            <li>• Make sure you have created an account first</li>
+            <li>• Check that your email and password are correct</li>
+            <li>• Verify your email if you just signed up</li>
+          </ul>
         </div>
       </div>
     </div>
