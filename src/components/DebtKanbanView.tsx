@@ -105,12 +105,12 @@ function DebtKanbanView({ searchTerm }: DebtKanbanViewProps) {
                       <div className="w-5 h-5 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
                         <User className="w-2.5 h-2.5 text-white" />
                       </div>
-                      <span className="text-xs text-gray-600">{debt.loggedBy}</span>
+                      <span className="text-xs text-gray-600">{debt.logged_by}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      {debt.figmaUrl && (
+                      {debt.figma_url && (
                         <a
-                          href={debt.figmaUrl}
+                          href={debt.figma_url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-purple-600 hover:text-purple-700"
@@ -121,7 +121,7 @@ function DebtKanbanView({ searchTerm }: DebtKanbanViewProps) {
                       )}
                       <div className="flex items-center gap-1 text-gray-500">
                         <Calendar className="w-3 h-3" />
-                        <span className="text-xs">{debt.createdAt.toLocaleDateString()}</span>
+                        <span className="text-xs">{debt.created_at.toLocaleDateString()}</span>
                       </div>
                     </div>
                   </div>

@@ -53,42 +53,35 @@ export function ProjectProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
 
-  // 📋 Fetch projects from Supabase
+  // 📋 Optimized fetch using single query with join
   const fetchProjects = async () => {
     if (!user) return;
 
     try {
       setLoading(true);
       
-      // Fetch projects
-      const { data: projectsData, error: projectsError } = await supabase
+      // Single optimized query with join to fetch projects and their UX debts
+      const { data: projectsData, error } = await supabase
         .from('projects')
-        .select('*')
+        .select(`
+          *,
+          ux_debts (*)
+        `)
         .eq('owner_id', user.id)
         .order('updated_at', { ascending: false });
 
-      if (projectsError) throw projectsError;
+      if (error) throw error;
 
-      // Fetch UX debts for all projects
-      const projectIds = projectsData?.map(p => p.id) || [];
-      const { data: debtsData, error: debtsError } = await supabase
-        .from('ux_debts')
-        .select('*')
-        .in('project_id', projectIds)
-        .order('created_at', { ascending: false });
-
-      if (debtsError) throw debtsError;
-
-      // Combine projects with their debts
+      // Transform the data to match our interface
       const projectsWithDebts: Project[] = (projectsData || []).map(project => ({
         ...project,
-        uxDebts: (debtsData || [])
-          .filter(debt => debt.project_id === project.id)
-          .map(debt => ({
+        uxDebts: (project.ux_debts || [])
+          .map((debt: any) => ({
             ...debt,
             created_at: new Date(debt.created_at),
             updated_at: new Date(debt.updated_at),
-          })),
+          }))
+          .sort((a: any, b: any) => b.created_at.getTime() - a.created_at.getTime()),
         created_at: new Date(project.created_at),
         updated_at: new Date(project.updated_at),
       }));

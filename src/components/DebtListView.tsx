@@ -106,9 +106,9 @@ function DebtListView({ searchTerm }: DebtListViewProps) {
                     <div className="text-sm text-gray-600 line-clamp-2">
                       {debt.description}
                     </div>
-                    {debt.figmaUrl && (
+                    {debt.figma_url && (
                       <a
-                        href={debt.figmaUrl}
+                        href={debt.figma_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 mt-1"
@@ -143,13 +143,13 @@ function DebtListView({ searchTerm }: DebtListViewProps) {
                     <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
                       <User className="w-3 h-3 text-white" />
                     </div>
-                    <span className="text-sm text-gray-900">{debt.loggedBy}</span>
+                    <span className="text-sm text-gray-900">{debt.logged_by}</span>
                   </div>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-1 text-sm text-gray-600">
                     <Calendar className="w-3 h-3" />
-                    {debt.createdAt.toLocaleDateString()}
+                    {debt.created_at.toLocaleDateString()}
                   </div>
                 </td>
                 <td className="px-6 py-4 text-right">
