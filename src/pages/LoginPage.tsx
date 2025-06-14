@@ -154,6 +154,17 @@ function LoginPage() {
                   <p className="font-medium">Login Failed</p>
                   <p className="mt-1">{error}</p>
                   {error.includes('Invalid email or password') && (
+                    <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                      <p className="text-yellow-800 text-xs font-medium mb-2">Common Solutions:</p>
+                      <ul className="text-yellow-700 text-xs space-y-1">
+                        <li>• Check that email confirmation is disabled in Supabase</li>
+                        <li>• Verify your email and password are correct</li>
+                        <li>• Try the "Forgot password?" link below</li>
+                        <li>• Make sure you've created an account first</li>
+                      </ul>
+                    </div>
+                  )}
+                  {error.includes('Invalid email or password') && (
                     <p className="mt-2 text-xs">
                       Don't have an account?{' '}
                       <Link to="/signup" className="text-red-700 hover:text-red-800 font-medium underline">
@@ -262,12 +273,14 @@ function LoginPage() {
           </div>
         </div>
 
-        {/* Quick Sign-in Info */}
+        {/* Troubleshooting Info */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">Sign-in optimized for speed</h3>
-          <p className="text-sm text-blue-600">
-            Your profile loads instantly while we sync data in the background for the best experience.
-          </p>
+          <h3 className="text-sm font-medium text-blue-800 mb-2">Having trouble signing in?</h3>
+          <div className="text-sm text-blue-600 space-y-1">
+            <p>• Make sure email confirmation is disabled in your Supabase dashboard</p>
+            <p>• Go to Authentication → Settings → Email and turn OFF "Enable email confirmations"</p>
+            <p>• This is required for testing and prevents login issues</p>
+          </div>
         </div>
       </div>
     </div>

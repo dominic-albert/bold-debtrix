@@ -63,6 +63,33 @@ function ProjectPage() {
   const severityStats = getSeverityStats();
   const statusStats = getStatusStats();
 
+  // Safe date formatting with fallback
+  const formatDate = (dateValue: any) => {
+    if (!dateValue) return 'Unknown';
+    
+    try {
+      // Handle different date formats
+      let date: Date;
+      if (dateValue instanceof Date) {
+        date = dateValue;
+      } else if (typeof dateValue === 'string') {
+        date = new Date(dateValue);
+      } else {
+        return 'Unknown';
+      }
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return 'Unknown';
+      }
+      
+      return date.toLocaleDateString();
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Unknown';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -89,7 +116,7 @@ function ProjectPage() {
                 <div className="flex items-center gap-6 text-sm text-gray-500">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
-                    Updated {project.updatedAt.toLocaleDateString()}
+                    Updated {formatDate(project.updated_at || project.updatedAt)}
                   </div>
                 </div>
               </div>
@@ -134,7 +161,7 @@ function ProjectPage() {
                 <div className="w-4 h-4 bg-gray-400 rounded-full"></div>
                 <span className="text-sm font-medium text-gray-800">Total</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">{project.uxDebts.length}</div>
+              <div className="text-2xl font-bold text-gray-900">{project.uxDebts?.length || 0}</div>
             </div>
           </div>
         </div>
