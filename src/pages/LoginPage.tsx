@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CheckCircle, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { CheckCircle, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 function LoginPage() {
@@ -105,7 +105,7 @@ function LoginPage() {
               >
                 {resetLoading ? (
                   <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    <Loader2 className="animate-spin h-5 w-5 mr-2" />
                     Sending reset email...
                   </div>
                 ) : (
@@ -243,7 +243,7 @@ function LoginPage() {
             >
               {loading ? (
                 <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  <Loader2 className="animate-spin h-5 w-5 mr-2" />
                   Signing in...
                 </div>
               ) : (
@@ -262,15 +262,12 @@ function LoginPage() {
           </div>
         </div>
 
-        {/* Troubleshooting Info */}
+        {/* Quick Sign-in Info */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">Having trouble signing in?</h3>
-          <ul className="text-sm text-blue-600 space-y-1">
-            <li>• Make sure you have created an account first</li>
-            <li>• Check that your email and password are correct</li>
-            <li>• Try the "Forgot password?" link if you can't remember your password</li>
-            <li>• If you just signed up, check your email for a confirmation link</li>
-          </ul>
+          <h3 className="text-sm font-medium text-blue-800 mb-2">Sign-in optimized for speed</h3>
+          <p className="text-sm text-blue-600">
+            Your profile loads instantly while we sync data in the background for the best experience.
+          </p>
         </div>
       </div>
     </div>

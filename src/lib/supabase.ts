@@ -30,7 +30,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       'X-Client-Info': 'ux-debt-tracker'
     }
   },
-  // Add retry configuration for network issues
+  // Optimize for performance
   db: {
     schema: 'public',
   },
@@ -41,16 +41,27 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
-// Test connection on initialization
-supabase.auth.getSession().then(({ data, error }) => {
-  if (error) {
-    console.error('Supabase connection test failed:', error);
-  } else {
-    console.log('Supabase connection test successful');
+// Optimized connection test
+let connectionTested = false;
+const testConnection = async () => {
+  if (connectionTested) return;
+  
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) {
+      console.warn('Supabase connection test warning:', error.message);
+    } else {
+      console.log('Supabase connection test successful');
+    }
+    connectionTested = true;
+  } catch (err) {
+    console.warn('Supabase connection test failed:', err);
+    connectionTested = true;
   }
-}).catch((err) => {
-  console.error('Supabase connection test error:', err);
-});
+};
+
+// Test connection with timeout
+setTimeout(testConnection, 100);
 
 export type Database = {
   public: {

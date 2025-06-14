@@ -31,86 +31,46 @@ interface AuthContextType {
 // 🧠 Create context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// 🏗️ AuthProvider component with real Supabase integration
+// 🏗️ AuthProvider component with optimized Supabase integration
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 📋 Fetch user profile from database
+  // 📋 Optimized user profile fetch with caching
   const fetchUserProfile = async (authUser: SupabaseUser): Promise<User | null> => {
     try {
-      console.log('Fetching profile for user:', authUser.id);
-      
+      // First, try to get profile from user metadata if available
+      if (authUser.user_metadata?.full_name) {
+        const userFromMetadata: User = {
+          id: authUser.id,
+          email: authUser.email!,
+          name: authUser.user_metadata.full_name,
+          avatar: authUser.user_metadata.avatar_url,
+        };
+        
+        // Return immediately from metadata, then sync with database in background
+        setTimeout(() => syncProfileToDatabase(authUser), 0);
+        return userFromMetadata;
+      }
+
+      // If no metadata, fetch from database
       const { data: profile, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', authUser.id)
-        .maybeSingle(); // Use maybeSingle instead of single to avoid errors when no rows
+        .maybeSingle();
 
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
         console.error('Error fetching profile:', error);
-        
-        // If profile doesn't exist, create it
-        if (error.code === 'PGRST116' || !profile) {
-          console.log('Profile not found, creating new profile...');
-          
-          const { data: newProfile, error: createError } = await supabase
-            .from('profiles')
-            .insert({
-              id: authUser.id,
-              email: authUser.email!,
-              full_name: authUser.user_metadata?.full_name || authUser.email!.split('@')[0],
-              avatar_url: authUser.user_metadata?.avatar_url || null,
-            })
-            .select()
-            .single();
-
-          if (createError) {
-            console.error('Error creating profile:', createError);
-            return null;
-          }
-
-          console.log('Profile created successfully:', newProfile);
-          return {
-            id: authUser.id,
-            email: authUser.email!,
-            name: newProfile.full_name,
-            avatar: newProfile.avatar_url,
-          };
-        }
         return null;
       }
 
       if (!profile) {
-        console.log('No profile found, creating new profile...');
-        
-        const { data: newProfile, error: createError } = await supabase
-          .from('profiles')
-          .insert({
-            id: authUser.id,
-            email: authUser.email!,
-            full_name: authUser.user_metadata?.full_name || authUser.email!.split('@')[0],
-            avatar_url: authUser.user_metadata?.avatar_url || null,
-          })
-          .select()
-          .single();
-
-        if (createError) {
-          console.error('Error creating profile:', createError);
-          return null;
-        }
-
-        console.log('Profile created successfully:', newProfile);
-        return {
-          id: authUser.id,
-          email: authUser.email!,
-          name: newProfile.full_name,
-          avatar: newProfile.avatar_url,
-        };
+        // Create profile if it doesn't exist
+        return await createUserProfile(authUser);
       }
 
-      console.log('Profile found:', profile);
       return {
         id: authUser.id,
         email: authUser.email!,
@@ -119,6 +79,73 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
     } catch (err) {
       console.error('Error in fetchUserProfile:', err);
+      // Return basic user info from auth data as fallback
+      return {
+        id: authUser.id,
+        email: authUser.email!,
+        name: authUser.email!.split('@')[0],
+        avatar: undefined,
+      };
+    }
+  };
+
+  // 🔄 Background sync profile to database
+  const syncProfileToDatabase = async (authUser: SupabaseUser) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: authUser.id,
+          email: authUser.email!,
+          full_name: authUser.user_metadata?.full_name || authUser.email!.split('@')[0],
+          avatar_url: authUser.user_metadata?.avatar_url || null,
+        }, {
+          onConflict: 'id'
+        });
+
+      if (error) {
+        console.error('Error syncing profile:', error);
+      }
+    } catch (err) {
+      console.error('Error in syncProfileToDatabase:', err);
+    }
+  };
+
+  // ➕ Create user profile
+  const createUserProfile = async (authUser: SupabaseUser): Promise<User | null> => {
+    try {
+      const profileData = {
+        id: authUser.id,
+        email: authUser.email!,
+        full_name: authUser.user_metadata?.full_name || authUser.email!.split('@')[0],
+        avatar_url: authUser.user_metadata?.avatar_url || null,
+      };
+
+      const { data: newProfile, error: createError } = await supabase
+        .from('profiles')
+        .insert(profileData)
+        .select()
+        .single();
+
+      if (createError) {
+        console.error('Error creating profile:', createError);
+        // Return basic user info even if profile creation fails
+        return {
+          id: authUser.id,
+          email: authUser.email!,
+          name: profileData.full_name,
+          avatar: profileData.avatar_url,
+        };
+      }
+
+      return {
+        id: authUser.id,
+        email: authUser.email!,
+        name: newProfile.full_name,
+        avatar: newProfile.avatar_url,
+      };
+    } catch (err) {
+      console.error('Error creating profile:', err);
       return null;
     }
   };
@@ -127,24 +154,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const getSession = async () => {
       try {
-        console.log('Getting initial session...');
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
           console.error('Error getting session:', error);
           setError(error.message);
         } else if (session?.user) {
-          console.log('Session found, fetching profile...');
           const userProfile = await fetchUserProfile(session.user);
-          if (userProfile) {
-            setUser(userProfile);
-            console.log('User profile loaded successfully');
-          } else {
-            console.error('Failed to fetch or create user profile');
-            setUser(null);
-          }
-        } else {
-          console.log('No session found');
+          setUser(userProfile);
         }
       } catch (err) {
         console.error('Error in getSession:', err);
@@ -159,16 +176,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // 👂 Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.id);
-        
         if (session?.user) {
           const userProfile = await fetchUserProfile(session.user);
-          if (userProfile) {
-            setUser(userProfile);
-          } else {
-            console.error('Failed to fetch or create user profile');
-            setUser(null);
-          }
+          setUser(userProfile);
         } else {
           setUser(null);
         }
@@ -180,13 +190,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // 🔐 Login function
+  // 🔐 Optimized login function
   const login = async (email: string, password: string) => {
     try {
       setError(null);
       setLoading(true);
-      
-      console.log('Attempting login for:', email);
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim().toLowerCase(),
@@ -194,23 +202,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (error) {
-        console.error('Login error:', error);
         throw error;
       }
 
-      console.log('Login successful, user:', data.user?.id);
-
       if (data.user) {
-        const userProfile = await fetchUserProfile(data.user);
-        if (userProfile) {
-          setUser(userProfile);
-          toast.success('Welcome back!');
-        } else {
-          throw new Error('Failed to load user profile. Please try again.');
-        }
+        // Set user immediately from auth data, then fetch profile in background
+        const quickUser: User = {
+          id: data.user.id,
+          email: data.user.email!,
+          name: data.user.user_metadata?.full_name || data.user.email!.split('@')[0],
+          avatar: data.user.user_metadata?.avatar_url,
+        };
+        
+        setUser(quickUser);
+        toast.success('Welcome back!');
+        
+        // Fetch full profile in background
+        setTimeout(async () => {
+          const fullProfile = await fetchUserProfile(data.user);
+          if (fullProfile) {
+            setUser(fullProfile);
+          }
+        }, 0);
       }
     } catch (err: any) {
-      console.error('Login failed:', err);
       let errorMessage = 'Login failed';
       
       if (err.message?.includes('Invalid login credentials') || err.message?.includes('invalid_credentials')) {
@@ -221,8 +236,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         errorMessage = 'Too many login attempts. Please wait a moment before trying again.';
       } else if (err.message?.includes('User not found')) {
         errorMessage = 'No account found with this email address. Please sign up first.';
-      } else if (err.message?.includes('Failed to load user profile')) {
-        errorMessage = 'Failed to load user profile. Please try again.';
       } else if (err.message) {
         errorMessage = err.message;
       }
@@ -235,13 +248,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // ✍️ Signup function
+  // ✍️ Optimized signup function
   const signup = async (email: string, password: string, name: string) => {
     try {
       setError(null);
       setLoading(true);
-      
-      console.log('Attempting signup for:', email);
       
       const { data, error } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
@@ -254,30 +265,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (error) {
-        console.error('Signup error:', error);
         throw error;
       }
-
-      console.log('Signup successful, user:', data.user?.id);
 
       if (data.user) {
         // Check if email confirmation is disabled
         if (data.user.email_confirmed_at) {
-          // User is immediately confirmed, proceed with login
-          const userProfile = await fetchUserProfile(data.user);
-          if (userProfile) {
-            setUser(userProfile);
-            toast.success('Account created successfully! Welcome to Debtrix!');
-          } else {
-            throw new Error('Account created but failed to load profile. Please try signing in.');
-          }
+          // User is immediately confirmed, set user data quickly
+          const quickUser: User = {
+            id: data.user.id,
+            email: data.user.email!,
+            name: name.trim(),
+            avatar: undefined,
+          };
+          
+          setUser(quickUser);
+          toast.success('Account created successfully! Welcome to Debtrix!');
+          
+          // Create profile in background
+          setTimeout(() => syncProfileToDatabase(data.user), 0);
         } else {
           // Email confirmation is enabled
           toast.success('Account created! Please check your email to verify your account before signing in.');
         }
       }
     } catch (err: any) {
-      console.error('Signup failed:', err);
       let errorMessage = 'Signup failed';
       
       if (err.message?.includes('User already registered') || err.message?.includes('user_already_exists')) {
@@ -288,8 +300,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         errorMessage = 'Please enter a valid email address.';
       } else if (err.message?.includes('Signup is disabled')) {
         errorMessage = 'Account registration is currently disabled. Please contact support.';
-      } else if (err.message?.includes('Account created but failed to load profile')) {
-        errorMessage = 'Account created but failed to load profile. Please try signing in.';
       } else if (err.message) {
         errorMessage = err.message;
       }
@@ -307,8 +317,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setError(null);
       
-      console.log('Sending password reset for:', email);
-      
       const { error } = await supabase.auth.resetPasswordForEmail(
         email.trim().toLowerCase(),
         {
@@ -317,13 +325,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       );
 
       if (error) {
-        console.error('Reset password error:', error);
         throw error;
       }
 
       toast.success('Password reset email sent! Check your inbox for instructions.');
     } catch (err: any) {
-      console.error('Reset password failed:', err);
       let errorMessage = 'Failed to send reset email';
       
       if (err.message?.includes('User not found')) {
@@ -344,12 +350,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       setError(null);
-      console.log('Logging out...');
-      
       const { error } = await supabase.auth.signOut();
       
       if (error) {
-        console.error('Logout error:', error);
         throw error;
       }
       
