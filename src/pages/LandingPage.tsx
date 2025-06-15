@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   CheckCircle, 
@@ -18,6 +18,12 @@ import {
 } from 'lucide-react';
 
 function LandingPage() {
+  const [videoPlaying, setVideoPlaying] = useState(false);
+
+  const handleVideoPlay = () => {
+    setVideoPlaying(true);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
@@ -201,14 +207,39 @@ function LandingPage() {
           </p>
           <div className="relative bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-3xl overflow-hidden shadow-2xl border border-white/10 hover:shadow-purple-500/25 hover:scale-105 transition-all duration-500">
             <div className="aspect-video relative group">
-              <iframe
-                src="https://www.youtube.com/embed/4MdJXPVvrts"
-                title="What is UX Debt?"
-                className="w-full h-full"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
+              {!videoPlaying ? (
+                <div 
+                  className="w-full h-full bg-gradient-to-br from-purple-900/50 to-blue-900/50 flex items-center justify-center cursor-pointer group"
+                  onClick={handleVideoPlay}
+                >
+                  <div className="absolute inset-0 bg-black/20"></div>
+                  <img 
+                    src="https://img.youtube.com/vi/4MdJXPVvrts/maxresdefault.jpg" 
+                    alt="What is UX Debt? Video Thumbnail"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-20 h-20 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                      <PlayCircle className="w-12 h-12 text-purple-600 ml-1" />
+                    </div>
+                  </div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <div className="bg-black/60 backdrop-blur-sm rounded-lg p-3">
+                      <h3 className="text-white font-semibold text-lg">What is UX Debt?</h3>
+                      <p className="text-gray-300 text-sm">Click to play video</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <iframe
+                  src="https://www.youtube.com/embed/4MdJXPVvrts?autoplay=1&rel=0&modestbranding=1"
+                  title="What is UX Debt?"
+                  className="w-full h-full"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                ></iframe>
+              )}
               <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
             </div>
           </div>
