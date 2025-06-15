@@ -14,7 +14,10 @@ import {
   Sparkles,
   TrendingUp,
   Shield,
-  Layers
+  Layers,
+  AlertTriangle,
+  Clock,
+  DollarSign
 } from 'lucide-react';
 
 function LandingPage() {
@@ -114,6 +117,107 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* What is UX Debt Section */}
+      <section className="py-24 bg-gradient-to-br from-slate-800/50 to-purple-900/30 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-bold text-white mb-8 hover:scale-105 transition-transform duration-300">
+              What is UX Debt?
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Understanding the hidden costs of postponed design decisions
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Video on the left */}
+            <div className="relative bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-3xl overflow-hidden shadow-2xl border border-white/10 hover:shadow-purple-500/25 hover:scale-105 transition-all duration-500">
+              <div className="aspect-video relative group">
+                {!videoPlaying ? (
+                  <div 
+                    className="w-full h-full bg-gradient-to-br from-purple-900/50 to-blue-900/50 flex items-center justify-center cursor-pointer group"
+                    onClick={handleVideoPlay}
+                  >
+                    <div className="absolute inset-0 bg-black/20"></div>
+                    <img 
+                      src="https://img.youtube.com/vi/4MdJXPVvrts/maxresdefault.jpg" 
+                      alt="What is UX Debt? Video Thumbnail"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-20 h-20 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
+                        <PlayCircle className="w-12 h-12 text-purple-600 ml-1" />
+                      </div>
+                    </div>
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <div className="bg-black/60 backdrop-blur-sm rounded-lg p-3">
+                        <h3 className="text-white font-semibold text-lg">What is UX Debt?</h3>
+                        <p className="text-gray-300 text-sm">Click to play video</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <iframe
+                    src="https://www.youtube-nocookie.com/embed/4MdJXPVvrts?autoplay=1&rel=0&modestbranding=1&enablejsapi=1"
+                    title="What is UX Debt?"
+                    className="w-full h-full"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  ></iframe>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+              </div>
+            </div>
+
+            {/* Pain points on the right */}
+            <div className="space-y-8">
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:scale-105 hover:bg-white/15 transition-all duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-red-500/20 border border-red-400/30 rounded-xl flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+                    <AlertTriangle className="w-6 h-6 text-red-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-3">Accumulating Issues</h3>
+                    <p className="text-gray-300 leading-relaxed">
+                      Small UX problems pile up over time—broken layouts, unclear flows, outdated components—creating a mountain of technical debt that becomes expensive to fix.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:scale-105 hover:bg-white/15 transition-all duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-yellow-500/20 border border-yellow-400/30 rounded-xl flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+                    <Clock className="w-6 h-6 text-yellow-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-3">Slowing Velocity</h3>
+                    <p className="text-gray-300 leading-relaxed">
+                      Teams spend more time working around existing problems than building new features. Design inconsistencies slow down development and confuse users.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:scale-105 hover:bg-white/15 transition-all duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-purple-500/20 border border-purple-400/30 rounded-xl flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+                    <DollarSign className="w-6 h-6 text-purple-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-3">Hidden Costs</h3>
+                    <p className="text-gray-300 leading-relaxed">
+                      Poor UX leads to user frustration, increased support tickets, and lost conversions. The longer you wait, the more expensive fixes become.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Problem Framing Section */}
       <section className="py-24 bg-gradient-to-br from-slate-800/50 to-purple-900/30 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -192,56 +296,6 @@ function LandingPage() {
             <p className="text-2xl text-gray-300 font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300">
               Think of it as Jira—but made for UX polish.
             </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Embedded Video Section */}
-      <section className="py-24 bg-gradient-to-br from-purple-900/30 to-slate-800/50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">
-            What is UX Debt?
-          </h2>
-          <p className="text-xl text-gray-300 mb-12">
-            Understanding the hidden costs of postponed design decisions
-          </p>
-          <div className="relative bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-3xl overflow-hidden shadow-2xl border border-white/10 hover:shadow-purple-500/25 hover:scale-105 transition-all duration-500">
-            <div className="aspect-video relative group">
-              {!videoPlaying ? (
-                <div 
-                  className="w-full h-full bg-gradient-to-br from-purple-900/50 to-blue-900/50 flex items-center justify-center cursor-pointer group"
-                  onClick={handleVideoPlay}
-                >
-                  <div className="absolute inset-0 bg-black/20"></div>
-                  <img 
-                    src="https://img.youtube.com/vi/4MdJXPVvrts/maxresdefault.jpg" 
-                    alt="What is UX Debt? Video Thumbnail"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-20 h-20 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                      <PlayCircle className="w-12 h-12 text-purple-600 ml-1" />
-                    </div>
-                  </div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <div className="bg-black/60 backdrop-blur-sm rounded-lg p-3">
-                      <h3 className="text-white font-semibold text-lg">What is UX Debt?</h3>
-                      <p className="text-gray-300 text-sm">Click to play video</p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <iframe
-                  src="https://www.youtube.com/embed/4MdJXPVvrts?autoplay=1&rel=0&modestbranding=1"
-                  title="What is UX Debt?"
-                  className="w-full h-full"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                ></iframe>
-              )}
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-            </div>
           </div>
         </div>
       </section>
