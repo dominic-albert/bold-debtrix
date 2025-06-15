@@ -19,9 +19,9 @@ import {
 
 function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b border-white/10 backdrop-blur-sm bg-white/5 sticky top-0 z-40">
+      <header className="border-b border-white/10 backdrop-blur-sm bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
@@ -47,8 +47,8 @@ function LandingPage() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-24">
+      {/* Hero Section - Dark Background */}
+      <section className="relative overflow-hidden py-24 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         {/* Animated Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/20 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
@@ -108,22 +108,22 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Problem Framing Section */}
-      <section className="py-24 bg-gradient-to-br from-slate-800/50 to-purple-900/30 backdrop-blur-sm">
+      {/* Problem Framing Section - White Background */}
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-5xl font-bold text-white mb-8 hover:scale-105 transition-transform duration-300">
+            <h2 className="text-5xl font-bold text-gray-900 mb-8 hover:scale-105 transition-transform duration-300">
               UX debt is invisible—until it's too late.
             </h2>
             <div className="max-w-4xl mx-auto space-y-8">
-              <p className="text-xl text-gray-300 leading-relaxed hover:text-white transition-colors duration-300">
+              <p className="text-xl text-gray-600 leading-relaxed hover:text-gray-800 transition-colors duration-300">
                 Designers and PMs often postpone minor UX flaws—broken layouts, unclear flows, outdated components—because they aren't showstoppers.
               </p>
-              <p className="text-xl text-gray-300 leading-relaxed hover:text-white transition-colors duration-300">
+              <p className="text-xl text-gray-600 leading-relaxed hover:text-gray-800 transition-colors duration-300">
                 Over time, these issues pile up, clogging user experience and product velocity. You lose users. The design team burns out. Fixes become expensive.
               </p>
-              <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 backdrop-blur-sm border border-purple-400/30 rounded-2xl p-10 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
-                <h3 className="text-3xl font-bold text-purple-300 mb-4 flex items-center justify-center gap-3">
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-2xl p-10 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
+                <h3 className="text-3xl font-bold text-purple-600 mb-4 flex items-center justify-center gap-3">
                   <TrendingUp className="w-8 h-8" />
                   That's where Debtster comes in.
                 </h3>
@@ -133,136 +133,139 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Introducing Debtster */}
-      <section className="py-24 bg-gradient-to-br from-slate-900/80 to-purple-900/40">
+      {/* Introducing Debtster - Colored Background */}
+      <section className="py-24 bg-gradient-to-br from-gray-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-5xl font-bold text-white mb-8 hover:scale-105 transition-transform duration-300">
+            <h2 className="text-5xl font-bold text-gray-900 mb-8 hover:scale-105 transition-transform duration-300">
               Your team's command center for UX debt.
             </h2>
-            <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-700 mb-12 max-w-3xl mx-auto">
               With Debtster, you can log issues contextually, assign severity, and track them through to resolution.
             </p>
-            <p className="text-lg text-gray-400 mb-16 max-w-4xl mx-auto">
+            <p className="text-lg text-gray-600 mb-16 max-w-4xl mx-auto">
               Whether it's a clunky filter interaction, inconsistent button states, or a confusing onboarding step, Debtster helps your team:
             </p>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
             <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-500/20 to-purple-600/30 backdrop-blur-sm border border-purple-400/30 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300 shadow-lg">
-                <Zap className="w-10 h-10 text-purple-400" />
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-purple-500/25 transition-all duration-300 shadow-lg">
+                <Zap className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-purple-300 transition-colors duration-300">Log UX debt instantly</h3>
-              <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">Right from design, dev, or feedback sessions</p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors duration-300">Log UX debt instantly</h3>
+              <p className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">Right from design, dev, or feedback sessions</p>
             </div>
 
             <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-500/20 to-blue-600/30 backdrop-blur-sm border border-blue-400/30 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-blue-500/25 transition-all duration-300 shadow-lg">
-                <Target className="w-10 h-10 text-blue-400" />
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-blue-500/25 transition-all duration-300 shadow-lg">
+                <Target className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-blue-300 transition-colors duration-300">Assign owners & severity</h3>
-              <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">Tags and severity levels for better organization</p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-300">Assign owners & severity</h3>
+              <p className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">Tags and severity levels for better organization</p>
             </div>
 
             <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-br from-emerald-500/20 to-emerald-600/30 backdrop-blur-sm border border-emerald-400/30 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-emerald-500/25 transition-all duration-300 shadow-lg">
-                <BarChart3 className="w-10 h-10 text-emerald-400" />
+              <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-emerald-500/25 transition-all duration-300 shadow-lg">
+                <BarChart3 className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-emerald-300 transition-colors duration-300">Visualize debt</h3>
-              <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">Across projects with intuitive dashboards</p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-emerald-600 transition-colors duration-300">Visualize debt</h3>
+              <p className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">Across projects with intuitive dashboards</p>
             </div>
 
             <div className="text-center group">
-              <div className="w-20 h-20 bg-gradient-to-br from-orange-500/20 to-orange-600/30 backdrop-blur-sm border border-orange-400/30 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-orange-500/25 transition-all duration-300 shadow-lg">
-                <Users className="w-10 h-10 text-orange-400" />
+              <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-orange-500/25 transition-all duration-300 shadow-lg">
+                <Users className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-3 group-hover:text-orange-300 transition-colors duration-300">Prioritize smartly</h3>
-              <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">What to fix first, and what can wait</p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors duration-300">Prioritize smartly</h3>
+              <p className="text-gray-600 group-hover:text-gray-700 transition-colors duration-300">What to fix first, and what can wait</p>
             </div>
           </div>
 
           <div className="text-center">
-            <p className="text-2xl text-gray-300 font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300">
+            <p className="text-2xl text-gray-700 font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300">
               Think of it as Jira—but made for UX polish.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Embedded Video Section */}
-      <section className="py-24 bg-gradient-to-br from-purple-900/30 to-slate-800/50">
+      {/* Embedded Video Section - White Background */}
+      <section className="py-24 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4 hover:scale-105 transition-transform duration-300">
             What is UX Debt?
           </h2>
-          <p className="text-xl text-gray-300 mb-12">
+          <p className="text-xl text-gray-600 mb-12">
             Understanding the hidden costs of postponed design decisions
           </p>
-          <div className="relative bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-3xl overflow-hidden shadow-2xl border border-white/10 hover:shadow-purple-500/25 hover:scale-105 transition-all duration-500">
+          <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl overflow-hidden shadow-2xl border border-gray-300 hover:shadow-purple-500/25 hover:scale-105 transition-all duration-500">
             <div className="aspect-video relative group">
               <iframe
-                src="https://www.youtube.com/embed/4MdJXPVvrts"
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/4MdJXPVvrts?enablejsapi=1&origin=https://debtrix.netlify.app"
                 title="What is UX Debt?"
-                className="w-full h-full"
                 frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
+                className="rounded-3xl"
               ></iframe>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-3xl"></div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Figma Plugin Section */}
-      <section className="py-24 bg-gradient-to-br from-slate-900/80 to-purple-900/40">
+      {/* Figma Plugin Section - Colored Background */}
+      <section className="py-24 bg-gradient-to-br from-purple-50 to-blue-50">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-br from-purple-500/20 to-blue-500/20 backdrop-blur-sm border border-purple-400/30 rounded-3xl p-12 md:p-16 text-center shadow-xl hover:shadow-2xl hover:shadow-purple-500/25 hover:scale-105 transition-all duration-500">
+          <div className="bg-gradient-to-br from-white to-purple-50 border border-purple-200 rounded-3xl p-12 md:p-16 text-center shadow-xl hover:shadow-2xl hover:shadow-purple-500/25 hover:scale-105 transition-all duration-500">
             <div className="flex items-center justify-center gap-4 mb-8">
               <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300">
                 <Figma className="w-7 h-7 text-white" />
               </div>
-              <h2 className="text-4xl font-bold text-white">
+              <h2 className="text-4xl font-bold text-gray-900">
                 Debtster Plugin for Figma
               </h2>
-              <div className="bg-green-500/20 border border-green-400/30 text-green-300 px-3 py-1 rounded-full text-sm font-semibold backdrop-blur-sm hover:scale-105 transition-transform duration-200">
+              <div className="bg-green-100 border border-green-300 text-green-700 px-3 py-1 rounded-full text-sm font-semibold hover:scale-105 transition-transform duration-200">
                 Available Now
               </div>
             </div>
-            <p className="text-xl text-gray-300 mb-12">
+            <p className="text-xl text-gray-700 mb-12">
               Spot a UX flaw while designing? Don't switch tools.
             </p>
             
             <div className="grid md:grid-cols-3 gap-8 mb-12">
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:scale-105 hover:bg-white/15 transition-all duration-300">
-                <div className="w-12 h-12 bg-purple-500/20 border border-purple-400/30 rounded-xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
-                  <Layers className="w-6 h-6 text-purple-400" />
+              <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:scale-105 hover:border-purple-300 transition-all duration-300">
+                <div className="w-12 h-12 bg-purple-100 border border-purple-200 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Layers className="w-6 h-6 text-purple-600" />
                 </div>
-                <h3 className="font-bold text-white mb-3">Highlight components</h3>
-                <p className="text-gray-400 text-sm">Select any component or frame in Figma</p>
+                <h3 className="font-bold text-gray-900 mb-3">Highlight components</h3>
+                <p className="text-gray-600 text-sm">Select any component or frame in Figma</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:scale-105 hover:bg-white/15 transition-all duration-300">
-                <div className="w-12 h-12 bg-blue-500/20 border border-blue-400/30 rounded-xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
-                  <Target className="w-6 h-6 text-blue-400" />
+              <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:scale-105 hover:border-blue-300 transition-all duration-300">
+                <div className="w-12 h-12 bg-blue-100 border border-blue-200 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Target className="w-6 h-6 text-blue-600" />
                 </div>
-                <h3 className="font-bold text-white mb-3">Add UX Debt tags</h3>
-                <p className="text-gray-400 text-sm">Tag and comment directly in your design</p>
+                <h3 className="font-bold text-gray-900 mb-3">Add UX Debt tags</h3>
+                <p className="text-gray-600 text-sm">Tag and comment directly in your design</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:scale-105 hover:bg-white/15 transition-all duration-300">
-                <div className="w-12 h-12 bg-emerald-500/20 border border-emerald-400/30 rounded-xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
-                  <Shield className="w-6 h-6 text-emerald-400" />
+              <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:scale-105 hover:border-emerald-300 transition-all duration-300">
+                <div className="w-12 h-12 bg-emerald-100 border border-emerald-200 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Shield className="w-6 h-6 text-emerald-600" />
                 </div>
-                <h3 className="font-bold text-white mb-3">Auto-sync</h3>
-                <p className="text-gray-400 text-sm">Automatically syncs to your Debtster dashboard</p>
+                <h3 className="font-bold text-gray-900 mb-3">Auto-sync</h3>
+                <p className="text-gray-600 text-sm">Automatically syncs to your Debtster dashboard</p>
               </div>
             </div>
 
             <div className="space-y-4">
-              <p className="text-xl text-gray-300 font-semibold">
+              <p className="text-xl text-gray-700 font-semibold">
                 Designers stay in flow. PMs stay in control.
               </p>
-              <p className="text-gray-400">
+              <p className="text-gray-600">
                 No more back-and-forth screenshots or endless Notion pages.
               </p>
               <Link 
@@ -277,18 +280,18 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Customer Feedback Section */}
-      <section className="py-24 bg-gradient-to-br from-purple-900/30 to-slate-800/50">
+      {/* Customer Feedback Section - White Background */}
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
-            <h2 className="text-4xl font-bold text-white mb-4 hover:scale-105 transition-transform duration-300">What teams are saying</h2>
-            <p className="text-xl text-gray-300">Join thousands of designers and product teams</p>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4 hover:scale-105 transition-transform duration-300">What teams are saying</h2>
+            <p className="text-xl text-gray-600">Join thousands of designers and product teams</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:-translate-y-2 hover:scale-105">
-              <Quote className="w-8 h-8 text-purple-400 mb-6" />
-              <p className="text-gray-300 mb-8 leading-relaxed text-lg">
+            <div className="bg-gradient-to-br from-white to-purple-50 border border-purple-200 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:-translate-y-2 hover:scale-105">
+              <Quote className="w-8 h-8 text-purple-600 mb-6" />
+              <p className="text-gray-700 mb-8 leading-relaxed text-lg">
                 "We log UX friction in real time—during user testing, design reviews, even standups. Debtster keeps it all in one place."
               </p>
               <div className="flex items-center gap-4">
@@ -296,15 +299,15 @@ function LandingPage() {
                   <span className="text-white font-bold">MR</span>
                 </div>
                 <div>
-                  <p className="font-bold text-white">Maya R.</p>
-                  <p className="text-sm text-gray-400">Lead Product Designer @ Finlo</p>
+                  <p className="font-bold text-gray-900">Maya R.</p>
+                  <p className="text-sm text-gray-600">Lead Product Designer @ Finlo</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:-translate-y-2 hover:scale-105">
-              <Quote className="w-8 h-8 text-purple-400 mb-6" />
-              <p className="text-gray-300 mb-8 leading-relaxed text-lg">
+            <div className="bg-gradient-to-br from-white to-emerald-50 border border-emerald-200 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:shadow-emerald-500/25 transition-all duration-300 transform hover:-translate-y-2 hover:scale-105">
+              <Quote className="w-8 h-8 text-emerald-600 mb-6" />
+              <p className="text-gray-700 mb-8 leading-relaxed text-lg">
                 "Our design debt backlog used to live in post-its and Slack threads. Now it's a dashboard with progress, ownership, and timelines."
               </p>
               <div className="flex items-center gap-4">
@@ -312,15 +315,15 @@ function LandingPage() {
                   <span className="text-white font-bold">NV</span>
                 </div>
                 <div>
-                  <p className="font-bold text-white">Nishant V.</p>
-                  <p className="text-sm text-gray-400">UX Manager @ ZapGrid</p>
+                  <p className="font-bold text-gray-900">Nishant V.</p>
+                  <p className="text-sm text-gray-600">UX Manager @ ZapGrid</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:-translate-y-2 hover:scale-105">
-              <Quote className="w-8 h-8 text-purple-400 mb-6" />
-              <p className="text-gray-300 mb-8 leading-relaxed text-lg">
+            <div className="bg-gradient-to-br from-white to-orange-50 border border-orange-200 rounded-2xl p-8 shadow-lg hover:shadow-xl hover:shadow-orange-500/25 transition-all duration-300 transform hover:-translate-y-2 hover:scale-105">
+              <Quote className="w-8 h-8 text-orange-600 mb-6" />
+              <p className="text-gray-700 mb-8 leading-relaxed text-lg">
                 "The Figma plugin is a game-changer. No more losing track of what we spotted in design!"
               </p>
               <div className="flex items-center gap-4">
@@ -328,8 +331,8 @@ function LandingPage() {
                   <span className="text-white font-bold">DM</span>
                 </div>
                 <div>
-                  <p className="font-bold text-white">Divya M.</p>
-                  <p className="text-sm text-gray-400">Product Owner @ HealthCore</p>
+                  <p className="font-bold text-gray-900">Divya M.</p>
+                  <p className="text-sm text-gray-600">Product Owner @ HealthCore</p>
                 </div>
               </div>
             </div>
@@ -337,7 +340,7 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Final CTA Section */}
+      {/* Final CTA Section - Dark Background */}
       <section className="py-24 bg-gradient-to-br from-purple-600 via-purple-700 to-blue-600 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute inset-0">
@@ -375,7 +378,7 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Footer - Dark Background */}
       <footer className="bg-slate-900 text-white py-16 border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
