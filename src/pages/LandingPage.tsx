@@ -180,7 +180,7 @@ function LandingPage() {
                   <div>
                     <h3 className="text-xl font-bold text-white mb-3">Accumulating Issues</h3>
                     <p className="text-gray-300 leading-relaxed">
-                      Small UX problems pile up over time—broken layouts, unclear flows, outdated components—creating a mountain of technical debt that becomes expensive to fix.
+                      Small UX flaws—broken layouts, clunky flows, outdated components—stack into costly UX debt over time.
                     </p>
                   </div>
                 </div>
@@ -194,7 +194,7 @@ function LandingPage() {
                   <div>
                     <h3 className="text-xl font-bold text-white mb-3">Slowing Velocity</h3>
                     <p className="text-gray-300 leading-relaxed">
-                      Teams spend more time working around existing problems than building new features. Design inconsistencies slow down development and confuse users.
+                      Teams waste time patching old problems instead of building new value. Design gaps slow devs and confuse users.
                     </p>
                   </div>
                 </div>
@@ -208,7 +208,7 @@ function LandingPage() {
                   <div>
                     <h3 className="text-xl font-bold text-white mb-3">Hidden Costs</h3>
                     <p className="text-gray-300 leading-relaxed">
-                      Poor UX leads to user frustration, increased support tickets, and lost conversions. The longer you wait, the more expensive fixes become.
+                      Poor UX leads to frustration, more support tickets, and lost conversions—fixes only get costlier the longer you wait.
                     </p>
                   </div>
                 </div>
