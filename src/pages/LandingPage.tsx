@@ -23,9 +23,9 @@ import {
 
 function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm">
+      <header className="border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
@@ -52,7 +52,7 @@ function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-white to-blue-50 py-20">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="text-center">
@@ -98,29 +98,77 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Problem Framing Section */}
+      {/* Problem Framing Section - Enhanced */}
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-bold text-gray-900 mb-8 hover:scale-105 transition-transform duration-300">
               UX debt is invisible—until it's too late.
             </h2>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-              Designers and PMs often postpone minor UX flaws—broken layouts, unclear flows, outdated components—because they aren't showstoppers. Over time, these issues pile up, clogging user experience and product velocity. You lose users. The design team burns out. Fixes become expensive.
-            </p>
           </div>
 
-          <div className="text-center">
-            <div className="bg-gradient-to-br from-purple-100 to-blue-100 rounded-3xl p-12 text-center hover:scale-105 transition-all duration-500 max-w-2xl mx-auto">
-              <div className="w-24 h-24 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
-                <Lightbulb className="w-12 h-12 text-white" />
+          {/* Visual Problem Illustration */}
+          <div className="grid lg:grid-cols-2 gap-16 items-center mb-16">
+            <div className="space-y-8">
+              <div className="bg-gradient-to-br from-red-50 to-orange-50 border border-red-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">The Problem Compounds</h3>
+                    <p className="text-gray-700 leading-relaxed">
+                      Designers and PMs often postpone minor UX flaws—broken layouts, unclear flows, outdated components—because they aren't showstoppers.
+                    </p>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-6">
-                That's where Debtster comes in.
-              </h3>
-              <p className="text-xl text-gray-700 leading-relaxed">
-                Transform chaos into clarity with a systematic approach to UX debt management.
-              </p>
+
+              <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-6 h-6 text-yellow-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Time Becomes the Enemy</h3>
+                    <p className="text-gray-700 leading-relaxed">
+                      Over time, these issues pile up, clogging user experience and product velocity. You lose users. The design team burns out.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-red-50 to-pink-50 border border-red-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <TrendingUp className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Fixes Become Expensive</h3>
+                    <p className="text-gray-700 leading-relaxed">
+                      What started as small tweaks now require major overhauls. Technical debt meets design debt in a costly collision.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="bg-gradient-to-br from-purple-100 to-blue-100 rounded-3xl p-12 text-center hover:scale-105 transition-all duration-500">
+                <div className="w-24 h-24 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-lg">
+                  <Lightbulb className="w-12 h-12 text-white" />
+                </div>
+                <h3 className="text-3xl font-bold text-gray-900 mb-6">
+                  That's where Debtster comes in.
+                </h3>
+                <p className="text-xl text-gray-700 leading-relaxed">
+                  Transform chaos into clarity with a systematic approach to UX debt management.
+                </p>
+              </div>
+              
+              {/* Floating Elements */}
+              <div className="absolute -top-4 -right-4 w-16 h-16 bg-yellow-400 rounded-full opacity-20 animate-bounce"></div>
+              <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-purple-400 rounded-full opacity-30 animate-pulse"></div>
             </div>
           </div>
         </div>
@@ -183,94 +231,29 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* What is UX Debt Section - Video Left, Copy Right */}
+      {/* Embedded Video Section */}
       <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4 hover:scale-105 transition-transform duration-300">
-              What is UX Debt?
-            </h2>
-            <p className="text-xl text-gray-600">
-              Understanding the hidden costs of postponed design decisions
-            </p>
-          </div>
-          
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Video Left */}
-            <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl overflow-hidden shadow-2xl border border-gray-300 hover:shadow-purple-500/25 hover:scale-105 transition-all duration-500">
-              <div className="aspect-video relative group">
-                <iframe 
-                  width="996" 
-                  height="560" 
-                  src="https://www.youtube.com/embed/4MdJXPVvrts" 
-                  title="UX Debt" 
-                  frameBorder="0" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                  referrerPolicy="strict-origin-when-cross-origin" 
-                  allowFullScreen
-                  className="w-full h-full rounded-3xl"
-                ></iframe>
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-3xl"></div>
-              </div>
-            </div>
-
-            {/* Copy Right */}
-            <div className="space-y-8">
-              <div className="bg-gradient-to-br from-red-50 to-orange-50 border border-red-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <AlertTriangle className="w-6 h-6 text-red-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Small Issues Accumulate</h3>
-                    <p className="text-gray-700 leading-relaxed">
-                      Minor UX flaws like inconsistent spacing, unclear labels, or broken interactions seem harmless individually but compound over time.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-6 h-6 text-yellow-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">User Experience Degrades</h3>
-                    <p className="text-gray-700 leading-relaxed">
-                      As UX debt builds up, users encounter more friction, confusion, and frustration, leading to decreased satisfaction and conversion rates.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <TrendingUp className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Development Velocity Slows</h3>
-                    <p className="text-gray-700 leading-relaxed">
-                      Teams spend more time working around existing issues, and new features become harder to implement cleanly and consistently.
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Shield className="w-6 h-6 text-emerald-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">Debtster Prevents This</h3>
-                    <p className="text-gray-700 leading-relaxed">
-                      By systematically tracking and prioritizing UX issues, teams can address problems before they become expensive to fix.
-                    </p>
-                  </div>
-                </div>
-              </div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl font-bold text-gray-900 mb-4 hover:scale-105 transition-transform duration-300">
+            What is UX Debt?
+          </h2>
+          <p className="text-xl text-gray-600 mb-12">
+            Understanding the hidden costs of postponed design decisions
+          </p>
+          <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl overflow-hidden shadow-2xl border border-gray-300 hover:shadow-purple-500/25 hover:scale-105 transition-all duration-500">
+            <div className="aspect-video relative group">
+              <iframe 
+                width="996" 
+                height="560" 
+                src="https://www.youtube.com/embed/4MdJXPVvrts" 
+                title="UX Debt" 
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                referrerPolicy="strict-origin-when-cross-origin" 
+                allowFullScreen
+                className="w-full h-full rounded-3xl"
+              ></iframe>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-3xl"></div>
             </div>
           </div>
         </div>
