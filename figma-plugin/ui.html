@@ -21,13 +21,13 @@
     .container {
       padding: 16px;
       max-width: 420px;
-      min-height: 650px;
+      min-height: 680px;
     }
     
     .header {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       margin-bottom: 20px;
       padding-bottom: 16px;
       border-bottom: 1px solid #e1e5e9;
@@ -40,15 +40,15 @@
     .header-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
     }
     
     .back-button {
       background: none;
       border: none;
       cursor: pointer;
-      padding: 6px;
-      border-radius: 6px;
+      padding: 4px;
+      border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -62,38 +62,28 @@
     }
     
     .logo {
-      width: 32px;
-      height: 32px;
+      width: 24px;
+      height: 24px;
       background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-      border-radius: 8px;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
       font-weight: bold;
-      font-size: 16px;
-      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
-    }
-    
-    .brand {
-      display: flex;
-      flex-direction: column;
+      font-size: 12px;
     }
     
     .title {
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 600;
       color: #1f2937;
-      background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
     }
     
     .subtitle {
-      font-size: 12px;
+      font-size: 14px;
       color: #6b7280;
-      margin-top: 2px;
+      margin-top: 4px;
     }
     
     .form-group {
@@ -109,12 +99,11 @@
     
     .input, .select, .textarea {
       width: 100%;
-      padding: 10px 12px;
+      padding: 8px 12px;
       border: 1px solid #d1d5db;
-      border-radius: 8px;
+      border-radius: 6px;
       font-size: 14px;
       background: white;
-      transition: all 0.2s;
     }
     
     .input:focus, .select:focus, .textarea:focus {
@@ -125,21 +114,20 @@
     
     .textarea {
       resize: vertical;
-      min-height: 70px;
+      min-height: 60px;
     }
     
     .button {
       width: 100%;
-      padding: 12px 16px;
+      padding: 10px 16px;
       background: linear-gradient(135deg, #8b5cf6, #3b82f6);
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
     }
     
     .button:hover {
@@ -158,7 +146,6 @@
       background: #f3f4f6;
       color: #374151;
       border: 1px solid #d1d5db;
-      box-shadow: none;
     }
     
     .button-secondary:hover {
@@ -167,7 +154,7 @@
     }
     
     .button-small {
-      padding: 8px 12px;
+      padding: 6px 12px;
       font-size: 12px;
       width: auto;
     }
@@ -186,8 +173,8 @@
       background: #fef2f2;
       border: 1px solid #fecaca;
       color: #dc2626;
-      padding: 10px 12px;
-      border-radius: 8px;
+      padding: 8px 12px;
+      border-radius: 6px;
       font-size: 13px;
       margin-bottom: 16px;
     }
@@ -196,8 +183,8 @@
       background: #f0fdf4;
       border: 1px solid #bbf7d0;
       color: #16a34a;
-      padding: 10px 12px;
-      border-radius: 8px;
+      padding: 8px 12px;
+      border-radius: 6px;
       font-size: 13px;
       margin-bottom: 16px;
     }
@@ -206,8 +193,8 @@
       background: #fffbeb;
       border: 1px solid #fed7aa;
       color: #d97706;
-      padding: 10px 12px;
-      border-radius: 8px;
+      padding: 8px 12px;
+      border-radius: 6px;
       font-size: 13px;
       margin-bottom: 16px;
     }
@@ -234,31 +221,30 @@
     .project-item {
       padding: 16px;
       border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      margin-bottom: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
       cursor: pointer;
       transition: all 0.2s;
       background: white;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      position: relative;
     }
     
     .project-item:hover {
       border-color: #8b5cf6;
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
       transform: translateY(-1px);
     }
     
     .project-item.selected {
       border-color: #8b5cf6;
-      background: #faf5ff;
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+      background: #f8fafc;
     }
     
     .project-header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 8px;
     }
     
     .project-color {
@@ -272,14 +258,13 @@
       font-weight: 600;
       color: #1f2937;
       font-size: 15px;
-      flex: 1;
     }
     
     .project-description {
       font-size: 12px;
       color: #6b7280;
-      line-height: 1.4;
       margin-bottom: 12px;
+      line-height: 1.4;
     }
     
     .project-stats {
@@ -297,67 +282,53 @@
       text-align: center;
     }
     
-    .stat-value {
-      font-size: 16px;
+    .stat-number {
+      font-size: 18px;
       font-weight: 700;
-      color: #1f2937;
-      margin-bottom: 2px;
+      color: #1e293b;
+      display: block;
     }
     
     .stat-label {
       font-size: 10px;
       color: #64748b;
       text-transform: uppercase;
-      font-weight: 600;
+      font-weight: 500;
       letter-spacing: 0.5px;
     }
     
-    .project-badges {
+    .severity-badges {
       display: flex;
-      gap: 6px;
+      gap: 4px;
       flex-wrap: wrap;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
     
     .severity-badge {
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 3px 6px;
-      border-radius: 4px;
+      gap: 3px;
+      padding: 2px 6px;
+      border-radius: 10px;
       font-size: 10px;
-      font-weight: 600;
+      font-weight: 500;
     }
     
-    .severity-critical {
-      background: #fef2f2;
-      color: #dc2626;
-      border: 1px solid #fecaca;
-    }
-    
-    .severity-high {
-      background: #fff7ed;
-      color: #ea580c;
-      border: 1px solid #fed7aa;
-    }
-    
-    .severity-medium {
-      background: #fffbeb;
-      color: #d97706;
-      border: 1px solid #fde68a;
-    }
-    
-    .severity-low {
-      background: #f0fdf4;
-      color: #16a34a;
-      border: 1px solid #bbf7d0;
-    }
+    .severity-critical { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .severity-high { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
+    .severity-medium { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+    .severity-low { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
     
     .severity-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
     }
+    
+    .dot-critical { background: #dc2626; }
+    .dot-high { background: #ea580c; }
+    .dot-medium { background: #d97706; }
+    .dot-low { background: #16a34a; }
     
     .project-footer {
       display: flex;
@@ -366,7 +337,7 @@
       font-size: 11px;
       color: #64748b;
       padding-top: 8px;
-      border-top: 1px solid #f1f5f9;
+      border-top: 1px solid #e2e8f0;
     }
     
     .debt-item {
@@ -376,12 +347,11 @@
       margin-bottom: 8px;
       background: white;
       position: relative;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
     
     .debt-item:hover {
       border-color: #d1d5db;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
     
     .debt-header {
@@ -423,10 +393,10 @@
     }
     
     .badge {
-      padding: 3px 8px;
-      border-radius: 6px;
+      padding: 2px 6px;
+      border-radius: 4px;
       font-size: 10px;
-      font-weight: 600;
+      font-weight: 500;
     }
     
     .badge-critical { background: #fef2f2; color: #dc2626; }
@@ -439,36 +409,92 @@
     .badge-resolved { background: #f0fdf4; color: #16a34a; }
     
     .figma-context {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
       border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 12px;
+      padding: 12px;
+      margin-bottom: 16px;
       font-size: 12px;
-      color: #64748b;
+      color: #0369a1;
+    }
+
+    .figma-context-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #0c4a6e;
+    }
+
+    .figma-context-details {
+      space-y: 4px;
+    }
+
+    .figma-context-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .figma-context-label {
+      font-weight: 500;
+      color: #0369a1;
+    }
+
+    .figma-context-value {
+      color: #0c4a6e;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    }
+
+    .figma-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #8b5cf6;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      transition: all 0.2s;
+    }
+
+    .figma-link:hover {
+      background: rgba(139, 92, 246, 0.15);
+      border-color: rgba(139, 92, 246, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .figma-link svg {
+      width: 12px;
+      height: 12px;
     }
 
     .config-section {
       background: #f0f9ff;
       border: 1px solid #bae6fd;
-      border-radius: 10px;
-      padding: 16px;
+      border-radius: 8px;
+      padding: 12px;
       margin-bottom: 16px;
     }
 
     .config-title {
       font-weight: 600;
       color: #0369a1;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .config-input {
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .config-input input {
       font-size: 12px;
-      padding: 8px 10px;
+      padding: 6px 8px;
     }
 
     .config-help {
@@ -516,18 +542,16 @@
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      isolation: isolate;
     }
     
     .modal-content {
       background: white;
-      border-radius: 12px;
+      border-radius: 8px;
       padding: 20px;
       width: 90%;
       max-width: 400px;
       max-height: 80vh;
       overflow-y: auto;
-      position: relative;
     }
     
     .modal-header {
@@ -564,7 +588,7 @@
       border: 1px solid #fed7aa;
       color: #d97706;
       padding: 12px;
-      border-radius: 8px;
+      border-radius: 6px;
       font-size: 13px;
       margin-bottom: 16px;
       display: flex;
@@ -572,81 +596,50 @@
       gap: 8px;
     }
 
-    /* AI Suggestions Styling */
-    .ai-suggestions {
-      margin-top: 8px;
-      padding: 12px;
-      background: #f0f9ff;
-      border: 1px solid #bae6fd;
-      border-radius: 8px;
+    .debt-detail-content {
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 8px;
     }
 
-    .ai-suggestions-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
+    .debt-detail-section {
+      margin-bottom: 16px;
     }
 
-    .ai-suggestions-title {
+    .debt-detail-label {
       font-size: 12px;
       font-weight: 600;
-      color: #0369a1;
+      color: #374151;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    .suggestion-item {
-      width: 100%;
-      text-align: left;
-      padding: 8px;
-      margin-bottom: 6px;
-      font-size: 12px;
-      color: #0369a1;
-      background: white;
-      border: 1px solid #bae6fd;
+    .debt-detail-value {
+      color: #1f2937;
+      line-height: 1.5;
+    }
+
+    .debt-detail-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .debt-detail-badges {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .debt-detail-description {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
       border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
-      line-height: 1.4;
-    }
-
-    .suggestion-item:hover {
-      background: #e0f2fe;
-      border-color: #0369a1;
-    }
-
-    .suggestion-item:last-child {
-      margin-bottom: 0;
-    }
-
-    .hide-suggestions {
-      margin-top: 8px;
-      font-size: 11px;
-      color: #0369a1;
-      cursor: pointer;
-      text-decoration: underline;
-    }
-
-    .hide-suggestions:hover {
-      color: #0284c7;
-    }
-
-    .ai-loading {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      border: 2px solid #0369a1;
-      border-radius: 50%;
-      border-top-color: transparent;
-      animation: spin 1s ease-in-out infinite;
-    }
-
-    /* Accessibility improvements */
-    .input:focus-visible,
-    .select:focus-visible,
-    .textarea:focus-visible,
-    .button:focus-visible {
-      outline: 2px solid #8b5cf6;
-      outline-offset: 2px;
+      padding: 12px;
+      color: #1e293b;
+      line-height: 1.5;
     }
   </style>
 </head>
@@ -656,22 +649,19 @@
     <div id="config-setup" class="screen">
       <div class="header">
         <div class="logo">D</div>
-        <div class="brand">
-          <div class="title">Debtrix</div>
-          <div class="subtitle">UX Debt Tracker</div>
-        </div>
+        <div class="title">Debtrix</div>
       </div>
       
       <div class="config-section">
         <div class="config-title">Plugin Configuration</div>
         <div class="config-input">
           <label class="label">Supabase URL</label>
-          <input type="text" id="supabase-url" class="input" placeholder="https://your-project.supabase.co" autocomplete="off">
+          <input type="text" id="supabase-url" class="input" placeholder="https://your-project.supabase.co">
           <div class="config-help">Your Supabase project URL</div>
         </div>
         <div class="config-input">
           <label class="label">Supabase Anon Key</label>
-          <input type="text" id="supabase-anon-key" class="input" placeholder="Your anon key" autocomplete="off">
+          <input type="text" id="supabase-anon-key" class="input" placeholder="Your anon key">
           <div class="config-help">Your Supabase anonymous key</div>
         </div>
         <button id="save-config-btn" class="button">
@@ -684,22 +674,19 @@
     <div id="api-setup" class="screen hidden">
       <div class="header">
         <div class="logo">D</div>
-        <div class="brand">
-          <div class="title">Debtrix</div>
-          <div class="subtitle">UX Debt Tracker</div>
-        </div>
+        <div class="title">Debtrix</div>
       </div>
       
       <div class="form-group">
         <label class="label">API Key</label>
-        <input type="password" id="api-key-input" class="input" placeholder="Paste your API key here" autocomplete="off">
+        <input type="password" id="api-key-input" class="input" placeholder="Paste your API key here">
       </div>
       <button id="verify-key-btn" class="button">
         <span class="button-text">Connect to Debtrix</span>
       </button>
       <div id="api-error" class="error hidden"></div>
       
-      <div style="margin-top: 16px; padding: 12px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; font-size: 12px; color: #0369a1;">
+      <div style="margin-top: 16px; padding: 12px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 12px; color: #0369a1;">
         <strong>How to get your API key:</strong><br>
         1. Go to Debtrix web app<br>
         2. Navigate to Settings → API Access<br>
@@ -716,8 +703,7 @@
     <div id="projects-screen" class="screen hidden">
       <div class="header">
         <div class="header-left">
-          <div class="logo">D</div>
-          <div class="brand">
+          <div>
             <div class="title">Your Projects</div>
             <div class="subtitle">Select a project to manage UX debt</div>
           </div>
@@ -736,13 +722,12 @@
     <div id="project-details-screen" class="screen hidden">
       <div class="header header-with-back">
         <div class="header-left">
-          <button id="back-to-projects-btn" class="back-button" aria-label="Back to projects">
+          <button id="back-to-projects-btn" class="back-button">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="m15 18-6-6 6-6"/>
             </svg>
           </button>
-          <div class="logo">D</div>
-          <div class="brand">
+          <div>
             <div class="title" id="project-title">Project Name</div>
             <div class="subtitle" id="project-subtitle">UX Debt Management</div>
           </div>
@@ -761,11 +746,11 @@
   </div>
 
   <!-- Add/Edit Debt Modal - STARTS HIDDEN -->
-  <div id="debt-modal" class="modal hidden" role="dialog" aria-labelledby="modal-title" aria-modal="true">
+  <div id="debt-modal" class="modal hidden">
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title" id="modal-title">Add UX Debt</div>
-        <button id="close-modal-btn" class="close-button" aria-label="Close modal">
+        <button id="close-modal-btn" class="close-button">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="m18 6-12 12"/>
             <path d="m6 6 12 12"/>
@@ -786,12 +771,12 @@
       <div id="figma-context-display" class="figma-context"></div>
       
       <div class="form-group">
-        <label class="label" for="debt-title">Title *</label>
-        <input type="text" id="debt-title" class="input" placeholder="Brief description of the issue" required>
+        <label class="label">Title *</label>
+        <input type="text" id="debt-title" class="input" placeholder="Brief description of the issue">
       </div>
       
       <div class="form-group">
-        <label class="label" for="debt-type">Type</label>
+        <label class="label">Type</label>
         <select id="debt-type" class="select">
           <option value="Heuristic">Heuristic</option>
           <option value="Accessibility">Accessibility</option>
@@ -802,7 +787,7 @@
       </div>
       
       <div class="form-group">
-        <label class="label" for="debt-severity">Severity</label>
+        <label class="label">Severity</label>
         <select id="debt-severity" class="select">
           <option value="Low">Low</option>
           <option value="Medium">Medium</option>
@@ -812,7 +797,7 @@
       </div>
       
       <div class="form-group">
-        <label class="label" for="debt-status">Status</label>
+        <label class="label">Status</label>
         <select id="debt-status" class="select">
           <option value="Open">Open</option>
           <option value="In Progress">In Progress</option>
@@ -821,31 +806,13 @@
       </div>
       
       <div class="form-group">
-        <label class="label" for="debt-description">Description *</label>
-        <textarea id="debt-description" class="textarea" placeholder="Detailed description of the UX issue..." required></textarea>
+        <label class="label">Description *</label>
+        <textarea id="debt-description" class="textarea" placeholder="Detailed description of the UX issue..."></textarea>
       </div>
       
       <div class="form-group">
-        <label class="label" for="debt-recommendation">Recommendation *</label>
-        <div style="position: relative;">
-          <textarea id="debt-recommendation" class="textarea" placeholder="How should this be fixed?" required></textarea>
-          <div id="ai-loading-indicator" class="hidden" style="position: absolute; top: 8px; right: 8px;">
-            <div class="ai-loading"></div>
-          </div>
-        </div>
-        
-        <!-- AI Suggestions Panel -->
-        <div id="ai-suggestions-panel" class="ai-suggestions hidden">
-          <div class="ai-suggestions-header">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="m15 14 5-5-5-5"/>
-              <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/>
-            </svg>
-            <span class="ai-suggestions-title">AI Suggestions</span>
-          </div>
-          <div id="ai-suggestions-list"></div>
-          <div class="hide-suggestions" onclick="hideSuggestions()">Hide suggestions</div>
-        </div>
+        <label class="label">Recommendation *</label>
+        <textarea id="debt-recommendation" class="textarea" placeholder="How should this be fixed?"></textarea>
       </div>
       
       <div class="action-buttons">
@@ -861,11 +828,11 @@
   </div>
   
   <!-- View Debt Modal - STARTS HIDDEN -->
-  <div id="view-debt-modal" class="modal hidden" role="dialog" aria-labelledby="view-modal-title" aria-modal="true">
+  <div id="view-debt-modal" class="modal hidden">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="modal-title" id="view-modal-title">UX Debt Details</div>
-        <button id="close-view-modal-btn" class="close-button" aria-label="Close modal">
+        <div class="modal-title">UX Debt Details</div>
+        <button id="close-view-modal-btn" class="close-button">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="m18 6-12 12"/>
             <path d="m6 6 12 12"/>
@@ -873,11 +840,11 @@
         </button>
       </div>
       
-      <div id="view-debt-content"></div>
+      <div id="view-debt-content" class="debt-detail-content"></div>
       
+      <!-- Removed Edit and Delete buttons as requested -->
       <div class="action-buttons">
-        <button id="edit-debt-btn" class="button button-secondary">Edit</button>
-        <button id="delete-debt-btn" class="button button-danger">Delete</button>
+        <button id="close-detail-btn" class="button">Close</button>
       </div>
     </div>
   </div>
@@ -933,19 +900,12 @@
     const figmaContextDisplay = document.getElementById('figma-context-display');
     const closeModalBtn = document.getElementById('close-modal-btn');
     const closeViewModalBtn = document.getElementById('close-view-modal-btn');
+    const closeDetailBtn = document.getElementById('close-detail-btn');
     const cancelDebtBtn = document.getElementById('cancel-debt-btn');
     const saveDebtBtn = document.getElementById('save-debt-btn');
-    const editDebtBtn = document.getElementById('edit-debt-btn');
-    const deleteDebtBtn = document.getElementById('delete-debt-btn');
     const debtError = document.getElementById('debt-error');
     const debtSuccess = document.getElementById('debt-success');
     const viewDebtContent = document.getElementById('view-debt-content');
-    
-    // AI Suggestions elements
-    const aiSuggestionsPanel = document.getElementById('ai-suggestions-panel');
-    const aiSuggestionsList = document.getElementById('ai-suggestions-list');
-    const aiLoadingIndicator = document.getElementById('ai-loading-indicator');
-    const debtRecommendationInput = document.getElementById('debt-recommendation');
     
     const logoutBtn = document.getElementById('logout-btn');
     
@@ -957,14 +917,10 @@
     addDebtBtn.addEventListener('click', () => openDebtModal());
     closeModalBtn.addEventListener('click', closeDebtModal);
     closeViewModalBtn.addEventListener('click', closeViewDebtModal);
+    closeDetailBtn.addEventListener('click', closeViewDebtModal);
     cancelDebtBtn.addEventListener('click', closeDebtModal);
     saveDebtBtn.addEventListener('click', saveDebt);
-    editDebtBtn.addEventListener('click', editCurrentDebt);
-    deleteDebtBtn.addEventListener('click', deleteCurrentDebt);
     logoutBtn.addEventListener('click', logout);
-    
-    // AI Suggestions event listener
-    debtRecommendationInput.addEventListener('input', handleRecommendationInput);
     
     // Initialize
     init();
@@ -1144,112 +1100,69 @@
         return;
       }
       
-      // First, fetch UX debts for each project to get metadata
-      Promise.all(currentProjects.map(project => 
-        fetch(`${apiBaseUrl}/rest/v1/ux_debts?project_id=eq.${project.id}&select=severity,status`, {
-          headers: {
-            'apikey': anonKey,
-            'x-api-key': apiKeyInput.value,
-            'Content-Type': 'application/json'
-          }
-        }).then(response => response.json()).then(debts => ({
-          ...project,
-          debts: debts || []
-        })).catch(() => ({
-          ...project,
-          debts: []
-        }))
-      )).then(projectsWithDebts => {
-        projectsList.innerHTML = projectsWithDebts.map(project => {
-          const debts = project.debts;
-          const totalDebts = debts.length;
-          
-          // Calculate severity stats
-          const severityStats = {
-            critical: debts.filter(d => d.severity === 'Critical').length,
-            high: debts.filter(d => d.severity === 'High').length,
-            medium: debts.filter(d => d.severity === 'Medium').length,
-            low: debts.filter(d => d.severity === 'Low').length
-          };
-          
-          // Calculate status stats
-          const statusStats = {
-            open: debts.filter(d => d.status === 'Open').length,
-            inProgress: debts.filter(d => d.status === 'In Progress').length,
-            resolved: debts.filter(d => d.status === 'Resolved').length
-          };
-          
-          // Get project color class
-          const colorClass = project.color || 'bg-purple-500';
-          
-          return `
-            <div class="project-item" data-project-id="${project.id}" role="button" tabindex="0">
-              <div class="project-header">
-                <div class="project-color ${colorClass}"></div>
-                <div class="project-title">${project.title}</div>
+      // Load UX debts for each project to show metadata
+      currentProjects.forEach(project => {
+        parent.postMessage({ 
+          pluginMessage: { 
+            type: 'get-ux-debts', 
+            projectId: project.id 
+          } 
+        }, '*');
+      });
+      
+      projectsList.innerHTML = currentProjects.map(project => {
+        // We'll update these with real data when debts are loaded
+        const totalDebts = 0;
+        const openDebts = 0;
+        const resolvedDebts = 0;
+        
+        return `
+          <div class="project-item" data-project-id="${project.id}">
+            <div class="project-header">
+              <div class="project-color" style="background-color: ${getProjectColorValue(project.color)}"></div>
+              <div class="project-title">${project.title}</div>
+            </div>
+            <div class="project-description">${project.description}</div>
+            
+            <div class="project-stats">
+              <div class="stat-item">
+                <span class="stat-number" id="total-${project.id}">-</span>
+                <span class="stat-label">Total Debts</span>
               </div>
-              
-              <div class="project-description">${project.description}</div>
-              
-              <div class="project-stats">
-                <div class="stat-item">
-                  <div class="stat-value">${totalDebts}</div>
-                  <div class="stat-label">Total Debts</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">${statusStats.open}</div>
-                  <div class="stat-label">Open Issues</div>
-                </div>
-              </div>
-              
-              ${totalDebts > 0 ? `
-                <div class="project-badges">
-                  ${severityStats.critical > 0 ? `
-                    <div class="severity-badge severity-critical">
-                      <div class="severity-dot" style="background: #dc2626;"></div>
-                      ${severityStats.critical} Critical
-                    </div>
-                  ` : ''}
-                  ${severityStats.high > 0 ? `
-                    <div class="severity-badge severity-high">
-                      <div class="severity-dot" style="background: #ea580c;"></div>
-                      ${severityStats.high} High
-                    </div>
-                  ` : ''}
-                  ${severityStats.medium > 0 ? `
-                    <div class="severity-badge severity-medium">
-                      <div class="severity-dot" style="background: #d97706;"></div>
-                      ${severityStats.medium} Medium
-                    </div>
-                  ` : ''}
-                  ${severityStats.low > 0 ? `
-                    <div class="severity-badge severity-low">
-                      <div class="severity-dot" style="background: #16a34a;"></div>
-                      ${severityStats.low} Low
-                    </div>
-                  ` : ''}
-                </div>
-              ` : ''}
-              
-              <div class="project-footer">
-                <span>Updated ${new Date(project.updated_at).toLocaleDateString()}</span>
-                <span>${statusStats.resolved}/${totalDebts} Resolved</span>
+              <div class="stat-item">
+                <span class="stat-number" id="open-${project.id}">-</span>
+                <span class="stat-label">Open Issues</span>
               </div>
             </div>
-          `;
-        }).join('');
-        
-        // Add click and keyboard handlers
-        document.querySelectorAll('.project-item').forEach(item => {
-          item.addEventListener('click', () => selectProject(item.dataset.projectId));
-          item.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              selectProject(item.dataset.projectId);
-            }
-          });
-        });
+            
+            <div class="severity-badges" id="severity-${project.id}">
+              <!-- Will be populated with severity data -->
+            </div>
+            
+            <div class="project-footer">
+              <span>Updated ${new Date(project.updated_at).toLocaleDateString()}</span>
+              <span id="resolution-${project.id}">-/- Resolved</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      // Add click handlers
+      document.querySelectorAll('.project-item').forEach(item => {
+        item.addEventListener('click', () => selectProject(item.dataset.projectId));
       });
+    }
+    
+    function getProjectColorValue(colorClass) {
+      const colorMap = {
+        'bg-purple-500': '#8b5cf6',
+        'bg-blue-500': '#3b82f6',
+        'bg-emerald-500': '#10b981',
+        'bg-orange-500': '#f97316',
+        'bg-rose-500': '#f43f5e',
+        'bg-indigo-500': '#6366f1'
+      };
+      return colorMap[colorClass] || '#8b5cf6';
     }
     
     function selectProject(projectId) {
@@ -1274,14 +1187,66 @@
     }
     
     function handleDebtsLoaded(data) {
-      debtsLoading.classList.add('hidden');
-      
       if (data.success) {
-        currentDebts = data.debts;
-        renderDebts();
+        const projectId = data.projectId || (selectedProject && selectedProject.id);
+        
+        if (projectId === selectedProject?.id) {
+          // Update main project details view
+          debtsLoading.classList.add('hidden');
+          currentDebts = data.debts;
+          renderDebts();
+        }
+        
+        // Update project metadata in projects list
+        updateProjectMetadata(projectId, data.debts);
       } else {
-        debtsList.innerHTML = `<div class="error">${data.error}</div>`;
+        if (selectedProject) {
+          debtsLoading.classList.add('hidden');
+          debtsList.innerHTML = `<div class="error">${data.error}</div>`;
+        }
       }
+    }
+    
+    function updateProjectMetadata(projectId, debts) {
+      const totalElement = document.getElementById(`total-${projectId}`);
+      const openElement = document.getElementById(`open-${projectId}`);
+      const severityElement = document.getElementById(`severity-${projectId}`);
+      const resolutionElement = document.getElementById(`resolution-${projectId}`);
+      
+      if (!totalElement) return; // Project not in current view
+      
+      const totalDebts = debts.length;
+      const openDebts = debts.filter(d => d.status === 'Open').length;
+      const resolvedDebts = debts.filter(d => d.status === 'Resolved').length;
+      
+      // Update stats
+      totalElement.textContent = totalDebts;
+      openElement.textContent = openDebts;
+      resolutionElement.textContent = `${resolvedDebts}/${totalDebts} Resolved`;
+      
+      // Update severity badges
+      const severityStats = {
+        critical: debts.filter(d => d.severity === 'Critical').length,
+        high: debts.filter(d => d.severity === 'High').length,
+        medium: debts.filter(d => d.severity === 'Medium').length,
+        low: debts.filter(d => d.severity === 'Low').length
+      };
+      
+      let severityHTML = '';
+      if (severityStats.critical > 0) {
+        severityHTML += `<div class="severity-badge severity-critical"><div class="severity-dot dot-critical"></div>${severityStats.critical} Critical</div>`;
+      }
+      if (severityStats.high > 0) {
+        severityHTML += `<div class="severity-badge severity-high"><div class="severity-dot dot-high"></div>${severityStats.high} High</div>`;
+      }
+      if (severityStats.medium > 0) {
+        severityHTML += `<div class="severity-badge severity-medium"><div class="severity-dot dot-medium"></div>${severityStats.medium} Medium</div>`;
+      }
+      if (severityStats.low > 0) {
+        severityHTML += `<div class="severity-badge severity-low"><div class="severity-dot dot-low"></div>${severityStats.low} Low</div>`;
+      }
+      
+      severityElement.innerHTML = severityHTML;
     }
     
     function renderDebts() {
@@ -1297,13 +1262,11 @@
       }
       
       debtsList.innerHTML = currentDebts.map(debt => `
-        <div class="debt-item" data-debt-id="${debt.id}" role="button" tabindex="0">
+        <div class="debt-item" data-debt-id="${debt.id}">
           <div class="debt-header">
             <div class="debt-title">${debt.title}</div>
             <div class="debt-actions">
               <button class="button button-small button-secondary view-debt-btn" data-debt-id="${debt.id}">View</button>
-              <button class="button button-small edit-debt-btn" data-debt-id="${debt.id}">Edit</button>
-              <button class="button button-small button-danger delete-debt-btn" data-debt-id="${debt.id}">Delete</button>
             </div>
           </div>
           <div class="debt-meta">
@@ -1320,20 +1283,6 @@
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           viewDebt(btn.dataset.debtId);
-        });
-      });
-      
-      document.querySelectorAll('.edit-debt-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          editDebt(btn.dataset.debtId);
-        });
-      });
-      
-      document.querySelectorAll('.delete-debt-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          deleteDebt(btn.dataset.debtId);
         });
       });
     }
@@ -1371,29 +1320,64 @@
       
       hideError(debtError);
       hideSuccess(debtSuccess);
-      hideSuggestions();
       debtModal.classList.remove('hidden');
-      
-      // Focus the first input for accessibility
-      setTimeout(() => {
-        document.getElementById('debt-title').focus();
-      }, 100);
     }
     
     function closeDebtModal() {
       debtModal.classList.add('hidden');
       editingDebt = null;
-      hideSuggestions();
     }
     
     function updateFigmaContext() {
       if (figmaContext) {
+        const nodeLink = figmaContext.selectedNodes > 0 ? 
+          `<a href="${figmaContext.url}" target="_blank" class="figma-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m18 13 6-6-6-6"/>
+              <path d="M2 5h16"/>
+            </svg>
+            Open Selected Node
+          </a>` : 
+          `<a href="${figmaContext.url}" target="_blank" class="figma-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m18 13 6-6-6-6"/>
+              <path d="M2 5h16"/>
+            </svg>
+            Open File
+          </a>`;
+
         figmaContextDisplay.innerHTML = `
-          <strong>Figma Context:</strong><br>
-          File: ${figmaContext.fileName}<br>
-          Page: ${figmaContext.pageName}<br>
-          Selected: ${figmaContext.selectedNodes} node(s)
-          ${figmaContext.selectedNodeNames.length > 0 ? '<br>Nodes: ' + figmaContext.selectedNodeNames.join(', ') : ''}
+          <div class="figma-context-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="9" cy="9" r="2"/>
+              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+            </svg>
+            Figma Context
+          </div>
+          <div class="figma-context-details">
+            <div class="figma-context-item">
+              <span class="figma-context-label">File:</span>
+              <span class="figma-context-value">${figmaContext.fileName}</span>
+            </div>
+            <div class="figma-context-item">
+              <span class="figma-context-label">Page:</span>
+              <span class="figma-context-value">${figmaContext.pageName}</span>
+            </div>
+            <div class="figma-context-item">
+              <span class="figma-context-label">Selected:</span>
+              <span class="figma-context-value">${figmaContext.selectedNodes} node(s)</span>
+            </div>
+            ${figmaContext.selectedNodeNames.length > 0 ? `
+              <div class="figma-context-item">
+                <span class="figma-context-label">Nodes:</span>
+                <span class="figma-context-value">${figmaContext.selectedNodeNames.join(', ')}</span>
+              </div>
+            ` : ''}
+            <div style="margin-top: 8px;">
+              ${nodeLink}
+            </div>
+          </div>
         `;
       }
     }
@@ -1401,125 +1385,6 @@
     function handleFigmaContext(context) {
       figmaContext = context;
       updateFigmaContext();
-    }
-    
-    // AI Suggestions functionality
-    function handleRecommendationInput(event) {
-      const value = event.target.value;
-      
-      if (value.length > 10) {
-        generateAISuggestions(value);
-      } else {
-        hideSuggestions();
-      }
-    }
-    
-    function generateAISuggestions(description) {
-      aiLoadingIndicator.classList.remove('hidden');
-      
-      setTimeout(() => {
-        const type = document.getElementById('debt-type').value;
-        const severity = document.getElementById('debt-severity').value;
-        const suggestions = getUXRecommendations(description, type, severity);
-        
-        displaySuggestions(suggestions);
-        aiLoadingIndicator.classList.add('hidden');
-      }, 800); // Simulate API delay
-    }
-    
-    function getUXRecommendations(description, type, severity) {
-      const suggestions = [];
-      const lowerDesc = description.toLowerCase();
-      
-      // Type-based suggestions
-      if (type === 'Accessibility') {
-        if (lowerDesc.includes('color') || lowerDesc.includes('contrast')) {
-          suggestions.push('Ensure color contrast meets WCAG AA standards (4.5:1 for normal text)');
-          suggestions.push('Add alternative visual indicators beyond color alone');
-        }
-        if (lowerDesc.includes('keyboard') || lowerDesc.includes('focus')) {
-          suggestions.push('Implement proper keyboard navigation and focus indicators');
-          suggestions.push('Ensure all interactive elements are keyboard accessible');
-        }
-        if (lowerDesc.includes('screen reader') || lowerDesc.includes('aria')) {
-          suggestions.push('Add appropriate ARIA labels and descriptions');
-          suggestions.push('Test with screen readers to verify content is properly announced');
-        }
-      }
-      
-      if (type === 'Performance') {
-        if (lowerDesc.includes('load') || lowerDesc.includes('slow')) {
-          suggestions.push('Optimize images and implement lazy loading');
-          suggestions.push('Minimize bundle size and implement code splitting');
-        }
-        if (lowerDesc.includes('animation') || lowerDesc.includes('transition')) {
-          suggestions.push('Use CSS transforms instead of changing layout properties');
-          suggestions.push('Implement reduced motion preferences for accessibility');
-        }
-      }
-      
-      if (type === 'Usability') {
-        if (lowerDesc.includes('button') || lowerDesc.includes('click')) {
-          suggestions.push('Ensure buttons have adequate touch targets (44px minimum)');
-          suggestions.push('Provide clear visual feedback for interactive states');
-        }
-        if (lowerDesc.includes('form') || lowerDesc.includes('input')) {
-          suggestions.push('Add clear labels and helpful error messages');
-          suggestions.push('Implement proper form validation and feedback');
-        }
-        if (lowerDesc.includes('navigation') || lowerDesc.includes('menu')) {
-          suggestions.push('Simplify navigation structure and reduce cognitive load');
-          suggestions.push('Ensure consistent navigation patterns across the application');
-        }
-      }
-      
-      if (type === 'Visual') {
-        if (lowerDesc.includes('layout') || lowerDesc.includes('spacing')) {
-          suggestions.push('Apply consistent spacing using a design system');
-          suggestions.push('Ensure proper visual hierarchy with typography and spacing');
-        }
-        if (lowerDesc.includes('responsive') || lowerDesc.includes('mobile')) {
-          suggestions.push('Test and optimize layout for all screen sizes');
-          suggestions.push('Implement mobile-first responsive design principles');
-        }
-      }
-      
-      // Severity-based suggestions
-      if (severity === 'Critical') {
-        suggestions.push('Address immediately as this blocks core user workflows');
-        suggestions.push('Consider hotfix deployment if affecting production users');
-      } else if (severity === 'High') {
-        suggestions.push('Prioritize in next sprint as this impacts user experience significantly');
-        suggestions.push('Document workarounds for users until fix is deployed');
-      }
-      
-      // Generic suggestions if no specific ones found
-      if (suggestions.length === 0) {
-        suggestions.push('Follow established design system patterns and guidelines');
-        suggestions.push('Test the solution with real users before implementation');
-        suggestions.push('Consider the impact on overall user workflow and experience');
-      }
-      
-      return suggestions.slice(0, 3); // Return top 3 suggestions
-    }
-    
-    function displaySuggestions(suggestions) {
-      aiSuggestionsList.innerHTML = suggestions.map(suggestion => `
-        <button class="suggestion-item" onclick="applySuggestion('${suggestion.replace(/'/g, "\\'")}')">
-          ${suggestion}
-        </button>
-      `).join('');
-      
-      aiSuggestionsPanel.classList.remove('hidden');
-    }
-    
-    function applySuggestion(suggestion) {
-      debtRecommendationInput.value = suggestion;
-      hideSuggestions();
-    }
-    
-    function hideSuggestions() {
-      aiSuggestionsPanel.classList.add('hidden');
     }
     
     function saveDebt() {
@@ -1598,66 +1463,60 @@
       if (!viewingDebt) return;
       
       viewDebtContent.innerHTML = `
-        <div class="form-group">
-          <label class="label">Title</label>
-          <div style="padding: 8px; background: #f9fafb; border-radius: 4px; font-weight: 500;">${viewingDebt.title}</div>
+        <div class="debt-detail-section">
+          <div class="debt-detail-label">Title</div>
+          <div class="debt-detail-value" style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">${viewingDebt.title}</div>
         </div>
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+        <div class="debt-detail-meta">
           <div>
-            <label class="label">Type</label>
-            <div style="padding: 8px; background: #f9fafb; border-radius: 4px;">${viewingDebt.type}</div>
+            <div class="debt-detail-label">Screen/Component</div>
+            <div class="debt-detail-value">${viewingDebt.screen}</div>
           </div>
           <div>
-            <label class="label">Severity</label>
-            <div style="padding: 8px; background: #f9fafb; border-radius: 4px;">
-              <span class="badge badge-${viewingDebt.severity.toLowerCase()}">${viewingDebt.severity}</span>
-            </div>
+            <div class="debt-detail-label">Type</div>
+            <div class="debt-detail-value">${viewingDebt.type}</div>
           </div>
         </div>
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-          <div>
-            <label class="label">Status</label>
-            <div style="padding: 8px; background: #f9fafb; border-radius: 4px;">
-              <span class="badge badge-${viewingDebt.status.toLowerCase().replace(' ', '-')}">${viewingDebt.status}</span>
-            </div>
-          </div>
-          <div>
-            <label class="label">Screen</label>
-            <div style="padding: 8px; background: #f9fafb; border-radius: 4px;">${viewingDebt.screen}</div>
-          </div>
+        <div class="debt-detail-badges">
+          <span class="badge badge-${viewingDebt.severity.toLowerCase()}">${viewingDebt.severity}</span>
+          <span class="badge badge-${viewingDebt.status.toLowerCase().replace(' ', '-')}">${viewingDebt.status}</span>
         </div>
         
-        <div class="form-group">
-          <label class="label">Description</label>
-          <div style="padding: 8px; background: #f9fafb; border-radius: 4px; line-height: 1.4;">${viewingDebt.description}</div>
+        <div class="debt-detail-section">
+          <div class="debt-detail-label">Description</div>
+          <div class="debt-detail-description">${viewingDebt.description}</div>
         </div>
         
-        <div class="form-group">
-          <label class="label">Recommendation</label>
-          <div style="padding: 8px; background: #f9fafb; border-radius: 4px; line-height: 1.4;">${viewingDebt.recommendation}</div>
+        <div class="debt-detail-section">
+          <div class="debt-detail-label">Recommendation</div>
+          <div class="debt-detail-description">${viewingDebt.recommendation}</div>
+        </div>
+        
+        <div class="debt-detail-meta">
+          <div>
+            <div class="debt-detail-label">Logged By</div>
+            <div class="debt-detail-value">${viewingDebt.logged_by}</div>
+          </div>
+          <div>
+            <div class="debt-detail-label">Created</div>
+            <div class="debt-detail-value">${new Date(viewingDebt.created_at).toLocaleDateString()}</div>
+          </div>
         </div>
         
         ${viewingDebt.figma_url ? `
-          <div class="form-group">
-            <label class="label">Figma Link</label>
-            <div style="padding: 8px; background: #f9fafb; border-radius: 4px;">
-              <a href="${viewingDebt.figma_url}" target="_blank" style="color: #8b5cf6; text-decoration: none;">Open in Figma</a>
-            </div>
+          <div class="debt-detail-section">
+            <div class="debt-detail-label">Figma Link</div>
+            <a href="${viewingDebt.figma_url}" target="_blank" class="figma-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m18 13 6-6-6-6"/>
+                <path d="M2 5h16"/>
+              </svg>
+              Open in Figma
+            </a>
           </div>
         ` : ''}
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-          <div>
-            <label class="label">Logged By</label>
-            <div style="padding: 8px; background: #f9fafb; border-radius: 4px;">${viewingDebt.logged_by}</div>
-          </div>
-          <div>
-            <label class="label">Created</label>
-            <div style="padding: 8px; background: #f9fafb; border-radius: 4px;">${new Date(viewingDebt.created_at).toLocaleDateString()}</div>
-          </div>
-        </div>
       `;
       
       viewDebtModal.classList.remove('hidden');
@@ -1666,50 +1525,6 @@
     function closeViewDebtModal() {
       viewDebtModal.classList.add('hidden');
       viewingDebt = null;
-    }
-    
-    function editDebt(debtId) {
-      const debt = currentDebts.find(d => d.id === debtId);
-      if (debt) {
-        openDebtModal(debt);
-      }
-    }
-    
-    function editCurrentDebt() {
-      if (viewingDebt) {
-        closeViewDebtModal();
-        openDebtModal(viewingDebt);
-      }
-    }
-    
-    function deleteDebt(debtId) {
-      const debt = currentDebts.find(d => d.id === debtId);
-      if (!debt) return;
-      
-      if (confirm(`Are you sure you want to delete "${debt.title}"? This action cannot be undone.`)) {
-        parent.postMessage({ 
-          pluginMessage: { 
-            type: 'delete-ux-debt', 
-            projectId: selectedProject.id,
-            debtId: debtId
-          } 
-        }, '*');
-      }
-    }
-    
-    function deleteCurrentDebt() {
-      if (viewingDebt) {
-        if (confirm(`Are you sure you want to delete "${viewingDebt.title}"? This action cannot be undone.`)) {
-          parent.postMessage({ 
-            pluginMessage: { 
-              type: 'delete-ux-debt', 
-              projectId: selectedProject.id,
-              debtId: viewingDebt.id
-            } 
-          }, '*');
-          closeViewDebtModal();
-        }
-      }
     }
     
     function handleDebtDeleted(data) {

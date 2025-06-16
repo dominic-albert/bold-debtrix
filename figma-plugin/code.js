@@ -237,7 +237,8 @@ function getUXDebts(projectId) {
       figma.ui.postMessage({ 
         type: 'ux-debts-loaded', 
         success: true, 
-        debts: debts 
+        debts: debts,
+        projectId: projectId // Include projectId for metadata updates
       });
     }).catch(function(error) {
       console.error('Get UX debts error:', error);
@@ -438,12 +439,18 @@ function getFigmaContextData() {
       var pageName = figma.currentPage.name;
       var fileName = figma.root.name;
       
-      // Generate Figma URL
+      // Generate Figma URL with enhanced node linking
       var url = 'https://www.figma.com/file/' + figma.fileKey + '/' + encodeURIComponent(fileName);
       
+      // If nodes are selected, create a direct link to the first selected node
       if (selection.length > 0) {
         var nodeId = selection[0].id;
-        url += '?node-id=' + encodeURIComponent(nodeId);
+        // Format node ID for URL (replace colons with dashes)
+        var formattedNodeId = nodeId.replace(/:/g, '-');
+        url += '?node-id=' + encodeURIComponent(formattedNodeId);
+        
+        // Add viewport parameter to focus on the selected node
+        url += '&viewport=' + encodeURIComponent('0,0,1,1');
       }
       
       resolve({
@@ -456,7 +463,7 @@ function getFigmaContextData() {
     } catch (error) {
       console.error('Error getting Figma context:', error);
       resolve({
-        url: 'https://www.figma.com',
+        url: 'https://www.figma.com/file/' + figma.fileKey,
         pageName: 'Unknown',
         fileName: 'Unknown',
         selectedNodes: 0,
