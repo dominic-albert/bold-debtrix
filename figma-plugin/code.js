@@ -6,27 +6,32 @@ figma.showUI(__html__, {
 });
 
 // Store API key and user data
-var apiKey| null = null;
-var userData: any = null;
-var config: { apiBaseUrl; anonKey: string } | null = null;
+var apiKey = null;
+var userData = null;
+var config = null;
 
 // Load stored data on startup
 function loadStoredData() {
   try {
-    var [storedKey, storedConfig] = Promise.all([
+    Promise.all([
       figma.clientStorage.getAsync('debtrix_api_key'),
       figma.clientStorage.getAsync('debtrix_config')
-    ]);
-    
-    if (storedConfig) {
-      config = storedConfig;
-      figma.ui.postMessage({ type: 'config-loaded', config: storedConfig });
-    }
-    
-    if (storedKey && storedConfig) {
-      apiKey = storedKey;
-      figma.ui.postMessage({ type: 'api-key-loaded', apiKey: storedKey });
-    }
+    ]).then(function(results) {
+      var storedKey = results[0];
+      var storedConfig = results[1];
+      
+      if (storedConfig) {
+        config = storedConfig;
+        figma.ui.postMessage({ type: 'config-loaded', config: storedConfig });
+      }
+      
+      if (storedKey && storedConfig) {
+        apiKey = storedKey;
+        figma.ui.postMessage({ type: 'api-key-loaded', apiKey: storedKey });
+      }
+    }).catch(function(error) {
+      console.error('Error loading stored data:', error);
+    });
   } catch (error) {
     console.error('Error loading stored data:', error);
   }
@@ -36,12 +41,13 @@ function loadStoredData() {
 loadStoredData();
 
 // Listen for messages from UI
-figma.ui.onmessage = async (msg) => {
+figma.ui.onmessage = function(msg) {
   try {
     switch (msg.type) {
       case 'load-config':
-        var storedConfig = figma.clientStorage.getAsync('debtrix_config');
-        figma.ui.postMessage({ type: 'config-loaded', config: storedConfig });
+        figma.clientStorage.getAsync('debtrix_config').then(function(storedConfig) {
+          figma.ui.postMessage({ type: 'config-loaded', config: storedConfig });
+        });
         break;
         
       case 'save-config':
@@ -108,34 +114,42 @@ function verifyApiKey(key) {
   }
   
   try {
-    var response = fetch(`${config.apiBaseUrl}/rest/v1/profiles?select=id,email,full_name`, {
+    fetch(config.apiBaseUrl + '/rest/v1/profiles?select=id,email,full_name', {
       headers: {
         'apikey': config.anonKey,
         'x-api-key': key,
         'Content-Type': 'application/json'
       }
-    });
-    
-    if (!response.ok) {
-      var errorText = response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-    
-    var data = response.json();
-    if (!data || data.length === 0) {
-      throw new Error('Invalid API key - no user found');
-    }
-    
-    apiKey = key;
-    userData = data[0];
-    
-    // Store API key
-    figma.clientStorage.setAsync('debtrix_api_key', key);
-    
-    figma.ui.postMessage({ 
-      type: 'api-key-verified', 
-      success: true, 
-      user: userData 
+    }).then(function(response) {
+      if (!response.ok) {
+        return response.text().then(function(errorText) {
+          throw new Error('HTTP ' + response.status + ': ' + errorText);
+        });
+      }
+      return response.json();
+    }).then(function(data) {
+      if (!data || data.length === 0) {
+        throw new Error('Invalid API key - no user found');
+      }
+      
+      apiKey = key;
+      userData = data[0];
+      
+      // Store API key
+      figma.clientStorage.setAsync('debtrix_api_key', key);
+      
+      figma.ui.postMessage({ 
+        type: 'api-key-verified', 
+        success: true, 
+        user: userData 
+      });
+    }).catch(function(error) {
+      console.error('API key verification error:', error);
+      figma.ui.postMessage({ 
+        type: 'api-key-verified', 
+        success: false, 
+        error: error.message || 'Failed to verify API key'
+      });
     });
   } catch (error) {
     console.error('API key verification error:', error);
@@ -158,25 +172,32 @@ function getProjects() {
   }
   
   try {
-    var response = fetch(`${config.apiBaseUrl}/rest/v1/projects?owner_id=eq.${userData.id}&select=id,title,description,color,created_at,updated_at&order=updated_at.desc`, {
+    fetch(config.apiBaseUrl + '/rest/v1/projects?owner_id=eq.' + userData.id + '&select=id,title,description,color,created_at,updated_at&order=updated_at.desc', {
       headers: {
         'apikey': config.anonKey,
         'x-api-key': apiKey,
         'Content-Type': 'application/json'
       }
-    });
-    
-    if (!response.ok) {
-      var errorText = response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-    
-    var projects = response.json();
-    
-    figma.ui.postMessage({ 
-      type: 'projects-loaded', 
-      success: true, 
-      projects 
+    }).then(function(response) {
+      if (!response.ok) {
+        return response.text().then(function(errorText) {
+          throw new Error('HTTP ' + response.status + ': ' + errorText);
+        });
+      }
+      return response.json();
+    }).then(function(projects) {
+      figma.ui.postMessage({ 
+        type: 'projects-loaded', 
+        success: true, 
+        projects: projects 
+      });
+    }).catch(function(error) {
+      console.error('Get projects error:', error);
+      figma.ui.postMessage({ 
+        type: 'projects-loaded', 
+        success: false, 
+        error: error.message || 'Failed to fetch projects'
+      });
     });
   } catch (error) {
     console.error('Get projects error:', error);
@@ -199,25 +220,32 @@ function getUXDebts(projectId) {
   }
   
   try {
-    var response = fetch(`${config.apiBaseUrl}/rest/v1/ux_debts?project_id=eq.${projectId}&select=*&order=created_at.desc`, {
+    fetch(config.apiBaseUrl + '/rest/v1/ux_debts?project_id=eq.' + projectId + '&select=*&order=created_at.desc', {
       headers: {
         'apikey': config.anonKey,
         'x-api-key': apiKey,
         'Content-Type': 'application/json'
       }
-    });
-    
-    if (!response.ok) {
-      var errorText = response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-    
-    var debts = response.json();
-    
-    figma.ui.postMessage({ 
-      type: 'ux-debts-loaded', 
-      success: true, 
-      debts 
+    }).then(function(response) {
+      if (!response.ok) {
+        return response.text().then(function(errorText) {
+          throw new Error('HTTP ' + response.status + ': ' + errorText);
+        });
+      }
+      return response.json();
+    }).then(function(debts) {
+      figma.ui.postMessage({ 
+        type: 'ux-debts-loaded', 
+        success: true, 
+        debts: debts 
+      });
+    }).catch(function(error) {
+      console.error('Get UX debts error:', error);
+      figma.ui.postMessage({ 
+        type: 'ux-debts-loaded', 
+        success: false, 
+        error: error.message || 'Failed to fetch UX debts'
+      });
     });
   } catch (error) {
     console.error('Get UX debts error:', error);
@@ -241,38 +269,50 @@ function createUXDebt(projectId, debtData) {
   
   try {
     // Get Figma context
-    var figmaContext = getFigmaContextData();
-    
-    var payload = {
-      ...debtData,
-      project_id: projectId,
-      logged_by: userData.full_name,
-      figma_url: figmaContext.url,
-      screen: debtData.screen || figmaContext.pageName,
-    };
-    
-    var response = fetch(`${config.apiBaseUrl}/rest/v1/ux_debts`, {
-      method: 'POST',
-      headers: {
-        'apikey': config.anonKey,
-        'x-api-key': apiKey,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify(payload)
-    });
-    
-    if (!response.ok) {
-      var errorText = response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-    
-    var debt = response.json();
-    
-    figma.ui.postMessage({ 
-      type: 'ux-debt-created', 
-      success: true, 
-      debt: Array.isArray(debt) ? debt[0] : debt
+    getFigmaContextData().then(function(figmaContext) {
+      var payload = {
+        title: debtData.title,
+        type: debtData.type,
+        severity: debtData.severity,
+        description: debtData.description,
+        recommendation: debtData.recommendation,
+        project_id: projectId,
+        logged_by: userData.full_name,
+        figma_url: figmaContext.url,
+        screen: debtData.screen || figmaContext.pageName,
+        status: 'Open'
+      };
+      
+      fetch(config.apiBaseUrl + '/rest/v1/ux_debts', {
+        method: 'POST',
+        headers: {
+          'apikey': config.anonKey,
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(payload)
+      }).then(function(response) {
+        if (!response.ok) {
+          return response.text().then(function(errorText) {
+            throw new Error('HTTP ' + response.status + ': ' + errorText);
+          });
+        }
+        return response.json();
+      }).then(function(debt) {
+        figma.ui.postMessage({ 
+          type: 'ux-debt-created', 
+          success: true, 
+          debt: Array.isArray(debt) ? debt[0] : debt
+        });
+      }).catch(function(error) {
+        console.error('Create UX debt error:', error);
+        figma.ui.postMessage({ 
+          type: 'ux-debt-created', 
+          success: false, 
+          error: error.message || 'Failed to create UX debt'
+        });
+      });
     });
   } catch (error) {
     console.error('Create UX debt error:', error);
@@ -295,7 +335,7 @@ function updateUXDebt(projectId, debtId, debtData) {
   }
   
   try {
-    var response = fetch(`${config.apiBaseUrl}/rest/v1/ux_debts?id=eq.${debtId}`, {
+    fetch(config.apiBaseUrl + '/rest/v1/ux_debts?id=eq.' + debtId, {
       method: 'PATCH',
       headers: {
         'apikey': config.anonKey,
@@ -304,19 +344,26 @@ function updateUXDebt(projectId, debtId, debtData) {
         'Prefer': 'return=representation'
       },
       body: JSON.stringify(debtData)
-    });
-    
-    if (!response.ok) {
-      var errorText = response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-    
-    var debt = response.json();
-    
-    figma.ui.postMessage({ 
-      type: 'ux-debt-updated', 
-      success: true, 
-      debt: Array.isArray(debt) ? debt[0] : debt
+    }).then(function(response) {
+      if (!response.ok) {
+        return response.text().then(function(errorText) {
+          throw new Error('HTTP ' + response.status + ': ' + errorText);
+        });
+      }
+      return response.json();
+    }).then(function(debt) {
+      figma.ui.postMessage({ 
+        type: 'ux-debt-updated', 
+        success: true, 
+        debt: Array.isArray(debt) ? debt[0] : debt
+      });
+    }).catch(function(error) {
+      console.error('Update UX debt error:', error);
+      figma.ui.postMessage({ 
+        type: 'ux-debt-updated', 
+        success: false, 
+        error: error.message || 'Failed to update UX debt'
+      });
     });
   } catch (error) {
     console.error('Update UX debt error:', error);
@@ -339,23 +386,31 @@ function deleteUXDebt(projectId, debtId) {
   }
   
   try {
-    var response = fetch(`${config.apiBaseUrl}/rest/v1/ux_debts?id=eq.${debtId}`, {
+    fetch(config.apiBaseUrl + '/rest/v1/ux_debts?id=eq.' + debtId, {
       method: 'DELETE',
       headers: {
         'apikey': config.anonKey,
         'x-api-key': apiKey,
         'Content-Type': 'application/json'
       }
-    });
-    
-    if (!response.ok) {
-      var errorText = response.text();
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
-    
-    figma.ui.postMessage({ 
-      type: 'ux-debt-deleted', 
-      success: true
+    }).then(function(response) {
+      if (!response.ok) {
+        return response.text().then(function(errorText) {
+          throw new Error('HTTP ' + response.status + ': ' + errorText);
+        });
+      }
+      
+      figma.ui.postMessage({ 
+        type: 'ux-debt-deleted', 
+        success: true
+      });
+    }).catch(function(error) {
+      console.error('Delete UX debt error:', error);
+      figma.ui.postMessage({ 
+        type: 'ux-debt-deleted', 
+        success: false, 
+        error: error.message || 'Failed to delete UX debt'
+      });
     });
   } catch (error) {
     console.error('Delete UX debt error:', error);
@@ -368,42 +423,45 @@ function deleteUXDebt(projectId, debtId) {
 }
 
 function getFigmaContext() {
-  var context = getFigmaContextData();
-  figma.ui.postMessage({ 
-    type: 'figma-context', 
-    context 
+  getFigmaContextData().then(function(context) {
+    figma.ui.postMessage({ 
+      type: 'figma-context', 
+      context: context 
+    });
   });
 }
 
 function getFigmaContextData() {
-  try {
-    var selection = figma.currentPage.selection;
-    var pageName = figma.currentPage.name;
-    var fileName = figma.root.name;
-    
-    // Generate Figma URL
-    var url = `https://www.figma.com/file/${figma.fileKey}/${encodeURIComponent(fileName)}`;
-    
-    if (selection.length > 0) {
-      var nodeId = selection[0].id;
-      url += `?node-id=${encodeURIComponent(nodeId)}`;
+  return new Promise(function(resolve) {
+    try {
+      var selection = figma.currentPage.selection;
+      var pageName = figma.currentPage.name;
+      var fileName = figma.root.name;
+      
+      // Generate Figma URL
+      var url = 'https://www.figma.com/file/' + figma.fileKey + '/' + encodeURIComponent(fileName);
+      
+      if (selection.length > 0) {
+        var nodeId = selection[0].id;
+        url += '?node-id=' + encodeURIComponent(nodeId);
+      }
+      
+      resolve({
+        url: url,
+        pageName: pageName,
+        fileName: fileName,
+        selectedNodes: selection.length,
+        selectedNodeNames: selection.map(function(node) { return node.name; })
+      });
+    } catch (error) {
+      console.error('Error getting Figma context:', error);
+      resolve({
+        url: 'https://www.figma.com',
+        pageName: 'Unknown',
+        fileName: 'Unknown',
+        selectedNodes: 0,
+        selectedNodeNames: []
+      });
     }
-    
-    return {
-      url,
-      pageName,
-      fileName,
-      selectedNodes: selection.length,
-      selectedNodeNames: selection.map(node => node.name)
-    };
-  } catch (error) {
-    console.error('Error getting Figma context:', error);
-    return {
-      url: 'https://www.figma.com',
-      pageName: 'Unknown',
-      fileName: 'Unknown',
-      selectedNodes: 0,
-      selectedNodeNames: []
-    };
-  }
+  });
 }

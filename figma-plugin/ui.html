@@ -534,6 +534,24 @@
       border-top-color: transparent;
       animation: spin 1s ease-in-out infinite;
     }
+
+    /* Accessibility improvements */
+    .input:focus-visible,
+    .select:focus-visible,
+    .textarea:focus-visible,
+    .button:focus-visible {
+      outline: 2px solid #8b5cf6;
+      outline-offset: 2px;
+    }
+
+    /* Ensure proper focus management */
+    .modal {
+      isolation: isolate;
+    }
+
+    .modal-content {
+      position: relative;
+    }
   </style>
 </head>
 <body>
@@ -552,12 +570,12 @@
         <div class="config-title">Plugin Configuration</div>
         <div class="config-input">
           <label class="label">Supabase URL</label>
-          <input type="text" id="supabase-url" class="input" placeholder="https://your-project.supabase.co">
+          <input type="text" id="supabase-url" class="input" placeholder="https://your-project.supabase.co" autocomplete="off">
           <div class="config-help">Your Supabase project URL</div>
         </div>
         <div class="config-input">
           <label class="label">Supabase Anon Key</label>
-          <input type="text" id="supabase-anon-key" class="input" placeholder="Your anon key">
+          <input type="text" id="supabase-anon-key" class="input" placeholder="Your anon key" autocomplete="off">
           <div class="config-help">Your Supabase anonymous key</div>
         </div>
         <button id="save-config-btn" class="button">
@@ -578,7 +596,7 @@
       
       <div class="form-group">
         <label class="label">API Key</label>
-        <input type="password" id="api-key-input" class="input" placeholder="Paste your API key here">
+        <input type="password" id="api-key-input" class="input" placeholder="Paste your API key here" autocomplete="off">
       </div>
       <button id="verify-key-btn" class="button">
         <span class="button-text">Connect to Debtrix</span>
@@ -622,7 +640,7 @@
     <div id="project-details-screen" class="screen hidden">
       <div class="header header-with-back">
         <div class="header-left">
-          <button id="back-to-projects-btn" class="back-button">
+          <button id="back-to-projects-btn" class="back-button" aria-label="Back to projects">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="m15 18-6-6 6-6"/>
             </svg>
@@ -647,11 +665,11 @@
   </div>
 
   <!-- Add/Edit Debt Modal - STARTS HIDDEN -->
-  <div id="debt-modal" class="modal hidden">
+  <div id="debt-modal" class="modal hidden" role="dialog" aria-labelledby="modal-title" aria-modal="true">
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title" id="modal-title">Add UX Debt</div>
-        <button id="close-modal-btn" class="close-button">
+        <button id="close-modal-btn" class="close-button" aria-label="Close modal">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="m18 6-12 12"/>
             <path d="m6 6 12 12"/>
@@ -672,12 +690,12 @@
       <div id="figma-context-display" class="figma-context"></div>
       
       <div class="form-group">
-        <label class="label">Title *</label>
-        <input type="text" id="debt-title" class="input" placeholder="Brief description of the issue">
+        <label class="label" for="debt-title">Title *</label>
+        <input type="text" id="debt-title" class="input" placeholder="Brief description of the issue" required>
       </div>
       
       <div class="form-group">
-        <label class="label">Type</label>
+        <label class="label" for="debt-type">Type</label>
         <select id="debt-type" class="select">
           <option value="Heuristic">Heuristic</option>
           <option value="Accessibility">Accessibility</option>
@@ -688,7 +706,7 @@
       </div>
       
       <div class="form-group">
-        <label class="label">Severity</label>
+        <label class="label" for="debt-severity">Severity</label>
         <select id="debt-severity" class="select">
           <option value="Low">Low</option>
           <option value="Medium">Medium</option>
@@ -698,7 +716,7 @@
       </div>
       
       <div class="form-group">
-        <label class="label">Status</label>
+        <label class="label" for="debt-status">Status</label>
         <select id="debt-status" class="select">
           <option value="Open">Open</option>
           <option value="In Progress">In Progress</option>
@@ -707,14 +725,14 @@
       </div>
       
       <div class="form-group">
-        <label class="label">Description *</label>
-        <textarea id="debt-description" class="textarea" placeholder="Detailed description of the UX issue..."></textarea>
+        <label class="label" for="debt-description">Description *</label>
+        <textarea id="debt-description" class="textarea" placeholder="Detailed description of the UX issue..." required></textarea>
       </div>
       
       <div class="form-group">
-        <label class="label">Recommendation *</label>
+        <label class="label" for="debt-recommendation">Recommendation *</label>
         <div style="position: relative;">
-          <textarea id="debt-recommendation" class="textarea" placeholder="How should this be fixed?"></textarea>
+          <textarea id="debt-recommendation" class="textarea" placeholder="How should this be fixed?" required></textarea>
           <div id="ai-loading-indicator" class="hidden" style="position: absolute; top: 8px; right: 8px;">
             <div class="ai-loading"></div>
           </div>
@@ -747,11 +765,11 @@
   </div>
   
   <!-- View Debt Modal - STARTS HIDDEN -->
-  <div id="view-debt-modal" class="modal hidden">
+  <div id="view-debt-modal" class="modal hidden" role="dialog" aria-labelledby="view-modal-title" aria-modal="true">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="modal-title">UX Debt Details</div>
-        <button id="close-view-modal-btn" class="close-button">
+        <div class="modal-title" id="view-modal-title">UX Debt Details</div>
+        <button id="close-view-modal-btn" class="close-button" aria-label="Close modal">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="m18 6-12 12"/>
             <path d="m6 6 12 12"/>
@@ -1031,15 +1049,21 @@
       }
       
       projectsList.innerHTML = currentProjects.map(project => `
-        <div class="project-item" data-project-id="${project.id}">
+        <div class="project-item" data-project-id="${project.id}" role="button" tabindex="0">
           <div class="project-title">${project.title}</div>
           <div class="project-description">${project.description}</div>
         </div>
       `).join('');
       
-      // Add click handlers
+      // Add click and keyboard handlers
       document.querySelectorAll('.project-item').forEach(item => {
         item.addEventListener('click', () => selectProject(item.dataset.projectId));
+        item.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            selectProject(item.dataset.projectId);
+          }
+        });
       });
     }
     
@@ -1088,7 +1112,7 @@
       }
       
       debtsList.innerHTML = currentDebts.map(debt => `
-        <div class="debt-item" data-debt-id="${debt.id}">
+        <div class="debt-item" data-debt-id="${debt.id}" role="button" tabindex="0">
           <div class="debt-header">
             <div class="debt-title">${debt.title}</div>
             <div class="debt-actions">
@@ -1164,6 +1188,11 @@
       hideSuccess(debtSuccess);
       hideSuggestions();
       debtModal.classList.remove('hidden');
+      
+      // Focus the first input for accessibility
+      setTimeout(() => {
+        document.getElementById('debt-title').focus();
+      }, 100);
     }
     
     function closeDebtModal() {
