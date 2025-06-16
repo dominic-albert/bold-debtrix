@@ -8,6 +8,8 @@ figma.showUI(__html__, {
 // Store API key and user data
 let apiKey: string | null = null;
 let userData: any = null;
+let apiBaseUrl: string = '';
+let anonKey: string = '';
 
 // Load stored API key on startup
 figma.clientStorage.getAsync('debtrix_api_key').then((storedKey) => {
@@ -21,6 +23,8 @@ figma.clientStorage.getAsync('debtrix_api_key').then((storedKey) => {
 figma.ui.onmessage = async (msg) => {
   switch (msg.type) {
     case 'verify-api-key':
+      apiBaseUrl = msg.apiBaseUrl;
+      anonKey = msg.anonKey;
       await verifyApiKey(msg.apiKey);
       break;
       
@@ -40,6 +44,12 @@ figma.ui.onmessage = async (msg) => {
       await getFigmaContext();
       break;
       
+    case 'logout':
+      await figma.clientStorage.deleteAsync('debtrix_api_key');
+      apiKey = null;
+      userData = null;
+      break;
+      
     case 'close-plugin':
       figma.closePlugin();
       break;
@@ -48,10 +58,11 @@ figma.ui.onmessage = async (msg) => {
 
 async function verifyApiKey(key: string) {
   try {
-    const response = await fetch(`${msg.apiBaseUrl}/rest/v1/profiles?api_key=eq.${key}&select=id,email,full_name`, {
+    const response = await fetch(`${apiBaseUrl}/rest/v1/profiles?select=id,email,full_name`, {
       headers: {
-        'apikey': msg.anonKey,
+        'apikey': anonKey,
         'x-api-key': key,
+        'Content-Type': 'application/json'
       }
     });
     
@@ -95,10 +106,11 @@ async function getProjects() {
   }
   
   try {
-    const response = await fetch(`${msg.apiBaseUrl}/rest/v1/projects?owner_id=eq.${userData.id}&select=id,title,description,color,created_at,updated_at&order=updated_at.desc`, {
+    const response = await fetch(`${apiBaseUrl}/rest/v1/projects?owner_id=eq.${userData.id}&select=id,title,description,color,created_at,updated_at&order=updated_at.desc`, {
       headers: {
-        'apikey': msg.anonKey,
+        'apikey': anonKey,
         'x-api-key': apiKey,
+        'Content-Type': 'application/json'
       }
     });
     
@@ -133,10 +145,11 @@ async function getUXDebts(projectId: string) {
   }
   
   try {
-    const response = await fetch(`${msg.apiBaseUrl}/rest/v1/ux_debts?project_id=eq.${projectId}&select=*&order=created_at.desc`, {
+    const response = await fetch(`${apiBaseUrl}/rest/v1/ux_debts?project_id=eq.${projectId}&select=*&order=created_at.desc`, {
       headers: {
-        'apikey': msg.anonKey,
+        'apikey': anonKey,
         'x-api-key': apiKey,
+        'Content-Type': 'application/json'
       }
     });
     
@@ -182,10 +195,10 @@ async function createUXDebt(projectId: string, debtData: any) {
       screen: debtData.screen || figmaContext.pageName,
     };
     
-    const response = await fetch(`${msg.apiBaseUrl}/rest/v1/ux_debts`, {
+    const response = await fetch(`${apiBaseUrl}/rest/v1/ux_debts`, {
       method: 'POST',
       headers: {
-        'apikey': msg.anonKey,
+        'apikey': anonKey,
         'x-api-key': apiKey,
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
@@ -194,7 +207,8 @@ async function createUXDebt(projectId: string, debtData: any) {
     });
     
     if (!response.ok) {
-      throw new Error('Failed to create UX debt');
+      const errorText = await response.text();
+      throw new Error(`Failed to create UX debt: ${errorText}`);
     }
     
     const debt = await response.json();
