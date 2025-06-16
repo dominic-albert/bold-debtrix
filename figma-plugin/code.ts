@@ -66,6 +66,14 @@ figma.ui.onmessage = async (msg) => {
         await createUXDebt(msg.projectId, msg.debtData);
         break;
         
+      case 'update-ux-debt':
+        await updateUXDebt(msg.projectId, msg.debtId, msg.debtData);
+        break;
+        
+      case 'delete-ux-debt':
+        await deleteUXDebt(msg.projectId, msg.debtId);
+        break;
+        
       case 'get-figma-context':
         await getFigmaContext();
         break;
@@ -272,6 +280,89 @@ async function createUXDebt(projectId: string, debtData: any) {
       type: 'ux-debt-created', 
       success: false, 
       error: error.message || 'Failed to create UX debt'
+    });
+  }
+}
+
+async function updateUXDebt(projectId: string, debtId: string, debtData: any) {
+  if (!apiKey || !userData || !config) {
+    figma.ui.postMessage({ 
+      type: 'ux-debt-updated', 
+      success: false, 
+      error: 'Not authenticated' 
+    });
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/rest/v1/ux_debts?id=eq.${debtId}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': config.anonKey,
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(debtData)
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    
+    const debt = await response.json();
+    
+    figma.ui.postMessage({ 
+      type: 'ux-debt-updated', 
+      success: true, 
+      debt: Array.isArray(debt) ? debt[0] : debt
+    });
+  } catch (error) {
+    console.error('Update UX debt error:', error);
+    figma.ui.postMessage({ 
+      type: 'ux-debt-updated', 
+      success: false, 
+      error: error.message || 'Failed to update UX debt'
+    });
+  }
+}
+
+async function deleteUXDebt(projectId: string, debtId: string) {
+  if (!apiKey || !config) {
+    figma.ui.postMessage({ 
+      type: 'ux-debt-deleted', 
+      success: false, 
+      error: 'Not authenticated' 
+    });
+    return;
+  }
+  
+  try {
+    const response = await fetch(`${config.apiBaseUrl}/rest/v1/ux_debts?id=eq.${debtId}`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': config.anonKey,
+        'x-api-key': apiKey,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+    
+    figma.ui.postMessage({ 
+      type: 'ux-debt-deleted', 
+      success: true
+    });
+  } catch (error) {
+    console.error('Delete UX debt error:', error);
+    figma.ui.postMessage({ 
+      type: 'ux-debt-deleted', 
+      success: false, 
+      error: error.message || 'Failed to delete UX debt'
     });
   }
 }
