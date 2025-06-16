@@ -10,6 +10,7 @@ import {
 import { useProject } from '../contexts/ProjectContext';
 import DebtOptionsMenu from './DebtOptionsMenu';
 import EditDebtModal from './EditDebtModal';
+import DebtDetailModal from './DebtDetailModal';
 
 interface DebtKanbanViewProps {
   searchTerm: string;
@@ -18,7 +19,9 @@ interface DebtKanbanViewProps {
 function DebtKanbanView({ searchTerm }: DebtKanbanViewProps) {
   const { currentProject, updateUXDebt } = useProject();
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [editingDebt, setEditingDebt] = useState(null);
+  const [viewingDebt, setViewingDebt] = useState(null);
 
   if (!currentProject) return null;
 
@@ -53,6 +56,11 @@ function DebtKanbanView({ searchTerm }: DebtKanbanViewProps) {
     setShowEditModal(true);
   };
 
+  const handleViewDebt = (debt: any) => {
+    setViewingDebt(debt);
+    setShowDetailModal(true);
+  };
+
   return (
     <>
       <div className="grid md:grid-cols-3 gap-6">
@@ -79,12 +87,13 @@ function DebtKanbanView({ searchTerm }: DebtKanbanViewProps) {
                     onDragStart={(e) => {
                       e.dataTransfer.setData('text/plain', debt.id);
                     }}
+                    onClick={() => handleViewDebt(debt)}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <h4 className="font-medium text-gray-900 text-sm line-clamp-2">
                         {debt.title}
                       </h4>
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity ml-2" onClick={(e) => e.stopPropagation()}>
                         <DebtOptionsMenu 
                           debt={debt} 
                           projectId={currentProject.id}
@@ -169,6 +178,23 @@ function DebtKanbanView({ searchTerm }: DebtKanbanViewProps) {
           }}
           debt={editingDebt}
           projectId={currentProject.id}
+        />
+      )}
+
+      {viewingDebt && (
+        <DebtDetailModal
+          isOpen={showDetailModal}
+          onClose={() => {
+            setShowDetailModal(false);
+            setViewingDebt(null);
+          }}
+          debt={viewingDebt}
+          projectId={currentProject.id}
+          onEdit={() => {
+            setShowDetailModal(false);
+            setEditingDebt(viewingDebt);
+            setShowEditModal(true);
+          }}
         />
       )}
     </>

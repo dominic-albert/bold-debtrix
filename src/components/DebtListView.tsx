@@ -10,6 +10,7 @@ import {
 import { useProject } from '../contexts/ProjectContext';
 import DebtOptionsMenu from './DebtOptionsMenu';
 import EditDebtModal from './EditDebtModal';
+import DebtDetailModal from './DebtDetailModal';
 
 interface DebtListViewProps {
   searchTerm: string;
@@ -18,7 +19,9 @@ interface DebtListViewProps {
 function DebtListView({ searchTerm }: DebtListViewProps) {
   const { currentProject } = useProject();
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [editingDebt, setEditingDebt] = useState(null);
+  const [viewingDebt, setViewingDebt] = useState(null);
 
   if (!currentProject) return null;
 
@@ -59,6 +62,11 @@ function DebtListView({ searchTerm }: DebtListViewProps) {
   const handleEditDebt = (debt: any) => {
     setEditingDebt(debt);
     setShowEditModal(true);
+  };
+
+  const handleViewDebt = (debt: any) => {
+    setViewingDebt(debt);
+    setShowDetailModal(true);
   };
 
   if (filteredDebts.length === 0) {
@@ -108,7 +116,11 @@ function DebtListView({ searchTerm }: DebtListViewProps) {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredDebts.map((debt) => (
-                <tr key={debt.id} className="hover:bg-gray-50 transition-colors">
+                <tr 
+                  key={debt.id} 
+                  className="hover:bg-gray-50 transition-colors cursor-pointer"
+                  onClick={() => handleViewDebt(debt)}
+                >
                   <td className="px-6 py-4">
                     <div>
                       <div className="font-medium text-gray-900 mb-1">{debt.title}</div>
@@ -121,6 +133,7 @@ function DebtListView({ searchTerm }: DebtListViewProps) {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 mt-1"
+                          onClick={(e) => e.stopPropagation()}
                         >
                           <ExternalLink className="w-3 h-3" />
                           Figma
@@ -162,11 +175,13 @@ function DebtListView({ searchTerm }: DebtListViewProps) {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <DebtOptionsMenu 
-                      debt={debt} 
-                      projectId={currentProject.id}
-                      onEdit={() => handleEditDebt(debt)}
-                    />
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <DebtOptionsMenu 
+                        debt={debt} 
+                        projectId={currentProject.id}
+                        onEdit={() => handleEditDebt(debt)}
+                      />
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -184,6 +199,23 @@ function DebtListView({ searchTerm }: DebtListViewProps) {
           }}
           debt={editingDebt}
           projectId={currentProject.id}
+        />
+      )}
+
+      {viewingDebt && (
+        <DebtDetailModal
+          isOpen={showDetailModal}
+          onClose={() => {
+            setShowDetailModal(false);
+            setViewingDebt(null);
+          }}
+          debt={viewingDebt}
+          projectId={currentProject.id}
+          onEdit={() => {
+            setShowDetailModal(false);
+            setEditingDebt(viewingDebt);
+            setShowEditModal(true);
+          }}
         />
       )}
     </>
