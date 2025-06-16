@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Debtrix</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #333;
+      background: #f8f9fa;
+    }
+    
+    .container {
+      padding: 16px;
+      max-width: 400px;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e1e5e9;
+    }
+    
+    .logo {
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1f2937;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #374151;
+    }
+    
+    .input, .select, .textarea {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      background: white;
+    }
+    
+    .input:focus, .select:focus, .textarea:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+    
+    .textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+    
+    .button {
+      width: 100%;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+    
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .button-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+    
+    .button-secondary:hover {
+      background: #e5e7eb;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    
+    .success {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #16a34a;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .project-item {
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+    }
+    
+    .project-item:hover {
+      border-color: #8b5cf6;
+      box-shadow: 0 2px 4px rgba(139, 92, 246, 0.1);
+    }
+    
+    .project-item.selected {
+      border-color: #8b5cf6;
+      background: #f8fafc;
+    }
+    
+    .project-title {
+      font-weight: 500;
+      color: #1f2937;
+      margin-bottom: 4px;
+    }
+    
+    .project-description {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    
+    .debt-item {
+      padding: 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: white;
+    }
+    
+    .debt-title {
+      font-weight: 500;
+      color: #1f2937;
+      margin-bottom: 4px;
+    }
+    
+    .debt-meta {
+      display: flex;
+      gap: 8px;
+      font-size: 11px;
+    }
+    
+    .badge {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+    
+    .badge-critical { background: #fef2f2; color: #dc2626; }
+    .badge-high { background: #fff7ed; color: #ea580c; }
+    .badge-medium { background: #fffbeb; color: #d97706; }
+    .badge-low { background: #f0fdf4; color: #16a34a; }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 16px;
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 8px 12px;
+      text-align: center;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    
+    .tab.active {
+      border-bottom-color: #8b5cf6;
+      color: #8b5cf6;
+      font-weight: 500;
+    }
+    
+    .figma-context {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">D</div>
+      <div class="title">Debtrix</div>
+    </div>
+    
+    <!-- API Key Setup -->
+    <div id="api-setup" class="screen">
+      <div class="form-group">
+        <label class="label">API Key</label>
+        <input type="password" id="api-key-input" class="input" placeholder="Paste your API key here">
+      </div>
+      <button id="verify-key-btn" class="button">
+        <span class="button-text">Connect to Debtrix</span>
+      </button>
+      <div id="api-error" class="error hidden"></div>
+      
+      <div style="margin-top: 16px; padding: 12px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 12px; color: #0369a1;">
+        <strong>How to get your API key:</strong><br>
+        1. Go to Debtrix web app<br>
+        2. Navigate to Settings → API Access<br>
+        3. Generate and copy your API key<br>
+        4. Paste it above
+      </div>
+    </div>
+    
+    <!-- Main App -->
+    <div id="main-app" class="screen hidden">
+      <div class="tabs">
+        <div class="tab active" data-tab="projects">Projects</div>
+        <div class="tab" data-tab="add-debt">Add Debt</div>
+        <div class="tab" data-tab="list">List</div>
+      </div>
+      
+      <!-- Projects Tab -->
+      <div id="projects-tab" class="tab-content">
+        <div id="projects-loading" class="hidden">Loading projects...</div>
+        <div id="projects-list"></div>
+      </div>
+      
+      <!-- Add Debt Tab -->
+      <div id="add-debt-tab" class="tab-content hidden">
+        <div id="no-project-selected" class="error">Please select a project first</div>
+        <div id="debt-form" class="hidden">
+          <div id="figma-context-display" class="figma-context"></div>
+          
+          <div class="form-group">
+            <label class="label">Title</label>
+            <input type="text" id="debt-title" class="input" placeholder="Brief description of the issue">
+          </div>
+          
+          <div class="form-group">
+            <label class="label">Type</label>
+            <select id="debt-type" class="select">
+              <option value="Heuristic">Heuristic</option>
+              <option value="Accessibility">Accessibility</option>
+              <option value="Performance">Performance</option>
+              <option value="Visual">Visual</option>
+              <option value="Usability">Usability</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="label">Severity</label>
+            <select id="debt-severity" class="select">
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="label">Description</label>
+            <textarea id="debt-description" class="textarea" placeholder="Detailed description of the UX issue..."></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label class="label">Recommendation</label>
+            <textarea id="debt-recommendation" class="textarea" placeholder="How should this be fixed?"></textarea>
+          </div>
+          
+          <button id="create-debt-btn" class="button">
+            <span class="button-text">Log UX Debt</span>
+          </button>
+          
+          <div id="debt-error" class="error hidden"></div>
+          <div id="debt-success" class="success hidden"></div>
+        </div>
+      </div>
+      
+      <!-- List Tab -->
+      <div id="list-tab" class="tab-content hidden">
+        <div id="debts-loading" class="hidden">Loading UX debts...</div>
+        <div id="debts-list"></div>
+      </div>
+      
+      <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
+        <button id="logout-btn" class="button button-secondary">Disconnect</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const API_BASE_URL = 'https://your-project.supabase.co'; // Replace with your Supabase URL
+    const ANON_KEY = 'your-anon-key'; // Replace with your Supabase anon key
+    
+    // State
+    let currentUser = null;
+    let currentProjects = [];
+    let selectedProject = null;
+    let currentDebts = [];
+    let figmaContext = null;
+    
+    // DOM elements
+    const apiSetupScreen = document.getElementById('api-setup');
+    const mainAppScreen = document.getElementById('main-app');
+    const apiKeyInput = document.getElementById('api-key-input');
+    const verifyKeyBtn = document.getElementById('verify-key-btn');
+    const apiError = document.getElementById('api-error');
+    
+    // Tab elements
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    // Projects
+    const projectsList = document.getElementById('projects-list');
+    const projectsLoading = document.getElementById('projects-loading');
+    
+    // Add debt
+    const noProjectSelected = document.getElementById('no-project-selected');
+    const debtForm = document.getElementById('debt-form');
+    const figmaContextDisplay = document.getElementById('figma-context-display');
+    const createDebtBtn = document.getElementById('create-debt-btn');
+    const debtError = document.getElementById('debt-error');
+    const debtSuccess = document.getElementById('debt-success');
+    
+    // List
+    const debtsList = document.getElementById('debts-list');
+    const debtsLoading = document.getElementById('debts-loading');
+    
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    // Event listeners
+    verifyKeyBtn.addEventListener('click', verifyApiKey);
+    createDebtBtn.addEventListener('click', createDebt);
+    logoutBtn.addEventListener('click', logout);
+    
+    // Tab switching
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+    });
+    
+    // Initialize
+    init();
+    
+    function init() {
+      // Request Figma context
+      parent.postMessage({ pluginMessage: { type: 'get-figma-context' } }, '*');
+      
+      // Listen for messages from plugin code
+      window.onmessage = (event) => {
+        const { type, ...data } = event.data.pluginMessage || {};
+        
+        switch (type) {
+          case 'api-key-loaded':
+            apiKeyInput.value = data.apiKey;
+            verifyApiKey();
+            break;
+          case 'api-key-verified':
+            handleApiKeyVerified(data);
+            break;
+          case 'projects-loaded':
+            handleProjectsLoaded(data);
+            break;
+          case 'ux-debts-loaded':
+            handleDebtsLoaded(data);
+            break;
+          case 'ux-debt-created':
+            handleDebtCreated(data);
+            break;
+          case 'figma-context':
+            handleFigmaContext(data.context);
+            break;
+        }
+      };
+    }
+    
+    function verifyApiKey() {
+      const apiKey = apiKeyInput.value.trim();
+      if (!apiKey) {
+        showError(apiError, 'Please enter your API key');
+        return;
+      }
+      
+      setLoading(verifyKeyBtn, true);
+      hideError(apiError);
+      
+      parent.postMessage({ 
+        pluginMessage: { 
+          type: 'verify-api-key', 
+          apiKey,
+          apiBaseUrl: API_BASE_URL,
+          anonKey: ANON_KEY
+        } 
+      }, '*');
+    }
+    
+    function handleApiKeyVerified(data) {
+      setLoading(verifyKeyBtn, false);
+      
+      if (data.success) {
+        currentUser = data.user;
+        apiSetupScreen.classList.add('hidden');
+        mainAppScreen.classList.remove('hidden');
+        loadProjects();
+      } else {
+        showError(apiError, data.error || 'Invalid API key');
+      }
+    }
+    
+    function loadProjects() {
+      projectsLoading.classList.remove('hidden');
+      parent.postMessage({ pluginMessage: { type: 'get-projects' } }, '*');
+    }
+    
+    function handleProjectsLoaded(data) {
+      projectsLoading.classList.add('hidden');
+      
+      if (data.success) {
+        currentProjects = data.projects;
+        renderProjects();
+      } else {
+        projectsList.innerHTML = `<div class="error">${data.error}</div>`;
+      }
+    }
+    
+    function renderProjects() {
+      if (currentProjects.length === 0) {
+        projectsList.innerHTML = '<div class="error">No projects found. Create a project in the web app first.</div>';
+        return;
+      }
+      
+      projectsList.innerHTML = currentProjects.map(project => `
+        <div class="project-item" data-project-id="${project.id}">
+          <div class="project-title">${project.title}</div>
+          <div class="project-description">${project.description}</div>
+        </div>
+      `).join('');
+      
+      // Add click handlers
+      document.querySelectorAll('.project-item').forEach(item => {
+        item.addEventListener('click', () => selectProject(item.dataset.projectId));
+      });
+    }
+    
+    function selectProject(projectId) {
+      selectedProject = currentProjects.find(p => p.id === projectId);
+      
+      // Update UI
+      document.querySelectorAll('.project-item').forEach(item => {
+        item.classList.toggle('selected', item.dataset.projectId === projectId);
+      });
+      
+      // Update add debt tab
+      updateAddDebtTab();
+      
+      // Load debts for list tab
+      loadDebts(projectId);
+    }
+    
+    function updateAddDebtTab() {
+      if (selectedProject) {
+        noProjectSelected.classList.add('hidden');
+        debtForm.classList.remove('hidden');
+        updateFigmaContext();
+      } else {
+        noProjectSelected.classList.remove('hidden');
+        debtForm.classList.add('hidden');
+      }
+    }
+    
+    function updateFigmaContext() {
+      if (figmaContext) {
+        figmaContextDisplay.innerHTML = `
+          <strong>Figma Context:</strong><br>
+          File: ${figmaContext.fileName}<br>
+          Page: ${figmaContext.pageName}<br>
+          Selected: ${figmaContext.selectedNodes} node(s)
+        `;
+      }
+    }
+    
+    function handleFigmaContext(context) {
+      figmaContext = context;
+      updateFigmaContext();
+    }
+    
+    function createDebt() {
+      if (!selectedProject) {
+        showError(debtError, 'Please select a project first');
+        return;
+      }
+      
+      const title = document.getElementById('debt-title').value.trim();
+      const type = document.getElementById('debt-type').value;
+      const severity = document.getElementById('debt-severity').value;
+      const description = document.getElementById('debt-description').value.trim();
+      const recommendation = document.getElementById('debt-recommendation').value.trim();
+      
+      if (!title || !description || !recommendation) {
+        showError(debtError, 'Please fill in all required fields');
+        return;
+      }
+      
+      setLoading(createDebtBtn, true);
+      hideError(debtError);
+      hideSuccess(debtSuccess);
+      
+      const debtData = {
+        title,
+        type,
+        severity,
+        description,
+        recommendation,
+        screen: figmaContext?.pageName || 'Unknown'
+      };
+      
+      parent.postMessage({ 
+        pluginMessage: { 
+          type: 'create-ux-debt', 
+          projectId: selectedProject.id,
+          debtData
+        } 
+      }, '*');
+    }
+    
+    function handleDebtCreated(data) {
+      setLoading(createDebtBtn, false);
+      
+      if (data.success) {
+        showSuccess(debtSuccess, 'UX debt logged successfully!');
+        
+        // Clear form
+        document.getElementById('debt-title').value = '';
+        document.getElementById('debt-description').value = '';
+        document.getElementById('debt-recommendation').value = '';
+        
+        // Reload debts
+        if (selectedProject) {
+          loadDebts(selectedProject.id);
+        }
+        
+        // Auto-close after 2 seconds
+        setTimeout(() => {
+          parent.postMessage({ pluginMessage: { type: 'close-plugin' } }, '*');
+        }, 2000);
+      } else {
+        showError(debtError, data.error || 'Failed to create UX debt');
+      }
+    }
+    
+    function loadDebts(projectId) {
+      debtsLoading.classList.remove('hidden');
+      parent.postMessage({ 
+        pluginMessage: { 
+          type: 'get-ux-debts', 
+          projectId 
+        } 
+      }, '*');
+    }
+    
+    function handleDebtsLoaded(data) {
+      debtsLoading.classList.add('hidden');
+      
+      if (data.success) {
+        currentDebts = data.debts;
+        renderDebts();
+      } else {
+        debtsList.innerHTML = `<div class="error">${data.error}</div>`;
+      }
+    }
+    
+    function renderDebts() {
+      if (currentDebts.length === 0) {
+        debtsList.innerHTML = '<div class="error">No UX debts found for this project.</div>';
+        return;
+      }
+      
+      debtsList.innerHTML = currentDebts.map(debt => `
+        <div class="debt-item">
+          <div class="debt-title">${debt.title}</div>
+          <div class="debt-meta">
+            <span class="badge badge-${debt.severity.toLowerCase()}">${debt.severity}</span>
+            <span>${debt.type}</span>
+            <span>${debt.status}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function switchTab(tabName) {
+      // Update tab buttons
+      tabs.forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === tabName);
+      });
+      
+      // Update tab content
+      tabContents.forEach(content => {
+        content.classList.toggle('hidden', content.id !== `${tabName}-tab`);
+      });
+      
+      // Load data if needed
+      if (tabName === 'list' && selectedProject) {
+        loadDebts(selectedProject.id);
+      }
+    }
+    
+    function logout() {
+      currentUser = null;
+      selectedProject = null;
+      currentProjects = [];
+      currentDebts = [];
+      
+      apiKeyInput.value = '';
+      mainAppScreen.classList.add('hidden');
+      apiSetupScreen.classList.remove('hidden');
+      
+      // Clear stored API key
+      parent.postMessage({ pluginMessage: { type: 'logout' } }, '*');
+    }
+    
+    // Utility functions
+    function setLoading(button, loading) {
+      const text = button.querySelector('.button-text');
+      if (loading) {
+        button.disabled = true;
+        text.innerHTML = '<span class="loading"></span>Loading...';
+      } else {
+        button.disabled = false;
+        text.textContent = button.dataset.originalText || text.textContent.replace('Loading...', '').trim();
+      }
+    }
+    
+    function showError(element, message) {
+      element.textContent = message;
+      element.classList.remove('hidden');
+    }
+    
+    function hideError(element) {
+      element.classList.add('hidden');
+    }
+    
+    function showSuccess(element, message) {
+      element.textContent = message;
+      element.classList.remove('hidden');
+    }
+    
+    function hideSuccess(element) {
+      element.classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User, 
   Mail, 
@@ -7,14 +7,25 @@ import {
   Shield, 
   Trash2,
   Camera,
-  Save
+  Save,
+  Key,
+  Copy,
+  RefreshCw,
+  Eye,
+  EyeOff,
+  CheckCircle
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
+import toast from 'react-hot-toast';
 import Navbar from '../components/Navbar';
 
 function SettingsPage() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
+  const [apiKey, setApiKey] = useState('');
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [generatingKey, setGeneratingKey] = useState(false);
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -37,10 +48,89 @@ function SettingsPage() {
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
+    { id: 'api', label: 'API Access', icon: Key },
     { id: 'security', label: 'Security', icon: Shield },
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'danger', label: 'Danger Zone', icon: Trash2 },
   ];
+
+  // Load API key on component mount
+  useEffect(() => {
+    if (user) {
+      loadApiKey();
+    }
+  }, [user]);
+
+  const loadApiKey = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('api_key')
+        .eq('id', user?.id)
+        .single();
+
+      if (error) throw error;
+      
+      if (data?.api_key) {
+        setApiKey(data.api_key);
+      }
+    } catch (error) {
+      console.error('Error loading API key:', error);
+    }
+  };
+
+  const generateApiKey = async () => {
+    setGeneratingKey(true);
+    try {
+      // Generate a secure API key
+      const newApiKey = `dbx_${user?.id?.slice(0, 8)}_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 15)}`;
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ api_key: newApiKey })
+        .eq('id', user?.id);
+
+      if (error) throw error;
+
+      setApiKey(newApiKey);
+      toast.success('API key generated successfully!');
+    } catch (error) {
+      console.error('Error generating API key:', error);
+      toast.error('Failed to generate API key');
+    } finally {
+      setGeneratingKey(false);
+    }
+  };
+
+  const copyApiKey = async () => {
+    try {
+      await navigator.clipboard.writeText(apiKey);
+      toast.success('API key copied to clipboard!');
+    } catch (error) {
+      toast.error('Failed to copy API key');
+    }
+  };
+
+  const revokeApiKey = async () => {
+    if (!confirm('Are you sure you want to revoke your API key? This will break any existing integrations.')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ api_key: null })
+        .eq('id', user?.id);
+
+      if (error) throw error;
+
+      setApiKey('');
+      toast.success('API key revoked successfully');
+    } catch (error) {
+      console.error('Error revoking API key:', error);
+      toast.error('Failed to revoke API key');
+    }
+  };
 
   const handleProfileSave = () => {
     // Save profile changes
@@ -204,6 +294,126 @@ function SettingsPage() {
                       <Save className="w-4 h-4" />
                       Save Changes
                     </button>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'api' && (
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-6">API Access</h2>
+                  
+                  <div className="space-y-6">
+                    {/* Figma Plugin Section */}
+                    <div className="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                          <Key className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">Figma Plugin Integration</h3>
+                          <p className="text-sm text-gray-600">Connect Debtrix with your Figma workspace</p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-white rounded-lg p-4 mb-4">
+                        <h4 className="font-medium text-gray-900 mb-2">How to use:</h4>
+                        <ol className="text-sm text-gray-600 space-y-1 list-decimal list-inside">
+                          <li>Install the Debtrix plugin from the Figma Community</li>
+                          <li>Generate your API key below</li>
+                          <li>Copy and paste the API key into the plugin</li>
+                          <li>Start logging UX debt directly from Figma!</li>
+                        </ol>
+                      </div>
+
+                      {/* API Key Management */}
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Your API Key
+                          </label>
+                          {apiKey ? (
+                            <div className="flex gap-2">
+                              <div className="flex-1 relative">
+                                <input
+                                  type={showApiKey ? 'text' : 'password'}
+                                  value={apiKey}
+                                  readOnly
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 font-mono text-sm"
+                                />
+                                <button
+                                  onClick={() => setShowApiKey(!showApiKey)}
+                                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                >
+                                  {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                </button>
+                              </div>
+                              <button
+                                onClick={copyApiKey}
+                                className="px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
+                              >
+                                <Copy className="w-4 h-4" />
+                                Copy
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+                              <Key className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                              <p className="text-gray-600 mb-4">No API key generated yet</p>
+                              <button
+                                onClick={generateApiKey}
+                                disabled={generatingKey}
+                                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-200 transform hover:scale-105 flex items-center gap-2 mx-auto disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                              >
+                                {generatingKey ? (
+                                  <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                                    Generating...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Key className="w-4 h-4" />
+                                    Generate API Key
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {apiKey && (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={generateApiKey}
+                              disabled={generatingKey}
+                              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <RefreshCw className="w-4 h-4" />
+                              Regenerate
+                            </button>
+                            <button
+                              onClick={revokeApiKey}
+                              className="flex items-center gap-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              Revoke
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Security Notice */}
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <Shield className="w-5 h-5 text-amber-600 mt-0.5" />
+                        <div>
+                          <h4 className="font-medium text-amber-800 mb-1">Security Notice</h4>
+                          <p className="text-sm text-amber-700">
+                            Keep your API key secure and never share it publicly. If you suspect it has been compromised, regenerate it immediately.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

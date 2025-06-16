@@ -1,0 +1,17 @@
+{
+  "name": "Debtrix - UX Debt Tracker",
+  "id": "debtrix-ux-debt-tracker",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "editorType": [
+    "figma"
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "https://*.supabase.co"
+    ]
+  }
+}
