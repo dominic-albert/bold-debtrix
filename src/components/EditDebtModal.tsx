@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Upload, Link as LinkIcon } from 'lucide-react';
+import { X, Upload, Link as LinkIcon, Lightbulb, Loader2 } from 'lucide-react';
 import { useProject } from '../contexts/ProjectContext';
 import { UXDebt } from '../contexts/ProjectContext';
 
@@ -34,6 +34,9 @@ const statusOptions = [
 function EditDebtModal({ isOpen, onClose, debt, projectId }: EditDebtModalProps) {
   const { updateUXDebt } = useProject();
   const [loading, setLoading] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   
   const [formData, setFormData] = useState({
     title: debt.title,
@@ -75,6 +78,101 @@ function EditDebtModal({ isOpen, onClose, debt, projectId }: EditDebtModalProps)
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Trigger AI suggestions for recommendation field
+    if (field === 'recommendation' && value.length > 10) {
+      generateAISuggestions(value);
+    }
+  };
+
+  const generateAISuggestions = async (description: string) => {
+    setLoadingSuggestions(true);
+    try {
+      // Simulate AI suggestions based on common UX patterns
+      const suggestions = getUXRecommendations(description, formData.type, formData.severity);
+      setAiSuggestions(suggestions);
+      setShowSuggestions(true);
+    } catch (error) {
+      console.error('Error generating suggestions:', error);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+  const getUXRecommendations = (description: string, type: string, severity: string): string[] => {
+    const suggestions: string[] = [];
+    const lowerDesc = description.toLowerCase();
+    
+    // Type-based suggestions
+    if (type === 'Accessibility') {
+      if (lowerDesc.includes('color') || lowerDesc.includes('contrast')) {
+        suggestions.push('Ensure color contrast meets WCAG AA standards (4.5:1 for normal text)');
+        suggestions.push('Add alternative visual indicators beyond color alone');
+      }
+      if (lowerDesc.includes('keyboard') || lowerDesc.includes('focus')) {
+        suggestions.push('Implement proper keyboard navigation and focus indicators');
+        suggestions.push('Ensure all interactive elements are keyboard accessible');
+      }
+      if (lowerDesc.includes('screen reader') || lowerDesc.includes('aria')) {
+        suggestions.push('Add appropriate ARIA labels and descriptions');
+        suggestions.push('Test with screen readers to verify content is properly announced');
+      }
+    }
+    
+    if (type === 'Performance') {
+      if (lowerDesc.includes('load') || lowerDesc.includes('slow')) {
+        suggestions.push('Optimize images and implement lazy loading');
+        suggestions.push('Minimize bundle size and implement code splitting');
+      }
+      if (lowerDesc.includes('animation') || lowerDesc.includes('transition')) {
+        suggestions.push('Use CSS transforms instead of changing layout properties');
+        suggestions.push('Implement reduced motion preferences for accessibility');
+      }
+    }
+    
+    if (type === 'Usability') {
+      if (lowerDesc.includes('button') || lowerDesc.includes('click')) {
+        suggestions.push('Ensure buttons have adequate touch targets (44px minimum)');
+        suggestions.push('Provide clear visual feedback for interactive states');
+      }
+      if (lowerDesc.includes('form') || lowerDesc.includes('input')) {
+        suggestions.push('Add clear labels and helpful error messages');
+        suggestions.push('Implement proper form validation and feedback');
+      }
+      if (lowerDesc.includes('navigation') || lowerDesc.includes('menu')) {
+        suggestions.push('Simplify navigation structure and reduce cognitive load');
+        suggestions.push('Ensure consistent navigation patterns across the application');
+      }
+    }
+    
+    if (type === 'Visual') {
+      if (lowerDesc.includes('layout') || lowerDesc.includes('spacing')) {
+        suggestions.push('Apply consistent spacing using a design system');
+        suggestions.push('Ensure proper visual hierarchy with typography and spacing');
+      }
+      if (lowerDesc.includes('responsive') || lowerDesc.includes('mobile')) {
+        suggestions.push('Test and optimize layout for all screen sizes');
+        suggestions.push('Implement mobile-first responsive design principles');
+      }
+    }
+    
+    // Severity-based suggestions
+    if (severity === 'Critical') {
+      suggestions.push('Address immediately as this blocks core user workflows');
+      suggestions.push('Consider hotfix deployment if affecting production users');
+    } else if (severity === 'High') {
+      suggestions.push('Prioritize in next sprint as this impacts user experience significantly');
+      suggestions.push('Document workarounds for users until fix is deployed');
+    }
+    
+    // Generic suggestions if no specific ones found
+    if (suggestions.length === 0) {
+      suggestions.push('Follow established design system patterns and guidelines');
+      suggestions.push('Test the solution with real users before implementation');
+      suggestions.push('Consider the impact on overall user workflow and experience');
+    }
+    
+    return suggestions.slice(0, 3); // Return top 3 suggestions
   };
 
   if (!isOpen) return null;
