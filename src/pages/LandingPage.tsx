@@ -149,12 +149,6 @@ function LandingPage() {
                         <PlayCircle className="w-12 h-12 text-purple-600 ml-1" />
                       </div>
                     </div>
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <div className="bg-black/60 backdrop-blur-sm rounded-lg p-3">
-                        <h3 className="text-white font-semibold text-lg">What is UX Debt?</h3>
-                        <p className="text-gray-300 text-sm">Click to play video</p>
-                      </div>
-                    </div>
                   </div>
                 ) : (
                   <iframe

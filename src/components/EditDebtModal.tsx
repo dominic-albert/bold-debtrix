@@ -212,14 +212,53 @@ function EditDebtModal({ isOpen, onClose, debt, projectId }: EditDebtModalProps)
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Recommendation <span className="text-red-500">*</span>
             </label>
-            <textarea
-              value={formData.recommendation}
-              onChange={(e) => handleInputChange('recommendation', e.target.value)}
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
-              placeholder="How should this be fixed?"
-              required
-            />
+            <div className="relative">
+              <textarea
+                value={formData.recommendation}
+                onChange={(e) => handleInputChange('recommendation', e.target.value)}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
+                placeholder="How should this be fixed?"
+                required
+              />
+              {loadingSuggestions && (
+                <div className="absolute top-2 right-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-purple-500" />
+                </div>
+              )}
+            </div>
+            
+            {/* AI Suggestions */}
+            {showSuggestions && aiSuggestions.length > 0 && (
+              <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Lightbulb className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-800">AI Suggestions</span>
+                </div>
+                <div className="space-y-2">
+                  {aiSuggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, recommendation: suggestion }));
+                        setShowSuggestions(false);
+                      }}
+                      className="w-full text-left p-2 text-sm text-blue-700 hover:bg-blue-100 rounded border border-blue-200 transition-colors"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowSuggestions(false)}
+                  className="mt-2 text-xs text-blue-600 hover:text-blue-800"
+                >
+                  Hide suggestions
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Figma URL */}

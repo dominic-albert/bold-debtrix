@@ -111,26 +111,19 @@ function DashboardPage() {
               return (
                 <div
                   key={project.id}
-                  className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 transform hover:scale-105 group relative"
+                  className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg transition-all duration-200 transform hover:scale-105 group relative"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`w-3 h-3 rounded-full ${project.color} group-hover:scale-110 transition-transform`}></div>
-                    <ProjectOptionsMenu 
-                      project={project} 
-                      onEdit={() => handleEditProject(project)}
-                    />
-                  </div>
 
                   <Link to={`/project/${project.id}`} className="block">
                     <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
                       {project.title}
                     </h3>
-                    <p className="text-gray-600 mb-4 line-clamp-2">
+                    <p className="text-gray-600 mb-3 line-clamp-2">
                       {project.description}
                     </p>
 
                     {/* Stats */}
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-500">Total Issues</span>
                         <span className="font-medium text-gray-900">
@@ -181,15 +174,25 @@ function DashboardPage() {
                           <span>{statusStats.resolved}</span>
                         </div>
                       </div>
+                    </div>
+                  </Link>
 
-                      <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
+                  {/* Bottom section with project color, date, and options */}
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${project.color} group-hover:scale-110 transition-transform`}></div>
+                      <div className="text-xs text-gray-500">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
                           Updated {new Date(project.updated_at).toLocaleDateString()}
                         </div>
                       </div>
                     </div>
-                  </Link>
+                    <ProjectOptionsMenu 
+                      project={project} 
+                      onEdit={() => handleEditProject(project)}
+                    />
+                  </div>
                 </div>
               );
             })}
