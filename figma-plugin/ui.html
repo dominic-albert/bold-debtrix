@@ -250,6 +250,35 @@
       font-size: 12px;
       color: #64748b;
     }
+
+    .config-section {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .config-title {
+      font-weight: 600;
+      color: #0369a1;
+      margin-bottom: 8px;
+    }
+
+    .config-input {
+      margin-bottom: 8px;
+    }
+
+    .config-input input {
+      font-size: 12px;
+      padding: 6px 8px;
+    }
+
+    .config-help {
+      font-size: 11px;
+      color: #0369a1;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -259,8 +288,28 @@
       <div class="title">Debtrix</div>
     </div>
     
+    <!-- Configuration Setup -->
+    <div id="config-setup" class="screen">
+      <div class="config-section">
+        <div class="config-title">Plugin Configuration</div>
+        <div class="config-input">
+          <label class="label">Supabase URL</label>
+          <input type="text" id="supabase-url" class="input" placeholder="https://your-project.supabase.co">
+          <div class="config-help">Your Supabase project URL</div>
+        </div>
+        <div class="config-input">
+          <label class="label">Supabase Anon Key</label>
+          <input type="text" id="supabase-anon-key" class="input" placeholder="Your anon key">
+          <div class="config-help">Your Supabase anonymous key</div>
+        </div>
+        <button id="save-config-btn" class="button">
+          <span class="button-text">Save Configuration</span>
+        </button>
+      </div>
+    </div>
+    
     <!-- API Key Setup -->
-    <div id="api-setup" class="screen">
+    <div id="api-setup" class="screen hidden">
       <div class="form-group">
         <label class="label">API Key</label>
         <input type="password" id="api-key-input" class="input" placeholder="Paste your API key here">
@@ -277,6 +326,10 @@
         3. Generate and copy your API key<br>
         4. Paste it above
       </div>
+      
+      <button id="back-to-config-btn" class="button button-secondary" style="margin-top: 12px;">
+        Back to Configuration
+      </button>
     </div>
     
     <!-- Main App -->
@@ -357,20 +410,27 @@
   </div>
 
   <script>
-    // Configuration - UPDATE THESE WITH YOUR ACTUAL VALUES
-    const API_BASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-    const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
-    
     // State
     let currentUser = null;
     let currentProjects = [];
     let selectedProject = null;
     let currentDebts = [];
     let figmaContext = null;
+    let apiBaseUrl = '';
+    let anonKey = '';
     
     // DOM elements
+    const configSetupScreen = document.getElementById('config-setup');
     const apiSetupScreen = document.getElementById('api-setup');
     const mainAppScreen = document.getElementById('main-app');
+    
+    // Config elements
+    const supabaseUrlInput = document.getElementById('supabase-url');
+    const supabaseAnonKeyInput = document.getElementById('supabase-anon-key');
+    const saveConfigBtn = document.getElementById('save-config-btn');
+    const backToConfigBtn = document.getElementById('back-to-config-btn');
+    
+    // API elements
     const apiKeyInput = document.getElementById('api-key-input');
     const verifyKeyBtn = document.getElementById('verify-key-btn');
     const apiError = document.getElementById('api-error');
@@ -398,6 +458,8 @@
     const logoutBtn = document.getElementById('logout-btn');
     
     // Event listeners
+    saveConfigBtn.addEventListener('click', saveConfiguration);
+    backToConfigBtn.addEventListener('click', showConfigScreen);
     verifyKeyBtn.addEventListener('click', verifyApiKey);
     createDebtBtn.addEventListener('click', createDebt);
     logoutBtn.addEventListener('click', logout);
@@ -411,6 +473,9 @@
     init();
     
     function init() {
+      // Load saved configuration
+      loadConfiguration();
+      
       // Request Figma context
       parent.postMessage({ pluginMessage: { type: 'get-figma-context' } }, '*');
       
@@ -420,8 +485,11 @@
         
         switch (type) {
           case 'api-key-loaded':
-            apiKeyInput.value = data.apiKey;
-            verifyApiKey();
+            if (apiBaseUrl && anonKey) {
+              apiKeyInput.value = data.apiKey;
+              showApiSetupScreen();
+              verifyApiKey();
+            }
             break;
           case 'api-key-verified':
             handleApiKeyVerified(data);
@@ -438,14 +506,78 @@
           case 'figma-context':
             handleFigmaContext(data.context);
             break;
+          case 'config-loaded':
+            if (data.config) {
+              apiBaseUrl = data.config.apiBaseUrl;
+              anonKey = data.config.anonKey;
+              supabaseUrlInput.value = apiBaseUrl;
+              supabaseAnonKeyInput.value = anonKey;
+              if (apiBaseUrl && anonKey) {
+                showApiSetupScreen();
+              }
+            }
+            break;
         }
       };
+    }
+    
+    function loadConfiguration() {
+      parent.postMessage({ pluginMessage: { type: 'load-config' } }, '*');
+    }
+    
+    function saveConfiguration() {
+      const url = supabaseUrlInput.value.trim();
+      const key = supabaseAnonKeyInput.value.trim();
+      
+      if (!url || !key) {
+        alert('Please fill in both Supabase URL and Anon Key');
+        return;
+      }
+      
+      if (!url.startsWith('https://') || !url.includes('.supabase.co')) {
+        alert('Please enter a valid Supabase URL (https://your-project.supabase.co)');
+        return;
+      }
+      
+      apiBaseUrl = url;
+      anonKey = key;
+      
+      setLoading(saveConfigBtn, true);
+      
+      parent.postMessage({ 
+        pluginMessage: { 
+          type: 'save-config',
+          config: { apiBaseUrl: url, anonKey: key }
+        } 
+      }, '*');
+      
+      setTimeout(() => {
+        setLoading(saveConfigBtn, false);
+        showApiSetupScreen();
+      }, 500);
+    }
+    
+    function showConfigScreen() {
+      configSetupScreen.classList.remove('hidden');
+      apiSetupScreen.classList.add('hidden');
+      mainAppScreen.classList.add('hidden');
+    }
+    
+    function showApiSetupScreen() {
+      configSetupScreen.classList.add('hidden');
+      apiSetupScreen.classList.remove('hidden');
+      mainAppScreen.classList.add('hidden');
     }
     
     function verifyApiKey() {
       const apiKey = apiKeyInput.value.trim();
       if (!apiKey) {
         showError(apiError, 'Please enter your API key');
+        return;
+      }
+      
+      if (!apiBaseUrl || !anonKey) {
+        showError(apiError, 'Please configure Supabase settings first');
         return;
       }
       
@@ -456,8 +588,8 @@
         pluginMessage: { 
           type: 'verify-api-key', 
           apiKey,
-          apiBaseUrl: API_BASE_URL,
-          anonKey: ANON_KEY
+          apiBaseUrl,
+          anonKey
         } 
       }, '*');
     }
@@ -679,8 +811,7 @@
       currentDebts = [];
       
       apiKeyInput.value = '';
-      mainAppScreen.classList.add('hidden');
-      apiSetupScreen.classList.remove('hidden');
+      showApiSetupScreen();
       
       // Clear stored API key
       parent.postMessage({ pluginMessage: { type: 'logout' } }, '*');

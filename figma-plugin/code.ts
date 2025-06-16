@@ -1,78 +1,121 @@
 // Figma plugin main code
 figma.showUI(__html__, { 
   width: 400, 
-  height: 600,
+  height: 650,
   themeColors: true 
 });
 
 // Store API key and user data
 let apiKey: string | null = null;
 let userData: any = null;
-let apiBaseUrl: string = '';
-let anonKey: string = '';
+let config: { apiBaseUrl: string; anonKey: string } | null = null;
 
-// Load stored API key on startup
-figma.clientStorage.getAsync('debtrix_api_key').then((storedKey) => {
-  if (storedKey) {
-    apiKey = storedKey;
-    figma.ui.postMessage({ type: 'api-key-loaded', apiKey: storedKey });
+// Load stored data on startup
+async function loadStoredData() {
+  try {
+    const [storedKey, storedConfig] = await Promise.all([
+      figma.clientStorage.getAsync('debtrix_api_key'),
+      figma.clientStorage.getAsync('debtrix_config')
+    ]);
+    
+    if (storedConfig) {
+      config = storedConfig;
+      figma.ui.postMessage({ type: 'config-loaded', config: storedConfig });
+    }
+    
+    if (storedKey && storedConfig) {
+      apiKey = storedKey;
+      figma.ui.postMessage({ type: 'api-key-loaded', apiKey: storedKey });
+    }
+  } catch (error) {
+    console.error('Error loading stored data:', error);
   }
-});
+}
+
+// Initialize
+loadStoredData();
 
 // Listen for messages from UI
 figma.ui.onmessage = async (msg) => {
-  switch (msg.type) {
-    case 'verify-api-key':
-      apiBaseUrl = msg.apiBaseUrl;
-      anonKey = msg.anonKey;
-      await verifyApiKey(msg.apiKey);
-      break;
-      
-    case 'get-projects':
-      await getProjects();
-      break;
-      
-    case 'get-ux-debts':
-      await getUXDebts(msg.projectId);
-      break;
-      
-    case 'create-ux-debt':
-      await createUXDebt(msg.projectId, msg.debtData);
-      break;
-      
-    case 'get-figma-context':
-      await getFigmaContext();
-      break;
-      
-    case 'logout':
-      await figma.clientStorage.deleteAsync('debtrix_api_key');
-      apiKey = null;
-      userData = null;
-      break;
-      
-    case 'close-plugin':
-      figma.closePlugin();
-      break;
+  try {
+    switch (msg.type) {
+      case 'load-config':
+        const storedConfig = await figma.clientStorage.getAsync('debtrix_config');
+        figma.ui.postMessage({ type: 'config-loaded', config: storedConfig });
+        break;
+        
+      case 'save-config':
+        config = msg.config;
+        await figma.clientStorage.setAsync('debtrix_config', config);
+        break;
+        
+      case 'verify-api-key':
+        config = { apiBaseUrl: msg.apiBaseUrl, anonKey: msg.anonKey };
+        await verifyApiKey(msg.apiKey);
+        break;
+        
+      case 'get-projects':
+        await getProjects();
+        break;
+        
+      case 'get-ux-debts':
+        await getUXDebts(msg.projectId);
+        break;
+        
+      case 'create-ux-debt':
+        await createUXDebt(msg.projectId, msg.debtData);
+        break;
+        
+      case 'get-figma-context':
+        await getFigmaContext();
+        break;
+        
+      case 'logout':
+        await figma.clientStorage.deleteAsync('debtrix_api_key');
+        apiKey = null;
+        userData = null;
+        break;
+        
+      case 'close-plugin':
+        figma.closePlugin();
+        break;
+    }
+  } catch (error) {
+    console.error('Error handling message:', error);
+    figma.ui.postMessage({ 
+      type: 'error', 
+      error: error.message || 'An unexpected error occurred' 
+    });
   }
 };
 
 async function verifyApiKey(key: string) {
+  if (!config) {
+    figma.ui.postMessage({ 
+      type: 'api-key-verified', 
+      success: false, 
+      error: 'Configuration not found' 
+    });
+    return;
+  }
+  
   try {
-    const response = await fetch(`${apiBaseUrl}/rest/v1/profiles?select=id,email,full_name`, {
+    const response = await fetch(`${config.apiBaseUrl}/rest/v1/profiles?select=id,email,full_name`, {
       headers: {
-        'apikey': anonKey,
+        'apikey': config.anonKey,
         'x-api-key': key,
         'Content-Type': 'application/json'
       }
     });
     
     if (!response.ok) {
-      throw new Error('Invalid API key');
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
     
     const data = await response.json();
-    if (data.length === 0) {
-      throw new Error('Invalid API key');
+    if (!data || data.length === 0) {
+      throw new Error('Invalid API key - no user found');
     }
     
     apiKey = key;
@@ -87,35 +130,37 @@ async function verifyApiKey(key: string) {
       user: userData 
     });
   } catch (error) {
+    console.error('API key verification error:', error);
     figma.ui.postMessage({ 
       type: 'api-key-verified', 
       success: false, 
-      error: error.message 
+      error: error.message || 'Failed to verify API key'
     });
   }
 }
 
 async function getProjects() {
-  if (!apiKey || !userData) {
+  if (!apiKey || !userData || !config) {
     figma.ui.postMessage({ 
       type: 'projects-loaded', 
       success: false, 
-      error: 'Not authenticated' 
+      error: 'Not authenticated or configured' 
     });
     return;
   }
   
   try {
-    const response = await fetch(`${apiBaseUrl}/rest/v1/projects?owner_id=eq.${userData.id}&select=id,title,description,color,created_at,updated_at&order=updated_at.desc`, {
+    const response = await fetch(`${config.apiBaseUrl}/rest/v1/projects?owner_id=eq.${userData.id}&select=id,title,description,color,created_at,updated_at&order=updated_at.desc`, {
       headers: {
-        'apikey': anonKey,
+        'apikey': config.anonKey,
         'x-api-key': apiKey,
         'Content-Type': 'application/json'
       }
     });
     
     if (!response.ok) {
-      throw new Error('Failed to fetch projects');
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
     
     const projects = await response.json();
@@ -126,16 +171,17 @@ async function getProjects() {
       projects 
     });
   } catch (error) {
+    console.error('Get projects error:', error);
     figma.ui.postMessage({ 
       type: 'projects-loaded', 
       success: false, 
-      error: error.message 
+      error: error.message || 'Failed to fetch projects'
     });
   }
 }
 
 async function getUXDebts(projectId: string) {
-  if (!apiKey) {
+  if (!apiKey || !config) {
     figma.ui.postMessage({ 
       type: 'ux-debts-loaded', 
       success: false, 
@@ -145,16 +191,17 @@ async function getUXDebts(projectId: string) {
   }
   
   try {
-    const response = await fetch(`${apiBaseUrl}/rest/v1/ux_debts?project_id=eq.${projectId}&select=*&order=created_at.desc`, {
+    const response = await fetch(`${config.apiBaseUrl}/rest/v1/ux_debts?project_id=eq.${projectId}&select=*&order=created_at.desc`, {
       headers: {
-        'apikey': anonKey,
+        'apikey': config.anonKey,
         'x-api-key': apiKey,
         'Content-Type': 'application/json'
       }
     });
     
     if (!response.ok) {
-      throw new Error('Failed to fetch UX debts');
+      const errorText = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
     
     const debts = await response.json();
@@ -165,16 +212,17 @@ async function getUXDebts(projectId: string) {
       debts 
     });
   } catch (error) {
+    console.error('Get UX debts error:', error);
     figma.ui.postMessage({ 
       type: 'ux-debts-loaded', 
       success: false, 
-      error: error.message 
+      error: error.message || 'Failed to fetch UX debts'
     });
   }
 }
 
 async function createUXDebt(projectId: string, debtData: any) {
-  if (!apiKey || !userData) {
+  if (!apiKey || !userData || !config) {
     figma.ui.postMessage({ 
       type: 'ux-debt-created', 
       success: false, 
@@ -195,10 +243,10 @@ async function createUXDebt(projectId: string, debtData: any) {
       screen: debtData.screen || figmaContext.pageName,
     };
     
-    const response = await fetch(`${apiBaseUrl}/rest/v1/ux_debts`, {
+    const response = await fetch(`${config.apiBaseUrl}/rest/v1/ux_debts`, {
       method: 'POST',
       headers: {
-        'apikey': anonKey,
+        'apikey': config.anonKey,
         'x-api-key': apiKey,
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
@@ -208,7 +256,7 @@ async function createUXDebt(projectId: string, debtData: any) {
     
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Failed to create UX debt: ${errorText}`);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
     
     const debt = await response.json();
@@ -216,13 +264,14 @@ async function createUXDebt(projectId: string, debtData: any) {
     figma.ui.postMessage({ 
       type: 'ux-debt-created', 
       success: true, 
-      debt: debt[0] 
+      debt: Array.isArray(debt) ? debt[0] : debt
     });
   } catch (error) {
+    console.error('Create UX debt error:', error);
     figma.ui.postMessage({ 
       type: 'ux-debt-created', 
       success: false, 
-      error: error.message 
+      error: error.message || 'Failed to create UX debt'
     });
   }
 }
@@ -236,23 +285,34 @@ async function getFigmaContext() {
 }
 
 async function getFigmaContextData() {
-  const selection = figma.currentPage.selection;
-  const pageName = figma.currentPage.name;
-  const fileName = figma.root.name;
-  
-  // Generate Figma URL
-  let url = `https://www.figma.com/file/${figma.fileKey}/${encodeURIComponent(fileName)}`;
-  
-  if (selection.length > 0) {
-    const nodeId = selection[0].id;
-    url += `?node-id=${encodeURIComponent(nodeId)}`;
+  try {
+    const selection = figma.currentPage.selection;
+    const pageName = figma.currentPage.name;
+    const fileName = figma.root.name;
+    
+    // Generate Figma URL
+    let url = `https://www.figma.com/file/${figma.fileKey}/${encodeURIComponent(fileName)}`;
+    
+    if (selection.length > 0) {
+      const nodeId = selection[0].id;
+      url += `?node-id=${encodeURIComponent(nodeId)}`;
+    }
+    
+    return {
+      url,
+      pageName,
+      fileName,
+      selectedNodes: selection.length,
+      selectedNodeNames: selection.map(node => node.name)
+    };
+  } catch (error) {
+    console.error('Error getting Figma context:', error);
+    return {
+      url: 'https://www.figma.com',
+      pageName: 'Unknown',
+      fileName: 'Unknown',
+      selectedNodes: 0,
+      selectedNodeNames: []
+    };
   }
-  
-  return {
-    url,
-    pageName,
-    fileName,
-    selectedNodes: selection.length,
-    selectedNodeNames: selection.map(node => node.name)
-  };
 }
