@@ -215,7 +215,7 @@
     }
     
     .hidden {
-      display: none;
+      display: none !important;
     }
     
     .project-item {
@@ -551,108 +551,108 @@
       <div id="debts-loading" class="hidden" style="margin-top: 16px;">Loading UX debts...</div>
       <div id="debts-list" style="margin-top: 16px;"></div>
     </div>
-    
-    <!-- Add/Edit Debt Modal -->
-    <div id="debt-modal" class="modal hidden">
-      <div class="modal-content">
-        <div class="modal-header">
-          <div class="modal-title" id="modal-title">Add UX Debt</div>
-          <button id="close-modal-btn" class="close-button">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="m18 6-12 12"/>
-              <path d="m6 6 12 12"/>
-            </svg>
-          </button>
-        </div>
-        
-        <div id="selection-warning" class="selection-warning hidden">
+  </div>
+
+  <!-- Add/Edit Debt Modal - STARTS HIDDEN -->
+  <div id="debt-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title">Add UX Debt</div>
+        <button id="close-modal-btn" class="close-button">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m21 16-4 4-4-4"/>
-            <path d="M17 20V4"/>
-            <path d="m3 8 4-4 4 4"/>
-            <path d="M7 4v16"/>
+            <path d="m18 6-12 12"/>
+            <path d="m6 6 12 12"/>
           </svg>
-          Please select a component or frame in Figma first to provide better context for this UX debt.
-        </div>
-        
-        <div id="figma-context-display" class="figma-context"></div>
-        
-        <div class="form-group">
-          <label class="label">Title *</label>
-          <input type="text" id="debt-title" class="input" placeholder="Brief description of the issue">
-        </div>
-        
-        <div class="form-group">
-          <label class="label">Type</label>
-          <select id="debt-type" class="select">
-            <option value="Heuristic">Heuristic</option>
-            <option value="Accessibility">Accessibility</option>
-            <option value="Performance">Performance</option>
-            <option value="Visual">Visual</option>
-            <option value="Usability">Usability</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="label">Severity</label>
-          <select id="debt-severity" class="select">
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-            <option value="Critical">Critical</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="label">Status</label>
-          <select id="debt-status" class="select">
-            <option value="Open">Open</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Resolved">Resolved</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="label">Description *</label>
-          <textarea id="debt-description" class="textarea" placeholder="Detailed description of the UX issue..."></textarea>
-        </div>
-        
-        <div class="form-group">
-          <label class="label">Recommendation *</label>
-          <textarea id="debt-recommendation" class="textarea" placeholder="How should this be fixed?"></textarea>
-        </div>
-        
-        <div class="action-buttons">
-          <button id="cancel-debt-btn" class="button button-secondary">Cancel</button>
-          <button id="save-debt-btn" class="button">
-            <span class="button-text">Save UX Debt</span>
-          </button>
-        </div>
-        
-        <div id="debt-error" class="error hidden"></div>
-        <div id="debt-success" class="success hidden"></div>
+        </button>
       </div>
+      
+      <div id="selection-warning" class="selection-warning hidden">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m21 16-4 4-4-4"/>
+          <path d="M17 20V4"/>
+          <path d="m3 8 4-4 4 4"/>
+          <path d="M7 4v16"/>
+        </svg>
+        Please select a component or frame in Figma first to provide better context for this UX debt.
+      </div>
+      
+      <div id="figma-context-display" class="figma-context"></div>
+      
+      <div class="form-group">
+        <label class="label">Title *</label>
+        <input type="text" id="debt-title" class="input" placeholder="Brief description of the issue">
+      </div>
+      
+      <div class="form-group">
+        <label class="label">Type</label>
+        <select id="debt-type" class="select">
+          <option value="Heuristic">Heuristic</option>
+          <option value="Accessibility">Accessibility</option>
+          <option value="Performance">Performance</option>
+          <option value="Visual">Visual</option>
+          <option value="Usability">Usability</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="label">Severity</label>
+        <select id="debt-severity" class="select">
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+          <option value="Critical">Critical</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="label">Status</label>
+        <select id="debt-status" class="select">
+          <option value="Open">Open</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Resolved">Resolved</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="label">Description *</label>
+        <textarea id="debt-description" class="textarea" placeholder="Detailed description of the UX issue..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label class="label">Recommendation *</label>
+        <textarea id="debt-recommendation" class="textarea" placeholder="How should this be fixed?"></textarea>
+      </div>
+      
+      <div class="action-buttons">
+        <button id="cancel-debt-btn" class="button button-secondary">Cancel</button>
+        <button id="save-debt-btn" class="button">
+          <span class="button-text">Save UX Debt</span>
+        </button>
+      </div>
+      
+      <div id="debt-error" class="error hidden"></div>
+      <div id="debt-success" class="success hidden"></div>
     </div>
-    
-    <!-- View Debt Modal -->
-    <div id="view-debt-modal" class="modal hidden">
-      <div class="modal-content">
-        <div class="modal-header">
-          <div class="modal-title">UX Debt Details</div>
-          <button id="close-view-modal-btn" class="close-button">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="m18 6-12 12"/>
-              <path d="m6 6 12 12"/>
-            </svg>
-          </button>
-        </div>
-        
-        <div id="view-debt-content"></div>
-        
-        <div class="action-buttons">
-          <button id="edit-debt-btn" class="button button-secondary">Edit</button>
-          <button id="delete-debt-btn" class="button button-danger">Delete</button>
-        </div>
+  </div>
+  
+  <!-- View Debt Modal - STARTS HIDDEN -->
+  <div id="view-debt-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">UX Debt Details</div>
+        <button id="close-view-modal-btn" class="close-button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m18 6-12 12"/>
+            <path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div id="view-debt-content"></div>
+      
+      <div class="action-buttons">
+        <button id="edit-debt-btn" class="button button-secondary">Edit</button>
+        <button id="delete-debt-btn" class="button button-danger">Delete</button>
       </div>
     </div>
   </div>
@@ -736,6 +736,9 @@
     init();
     
     function init() {
+      // Ensure all modals start hidden
+      hideAllModals();
+      
       loadConfiguration();
       parent.postMessage({ pluginMessage: { type: 'get-figma-context' } }, '*');
       
@@ -787,9 +790,23 @@
       };
     }
     
+    function hideAllModals() {
+      // Ensure all modals are hidden on startup
+      if (debtModal) debtModal.classList.add('hidden');
+      if (viewDebtModal) viewDebtModal.classList.add('hidden');
+    }
+    
     function showScreen(screenName) {
+      // Hide all modals first
+      hideAllModals();
+      
+      // Hide all screens
       Object.values(screens).forEach(screen => screen.classList.add('hidden'));
-      screens[screenName].classList.remove('hidden');
+      
+      // Show the requested screen
+      if (screens[screenName]) {
+        screens[screenName].classList.remove('hidden');
+      }
     }
     
     function loadConfiguration() {
