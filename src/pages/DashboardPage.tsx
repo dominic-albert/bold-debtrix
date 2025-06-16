@@ -7,7 +7,8 @@ import {
   AlertTriangle,
   CheckCircle2,
   Clock,
-  Calendar
+  Calendar,
+  BarChart3
 } from 'lucide-react';
 import { useProject } from '../contexts/ProjectContext';
 import Navbar from '../components/Navbar';
@@ -107,91 +108,114 @@ function DashboardPage() {
             {filteredProjects.map((project) => {
               const severityStats = getSeverityStats(project);
               const statusStats = getStatusStats(project);
+              const totalDebts = project.uxDebts?.length || 0;
               
               return (
                 <div
                   key={project.id}
-                  className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg transition-all duration-200 transform hover:scale-105 group relative"
+                  className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-200 transform hover:scale-105 group relative"
                 >
 
                   <Link to={`/project/${project.id}`} className="block">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="text-gray-600 mb-3 line-clamp-2">
+                    {/* Project Header */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded-full ${project.color} group-hover:scale-110 transition-transform`}></div>
+                        <h3 className="text-xl font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+                          {project.title}
+                        </h3>
+                      </div>
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ProjectOptionsMenu 
+                          project={project} 
+                          onEdit={() => handleEditProject(project)}
+                        />
+                      </div>
+                    </div>
+
+                    <p className="text-gray-600 mb-4 line-clamp-2">
                       {project.description}
                     </p>
 
-                    {/* Stats */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-500">Total Issues</span>
-                        <span className="font-medium text-gray-900">
-                          {project.uxDebts.length}
-                        </span>
+                    {/* Debt Metrics */}
+                    <div className="space-y-4">
+                      {/* Total Debts with Icon */}
+                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <BarChart3 className="w-4 h-4 text-gray-500" />
+                          <span className="text-sm font-medium text-gray-700">Total UX Debts</span>
+                        </div>
+                        <span className="text-lg font-bold text-gray-900">{totalDebts}</span>
                       </div>
 
-                      {/* Severity Distribution */}
-                      <div className="flex items-center gap-2">
-                        {severityStats.critical > 0 && (
-                          <div className="flex items-center gap-1 text-xs">
-                            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                            <span className="text-red-600 font-medium">{severityStats.critical}</span>
+                      {/* Status Distribution */}
+                      <div className="grid grid-cols-3 gap-2">
+                        <div className="text-center p-2 bg-red-50 rounded-lg border border-red-100">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <AlertTriangle className="w-3 h-3 text-red-600" />
+                            <span className="text-xs font-medium text-red-800">Open</span>
                           </div>
-                        )}
-                        {severityStats.high > 0 && (
-                          <div className="flex items-center gap-1 text-xs">
-                            <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
-                            <span className="text-orange-600 font-medium">{severityStats.high}</span>
+                          <div className="text-sm font-bold text-red-900">{statusStats.open}</div>
+                        </div>
+                        <div className="text-center p-2 bg-yellow-50 rounded-lg border border-yellow-100">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <Clock className="w-3 h-3 text-yellow-600" />
+                            <span className="text-xs font-medium text-yellow-800">Progress</span>
                           </div>
-                        )}
-                        {severityStats.medium > 0 && (
-                          <div className="flex items-center gap-1 text-xs">
-                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                            <span className="text-yellow-600 font-medium">{severityStats.medium}</span>
+                          <div className="text-sm font-bold text-yellow-900">{statusStats.inProgress}</div>
+                        </div>
+                        <div className="text-center p-2 bg-green-50 rounded-lg border border-green-100">
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <CheckCircle2 className="w-3 h-3 text-green-600" />
+                            <span className="text-xs font-medium text-green-800">Resolved</span>
                           </div>
-                        )}
-                        {severityStats.low > 0 && (
-                          <div className="flex items-center gap-1 text-xs">
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <span className="text-green-600 font-medium">{severityStats.low}</span>
-                          </div>
-                        )}
+                          <div className="text-sm font-bold text-green-900">{statusStats.resolved}</div>
+                        </div>
                       </div>
 
-                      {/* Status Progress */}
-                      <div className="flex items-center gap-4 text-xs">
-                        <div className="flex items-center gap-1 text-red-600">
-                          <AlertTriangle className="w-3 h-3" />
-                          <span>{statusStats.open}</span>
+                      {/* Severity Indicators */}
+                      {totalDebts > 0 && (
+                        <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
+                          <span className="text-xs text-gray-500">Severity:</span>
+                          <div className="flex items-center gap-2">
+                            {severityStats.critical > 0 && (
+                              <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                <span className="text-xs text-red-600 font-medium">{severityStats.critical}</span>
+                              </div>
+                            )}
+                            {severityStats.high > 0 && (
+                              <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                <span className="text-xs text-orange-600 font-medium">{severityStats.high}</span>
+                              </div>
+                            )}
+                            {severityStats.medium > 0 && (
+                              <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                <span className="text-xs text-yellow-600 font-medium">{severityStats.medium}</span>
+                              </div>
+                            )}
+                            {severityStats.low > 0 && (
+                              <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span className="text-xs text-green-600 font-medium">{severityStats.low}</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1 text-yellow-600">
-                          <Clock className="w-3 h-3" />
-                          <span>{statusStats.inProgress}</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-green-600">
-                          <CheckCircle2 className="w-3 h-3" />
-                          <span>{statusStats.resolved}</span>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   </Link>
 
-                  {/* Bottom section with project color, date, and options */}
-                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-3 h-3 rounded-full ${project.color} group-hover:scale-110 transition-transform`}></div>
-                      <div className="text-xs text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          Updated {new Date(project.updated_at).toLocaleDateString()}
-                        </div>
+                  {/* Footer with Date */}
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                    <div className="text-xs text-gray-500">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        Updated {new Date(project.updated_at).toLocaleDateString()}
                       </div>
                     </div>
-                    <ProjectOptionsMenu 
-                      project={project} 
-                      onEdit={() => handleEditProject(project)}
-                    />
                   </div>
                 </div>
               );
