@@ -5,7 +5,8 @@
   "main": "code.js",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc --watch"
+    "watch": "tsc --watch",
+    "dev": "npm run watch"
   },
   "devDependencies": {
     "@figma/plugin-typings": "^1.75.0",
