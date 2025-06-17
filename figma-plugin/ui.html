@@ -551,7 +551,7 @@
       width: 90%;
       max-width: 400px;
       max-height: 80vh;
-      overflow-y: auto;
+      overflow: hidden; /* Changed from overflow-y: auto to prevent double scrollbar */
     }
     
     .modal-header {
@@ -688,6 +688,32 @@
       background: #e0f2fe;
       color: #0c4a6e;
     }
+
+    /* Fix for modal form scrolling */
+    .modal-form {
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    /* Scrollbar styling for modal */
+    .modal-form::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .modal-form::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    .modal-form::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
+    }
+
+    .modal-form::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
   </style>
 </head>
 <body>
@@ -817,55 +843,58 @@
       
       <div id="figma-context-display" class="figma-context"></div>
       
-      <div class="form-group">
-        <label class="label">Title *</label>
-        <input type="text" id="debt-title" class="input" placeholder="Brief description of the issue">
-      </div>
-      
-      <div class="form-group">
-        <label class="label">Type</label>
-        <select id="debt-type" class="select">
-          <option value="Heuristic">Heuristic</option>
-          <option value="Accessibility">Accessibility</option>
-          <option value="Performance">Performance</option>
-          <option value="Visual">Visual</option>
-          <option value="Usability">Usability</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label class="label">Severity</label>
-        <select id="debt-severity" class="select">
-          <option value="Low">Low</option>
-          <option value="Medium">Medium</option>
-          <option value="High">High</option>
-          <option value="Critical">Critical</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label class="label">Status</label>
-        <select id="debt-status" class="select">
-          <option value="Open">Open</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Resolved">Resolved</option>
-        </select>
-      </div>
-      
-      <div class="form-group">
-        <label class="label">Description *</label>
-        <textarea id="debt-description" class="textarea" placeholder="Detailed description of the UX issue..."></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label class="label">Recommendation *</label>
-        <textarea id="debt-recommendation" class="textarea" placeholder="How should this be fixed?"></textarea>
+      <!-- Form with proper scrolling -->
+      <div class="modal-form">
+        <div class="form-group">
+          <label class="label">Title *</label>
+          <input type="text" id="debt-title" class="input" placeholder="Brief description of the issue">
+        </div>
+        
+        <div class="form-group">
+          <label class="label">Type</label>
+          <select id="debt-type" class="select">
+            <option value="Heuristic">Heuristic</option>
+            <option value="Accessibility">Accessibility</option>
+            <option value="Performance">Performance</option>
+            <option value="Visual">Visual</option>
+            <option value="Usability">Usability</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="label">Severity</label>
+          <select id="debt-severity" class="select">
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Critical">Critical</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="label">Status</label>
+          <select id="debt-status" class="select">
+            <option value="Open">Open</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Resolved">Resolved</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="label">Description *</label>
+          <textarea id="debt-description" class="textarea" placeholder="Detailed description of the UX issue..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="label">Recommendation *</label>
+          <textarea id="debt-recommendation" class="textarea" placeholder="How should this be fixed?"></textarea>
+        </div>
       </div>
       
       <div class="action-buttons">
         <button id="cancel-debt-btn" class="button button-secondary">Cancel</button>
         <button id="save-debt-btn" class="button">
-          <span class="button-text">Save UX Debt</span>
+          <span class="button-text" id="save-debt-text">Save UX Debt</span>
         </button>
       </div>
       
@@ -906,6 +935,7 @@
     let anonKey = '';
     let editingDebt = null;
     let viewingDebt = null;
+    let projectStats = {}; // Store project statistics
     
     // DOM elements
     const screens = {
@@ -949,6 +979,7 @@
     const closeDetailBtn = document.getElementById('close-detail-btn');
     const cancelDebtBtn = document.getElementById('cancel-debt-btn');
     const saveDebtBtn = document.getElementById('save-debt-btn');
+    const saveDebtText = document.getElementById('save-debt-text');
     const debtError = document.getElementById('debt-error');
     const debtSuccess = document.getElementById('debt-success');
     const viewDebtContent = document.getElementById('view-debt-content');
@@ -1128,6 +1159,15 @@
       
       if (data.success) {
         currentProjects = data.projects;
+        // Load UX debts for each project to get statistics
+        currentProjects.forEach(project => {
+          parent.postMessage({ 
+            pluginMessage: { 
+              type: 'get-ux-debts', 
+              projectId: project.id 
+            } 
+          }, '*');
+        });
         renderProjects();
       } else {
         projectsList.innerHTML = `<div class="error">${data.error}</div>`;
@@ -1146,21 +1186,8 @@
         return;
       }
       
-      // Load UX debts for each project to show metadata
-      currentProjects.forEach(project => {
-        parent.postMessage({ 
-          pluginMessage: { 
-            type: 'get-ux-debts', 
-            projectId: project.id 
-          } 
-        }, '*');
-      });
-      
       projectsList.innerHTML = currentProjects.map(project => {
-        // We'll update these with real data when debts are loaded
-        const totalDebts = 0;
-        const openDebts = 0;
-        const resolvedDebts = 0;
+        const stats = projectStats[project.id] || { total: 0, open: 0, resolved: 0, severities: {} };
         
         return `
           <div class="project-item" data-project-id="${project.id}">
@@ -1172,22 +1199,22 @@
             
             <div class="project-stats">
               <div class="stat-item">
-                <span class="stat-number" id="total-${project.id}">-</span>
+                <span class="stat-number">${stats.total}</span>
                 <span class="stat-label">Total Debts</span>
               </div>
               <div class="stat-item">
-                <span class="stat-number" id="open-${project.id}">-</span>
+                <span class="stat-number">${stats.open}</span>
                 <span class="stat-label">Open Issues</span>
               </div>
             </div>
             
             <div class="severity-badges" id="severity-${project.id}">
-              <!-- Will be populated with severity data -->
+              ${renderSeverityBadges(stats.severities)}
             </div>
             
             <div class="project-footer">
               <span>Updated ${new Date(project.updated_at).toLocaleDateString()}</span>
-              <span id="resolution-${project.id}">-/- Resolved</span>
+              <span>${stats.resolved}/${stats.total} Resolved</span>
             </div>
           </div>
         `;
@@ -1197,6 +1224,23 @@
       document.querySelectorAll('.project-item').forEach(item => {
         item.addEventListener('click', () => selectProject(item.dataset.projectId));
       });
+    }
+    
+    function renderSeverityBadges(severities) {
+      let html = '';
+      if (severities.critical > 0) {
+        html += `<div class="severity-badge severity-critical"><div class="severity-dot dot-critical"></div>${severities.critical} Critical</div>`;
+      }
+      if (severities.high > 0) {
+        html += `<div class="severity-badge severity-high"><div class="severity-dot dot-high"></div>${severities.high} High</div>`;
+      }
+      if (severities.medium > 0) {
+        html += `<div class="severity-badge severity-medium"><div class="severity-dot dot-medium"></div>${severities.medium} Medium</div>`;
+      }
+      if (severities.low > 0) {
+        html += `<div class="severity-badge severity-low"><div class="severity-dot dot-low"></div>${severities.low} Low</div>`;
+      }
+      return html;
     }
     
     function getProjectColorValue(colorClass) {
@@ -1236,15 +1280,35 @@
       if (data.success) {
         const projectId = data.projectId || (selectedProject && selectedProject.id);
         
+        // Calculate and store project statistics
+        const debts = data.debts || [];
+        const stats = {
+          total: debts.length,
+          open: debts.filter(d => d.status === 'Open').length,
+          resolved: debts.filter(d => d.status === 'Resolved').length,
+          severities: {
+            critical: debts.filter(d => d.severity === 'Critical').length,
+            high: debts.filter(d => d.severity === 'High').length,
+            medium: debts.filter(d => d.severity === 'Medium').length,
+            low: debts.filter(d => d.severity === 'Low').length
+          }
+        };
+        
+        if (projectId) {
+          projectStats[projectId] = stats;
+        }
+        
         if (projectId === selectedProject?.id) {
           // Update main project details view
           debtsLoading.classList.add('hidden');
-          currentDebts = data.debts;
+          currentDebts = debts;
           renderDebts();
         }
         
-        // Update project metadata in projects list
-        updateProjectMetadata(projectId, data.debts);
+        // Update project cards in projects list if we're on that screen
+        if (!screens.projects.classList.contains('hidden')) {
+          updateProjectCard(projectId, stats);
+        }
       } else {
         if (selectedProject) {
           debtsLoading.classList.add('hidden');
@@ -1253,46 +1317,16 @@
       }
     }
     
-    function updateProjectMetadata(projectId, debts) {
-      const totalElement = document.getElementById(`total-${projectId}`);
-      const openElement = document.getElementById(`open-${projectId}`);
+    function updateProjectCard(projectId, stats) {
+      const totalElement = document.querySelector(`[data-project-id="${projectId}"] .stat-number`);
+      const openElement = document.querySelectorAll(`[data-project-id="${projectId}"] .stat-number`)[1];
       const severityElement = document.getElementById(`severity-${projectId}`);
-      const resolutionElement = document.getElementById(`resolution-${projectId}`);
+      const resolutionElement = document.querySelector(`[data-project-id="${projectId}"] .project-footer span:last-child`);
       
-      if (!totalElement) return; // Project not in current view
-      
-      const totalDebts = debts.length;
-      const openDebts = debts.filter(d => d.status === 'Open').length;
-      const resolvedDebts = debts.filter(d => d.status === 'Resolved').length;
-      
-      // Update stats
-      totalElement.textContent = totalDebts;
-      openElement.textContent = openDebts;
-      resolutionElement.textContent = `${resolvedDebts}/${totalDebts} Resolved`;
-      
-      // Update severity badges
-      const severityStats = {
-        critical: debts.filter(d => d.severity === 'Critical').length,
-        high: debts.filter(d => d.severity === 'High').length,
-        medium: debts.filter(d => d.severity === 'Medium').length,
-        low: debts.filter(d => d.severity === 'Low').length
-      };
-      
-      let severityHTML = '';
-      if (severityStats.critical > 0) {
-        severityHTML += `<div class="severity-badge severity-critical"><div class="severity-dot dot-critical"></div>${severityStats.critical} Critical</div>`;
-      }
-      if (severityStats.high > 0) {
-        severityHTML += `<div class="severity-badge severity-high"><div class="severity-dot dot-high"></div>${severityStats.high} High</div>`;
-      }
-      if (severityStats.medium > 0) {
-        severityHTML += `<div class="severity-badge severity-medium"><div class="severity-dot dot-medium"></div>${severityStats.medium} Medium</div>`;
-      }
-      if (severityStats.low > 0) {
-        severityHTML += `<div class="severity-badge severity-low"><div class="severity-dot dot-low"></div>${severityStats.low} Low</div>`;
-      }
-      
-      severityElement.innerHTML = severityHTML;
+      if (totalElement) totalElement.textContent = stats.total;
+      if (openElement) openElement.textContent = stats.open;
+      if (severityElement) severityElement.innerHTML = renderSeverityBadges(stats.severities);
+      if (resolutionElement) resolutionElement.textContent = `${stats.resolved}/${stats.total} Resolved`;
     }
     
     function renderDebts() {
@@ -1370,6 +1404,9 @@
     function openDebtModal(debt = null) {
       editingDebt = debt;
       modalTitle.textContent = debt ? 'Edit UX Debt' : 'Add UX Debt';
+      
+      // Update button text based on mode
+      saveDebtText.textContent = debt ? 'Update UX Debt' : 'Save UX Debt';
       
       // Check if something is selected in Figma
       if (!debt && (!figmaContext || figmaContext.selectedNodes === 0)) {
@@ -1644,6 +1681,7 @@
       selectedProject = null;
       currentProjects = [];
       currentDebts = [];
+      projectStats = {};
       
       apiKeyInput.value = '';
       showScreen('apiSetup');
