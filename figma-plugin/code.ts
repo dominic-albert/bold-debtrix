@@ -92,7 +92,7 @@ figma.ui.onmessage = async (msg) => {
     console.error('Error handling message:', error);
     figma.ui.postMessage({ 
       type: 'error', 
-      error: error.message || 'An unexpected error occurred' 
+      error: (error as any).message || 'An unexpected error occurred' 
     });
   }
 };
@@ -142,7 +142,7 @@ async function verifyApiKey(key: string) {
     figma.ui.postMessage({ 
       type: 'api-key-verified', 
       success: false, 
-      error: error.message || 'Failed to verify API key'
+      error: (error as any).message || 'Failed to verify API key'
     });
   }
 }
@@ -183,7 +183,7 @@ async function getProjects() {
     figma.ui.postMessage({ 
       type: 'projects-loaded', 
       success: false, 
-      error: error.message || 'Failed to fetch projects'
+      error: (error as any).message || 'Failed to fetch projects'
     });
   }
 }
@@ -224,7 +224,7 @@ async function getUXDebts(projectId: string) {
     figma.ui.postMessage({ 
       type: 'ux-debts-loaded', 
       success: false, 
-      error: error.message || 'Failed to fetch UX debts'
+      error: (error as any).message || 'Failed to fetch UX debts'
     });
   }
 }
@@ -279,7 +279,7 @@ async function createUXDebt(projectId: string, debtData: any) {
     figma.ui.postMessage({ 
       type: 'ux-debt-created', 
       success: false, 
-      error: error.message || 'Failed to create UX debt'
+      error: (error as any).message || 'Failed to create UX debt'
     });
   }
 }
@@ -323,7 +323,7 @@ async function updateUXDebt(projectId: string, debtId: string, debtData: any) {
     figma.ui.postMessage({ 
       type: 'ux-debt-updated', 
       success: false, 
-      error: error.message || 'Failed to update UX debt'
+      error: (error as any).message || 'Failed to update UX debt'
     });
   }
 }
@@ -362,7 +362,7 @@ async function deleteUXDebt(projectId: string, debtId: string) {
     figma.ui.postMessage({ 
       type: 'ux-debt-deleted', 
       success: false, 
-      error: error.message || 'Failed to delete UX debt'
+      error: (error as any).message || 'Failed to delete UX debt'
     });
   }
 }
@@ -507,7 +507,7 @@ async function getFigmaContextData() {
       fileKey: null,
       selectedNodes: 0,
       selectedNodeNames: [],
-      error: error.message,
+      error: (error as any).message,
       debug: {
         hasFileKey: false,
         figmaFileKeyAvailable: false,
