@@ -381,29 +381,95 @@ async function getFigmaContextData() {
     const pageName = figma.currentPage.name;
     const fileName = figma.root.name;
     
-    // Generate Figma URL
-    let url = `https://www.figma.com/file/${figma.fileKey}/${encodeURIComponent(fileName)}`;
+    // Get the file key from the current document
+    let fileKey: string | null = null;
+    let url = 'https://www.figma.com/file/';
     
-    if (selection.length > 0) {
-      const nodeId = selection[0].id;
-      url += `?node-id=${encodeURIComponent(nodeId)}`;
+    // Try multiple methods to get the file key
+    try {
+      // Method 1: Try to get from figma.fileKey (if available)
+      if (typeof (figma as any).fileKey !== 'undefined' && (figma as any).fileKey) {
+        fileKey = (figma as any).fileKey;
+      }
+      
+      // Method 2: Try to get from the document URL if available
+      if (!fileKey && figma.root && (figma.root as any).getPluginData) {
+        const storedFileKey = (figma.root as any).getPluginData('fileKey');
+        if (storedFileKey) {
+          fileKey = storedFileKey;
+        }
+      }
+      
+      // Method 3: Try to extract from current URL if in browser context
+      if (!fileKey && typeof window !== 'undefined' && window.location) {
+        const urlMatch = window.location.href.match(/\/file\/([a-zA-Z0-9]+)/);
+        if (urlMatch) {
+          fileKey = urlMatch[1];
+        }
+      }
+      
+      // Method 4: Check if we can access the document's metadata
+      if (!fileKey && figma.root && figma.root.id) {
+        // Sometimes the file key might be derivable from the root ID
+        const rootId = figma.root.id;
+        if (rootId && rootId.length > 10) {
+          fileKey = rootId.split(':')[0] || rootId.substring(0, 22);
+        }
+      }
+    } catch (e) {
+      console.log('Could not determine file key:', e);
+    }
+    
+    // Build the URL
+    if (fileKey) {
+      url += `${fileKey}/${encodeURIComponent(fileName)}`;
+      
+      // If nodes are selected, create a direct link to the first selected node
+      if (selection.length > 0) {
+        const nodeId = selection[0].id;
+        // Convert node ID to URL format (replace colons with dashes)
+        const formattedNodeId = nodeId.replace(/:/g, '-');
+        url += `?node-id=${encodeURIComponent(formattedNodeId)}`;
+        
+        // Add viewport parameter to focus on the selected node
+        url += '&viewport=0,0,1,1';
+      }
+    } else {
+      // Fallback: create a generic Figma URL
+      url = 'https://www.figma.com/files/recent';
+      console.warn('Could not determine file key, using fallback URL');
     }
     
     return {
       url,
       pageName,
       fileName,
+      fileKey,
       selectedNodes: selection.length,
-      selectedNodeNames: selection.map(node => node.name)
+      selectedNodeNames: selection.map(node => node.name),
+      debug: {
+        hasFileKey: !!fileKey,
+        figmaFileKeyAvailable: typeof (figma as any).fileKey !== 'undefined',
+        figmaFileKeyValue: (figma as any).fileKey || 'undefined',
+        rootId: figma.root ? figma.root.id : 'no root'
+      }
     };
   } catch (error) {
     console.error('Error getting Figma context:', error);
     return {
-      url: 'https://www.figma.com',
+      url: 'https://www.figma.com/files/recent',
       pageName: 'Unknown',
       fileName: 'Unknown',
+      fileKey: null,
       selectedNodes: 0,
-      selectedNodeNames: []
+      selectedNodeNames: [],
+      error: error.message,
+      debug: {
+        hasFileKey: false,
+        figmaFileKeyAvailable: false,
+        figmaFileKeyValue: 'error',
+        rootId: 'error'
+      }
     };
   }
 }

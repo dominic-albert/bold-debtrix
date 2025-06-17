@@ -439,35 +439,95 @@ function getFigmaContextData() {
       var pageName = figma.currentPage.name;
       var fileName = figma.root.name;
       
-      // Generate Figma URL with proper file key and node linking
-      var url = 'https://www.figma.com/file/' + figma.fileKey + '/' + encodeURIComponent(fileName);
+      // Get the file key from the current document
+      var fileKey = null;
+      var url = 'https://www.figma.com/file/';
       
-      // If nodes are selected, create a direct link to the first selected node
-      if (selection.length > 0) {
-        var nodeId = selection[0].id;
-        // Format node ID for URL (replace colons with dashes)
-        var formattedNodeId = nodeId.replace(/:/g, '-');
-        url += '?node-id=' + encodeURIComponent(formattedNodeId);
+      // Try to get file key from the document
+      try {
+        // Method 1: Try to get from figma.fileKey (if available)
+        if (typeof figma.fileKey !== 'undefined' && figma.fileKey) {
+          fileKey = figma.fileKey;
+        }
         
-        // Add viewport parameter to focus on the selected node
-        url += '&viewport=0,0,1,1';
+        // Method 2: Try to get from the document URL if available
+        if (!fileKey && figma.root && figma.root.getPluginData) {
+          var storedFileKey = figma.root.getPluginData('fileKey');
+          if (storedFileKey) {
+            fileKey = storedFileKey;
+          }
+        }
+        
+        // Method 3: Try to extract from current URL if in browser context
+        if (!fileKey && typeof window !== 'undefined' && window.location) {
+          var urlMatch = window.location.href.match(/\/file\/([a-zA-Z0-9]+)/);
+          if (urlMatch) {
+            fileKey = urlMatch[1];
+          }
+        }
+        
+        // Method 4: Check if we can access the document's metadata
+        if (!fileKey && figma.root && figma.root.id) {
+          // Sometimes the file key might be derivable from the root ID
+          var rootId = figma.root.id;
+          if (rootId && rootId.length > 10) {
+            fileKey = rootId.split(':')[0] || rootId.substring(0, 22);
+          }
+        }
+      } catch (e) {
+        console.log('Could not determine file key:', e);
+      }
+      
+      // Build the URL
+      if (fileKey) {
+        url += fileKey + '/' + encodeURIComponent(fileName);
+        
+        // If nodes are selected, create a direct link to the first selected node
+        if (selection.length > 0) {
+          var nodeId = selection[0].id;
+          // Convert node ID to URL format (replace colons with dashes)
+          var formattedNodeId = nodeId.replace(/:/g, '-');
+          url += '?node-id=' + encodeURIComponent(formattedNodeId);
+          
+          // Add viewport parameter to focus on the selected node
+          url += '&viewport=0,0,1,1';
+        }
+      } else {
+        // Fallback: create a generic Figma URL
+        url = 'https://www.figma.com/files/recent';
+        console.warn('Could not determine file key, using fallback URL');
       }
       
       resolve({
         url: url,
         pageName: pageName,
         fileName: fileName,
+        fileKey: fileKey,
         selectedNodes: selection.length,
-        selectedNodeNames: selection.map(function(node) { return node.name; })
+        selectedNodeNames: selection.map(function(node) { return node.name; }),
+        debug: {
+          hasFileKey: !!fileKey,
+          figmaFileKeyAvailable: typeof figma.fileKey !== 'undefined',
+          figmaFileKeyValue: figma.fileKey || 'undefined',
+          rootId: figma.root ? figma.root.id : 'no root'
+        }
       });
     } catch (error) {
       console.error('Error getting Figma context:', error);
       resolve({
-        url: 'https://www.figma.com/file/' + (figma.fileKey || 'unknown'),
+        url: 'https://www.figma.com/files/recent',
         pageName: 'Unknown',
         fileName: 'Unknown',
+        fileKey: null,
         selectedNodes: 0,
-        selectedNodeNames: []
+        selectedNodeNames: [],
+        error: error.message,
+        debug: {
+          hasFileKey: false,
+          figmaFileKeyAvailable: false,
+          figmaFileKeyValue: 'error',
+          rootId: 'error'
+        }
       });
     }
   });
