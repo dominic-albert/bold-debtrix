@@ -16,12 +16,34 @@
       line-height: 1.4;
       color: #333;
       background: #f8f9fa;
+      height: 100vh;
+      overflow: hidden;
     }
     
     .container {
       padding: 16px;
       max-width: 420px;
-      min-height: 680px;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    
+    /* Custom sleek scrollbar */
+    .container::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .container::-webkit-scrollbar-thumb {
+      background: rgba(139, 92, 246, 0.3);
+      border-radius: 2px;
+    }
+    
+    .container::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 92, 246, 0.5);
     }
     
     .header {
@@ -550,8 +572,10 @@
       padding: 20px;
       width: 90%;
       max-width: 400px;
-      max-height: 80vh;
-      overflow: hidden; /* Changed from overflow-y: auto to prevent double scrollbar */
+      max-height: 85vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
     
     .modal-header {
@@ -561,6 +585,7 @@
       margin-bottom: 16px;
       padding-bottom: 12px;
       border-bottom: 1px solid #e5e7eb;
+      flex-shrink: 0;
     }
     
     .modal-title {
@@ -583,6 +608,40 @@
       color: #374151;
     }
     
+    .modal-form {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      max-height: 65vh;
+      padding-right: 8px;
+      margin-right: -8px;
+    }
+    
+    /* Custom sleek scrollbar for modal */
+    .modal-form::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .modal-form::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .modal-form::-webkit-scrollbar-thumb {
+      background: rgba(139, 92, 246, 0.3);
+      border-radius: 2px;
+    }
+    
+    .modal-form::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 92, 246, 0.5);
+    }
+    
+    .modal-footer {
+      flex-shrink: 0;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e7eb;
+    }
+    
     .selection-warning {
       background: #fffbeb;
       border: 1px solid #fed7aa;
@@ -597,9 +656,29 @@
     }
 
     .debt-detail-content {
-      max-height: 400px;
+      max-height: 65vh;
       overflow-y: auto;
+      overflow-x: hidden;
       padding-right: 8px;
+      margin-right: -8px;
+    }
+    
+    /* Custom sleek scrollbar for debt detail */
+    .debt-detail-content::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .debt-detail-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .debt-detail-content::-webkit-scrollbar-thumb {
+      background: rgba(139, 92, 246, 0.3);
+      border-radius: 2px;
+    }
+    
+    .debt-detail-content::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 92, 246, 0.5);
     }
 
     .debt-detail-section {
@@ -687,32 +766,6 @@
     .debt-view-btn:hover {
       background: #e0f2fe;
       color: #0c4a6e;
-    }
-
-    /* Fix for modal form scrolling */
-    .modal-form {
-      max-height: 60vh;
-      overflow-y: auto;
-      padding-right: 8px;
-    }
-
-    /* Scrollbar styling for modal */
-    .modal-form::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .modal-form::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 3px;
-    }
-
-    .modal-form::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
-      border-radius: 3px;
-    }
-
-    .modal-form::-webkit-scrollbar-thumb:hover {
-      background: #a8a8a8;
     }
   </style>
 </head>
@@ -831,20 +884,19 @@
         </button>
       </div>
       
-      <div id="selection-warning" class="selection-warning hidden">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="m21 16-4 4-4-4"/>
-          <path d="M17 20V4"/>
-          <path d="m3 8 4-4 4 4"/>
-          <path d="M7 4v16"/>
-        </svg>
-        Please select a component or frame in Figma first to provide better context for this UX debt.
-      </div>
-      
-      <div id="figma-context-display" class="figma-context"></div>
-      
-      <!-- Form with proper scrolling -->
       <div class="modal-form">
+        <div id="selection-warning" class="selection-warning hidden">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m21 16-4 4-4-4"/>
+            <path d="M17 20V4"/>
+            <path d="m3 8 4-4 4 4"/>
+            <path d="M7 4v16"/>
+          </svg>
+          Please select a component or frame in Figma first to provide better context for this UX debt.
+        </div>
+        
+        <div id="figma-context-display" class="figma-context"></div>
+        
         <div class="form-group">
           <label class="label">Title *</label>
           <input type="text" id="debt-title" class="input" placeholder="Brief description of the issue">
@@ -891,15 +943,17 @@
         </div>
       </div>
       
-      <div class="action-buttons">
-        <button id="cancel-debt-btn" class="button button-secondary">Cancel</button>
-        <button id="save-debt-btn" class="button">
-          <span class="button-text" id="save-debt-text">Save UX Debt</span>
-        </button>
+      <div class="modal-footer">
+        <div class="action-buttons">
+          <button id="cancel-debt-btn" class="button button-secondary">Cancel</button>
+          <button id="save-debt-btn" class="button">
+            <span class="button-text" id="save-debt-text">Save UX Debt</span>
+          </button>
+        </div>
+        
+        <div id="debt-error" class="error hidden"></div>
+        <div id="debt-success" class="success hidden"></div>
       </div>
-      
-      <div id="debt-error" class="error hidden"></div>
-      <div id="debt-success" class="success hidden"></div>
     </div>
   </div>
   
@@ -918,8 +972,10 @@
       
       <div id="view-debt-content" class="debt-detail-content"></div>
       
-      <div class="action-buttons">
-        <button id="close-detail-btn" class="button">Close</button>
+      <div class="modal-footer">
+        <div class="action-buttons">
+          <button id="close-detail-btn" class="button">Close</button>
+        </div>
       </div>
     </div>
   </div>
@@ -935,7 +991,7 @@
     let anonKey = '';
     let editingDebt = null;
     let viewingDebt = null;
-    let projectStats = {}; // Store project statistics
+    let projectStats = {};
     
     // DOM elements
     const screens = {
@@ -1159,8 +1215,10 @@
       
       if (data.success) {
         currentProjects = data.projects;
-        // Load UX debts for each project to get statistics
-        currentProjects.forEach(project => {
+        renderProjects();
+        
+        // Load stats for each project
+        data.projects.forEach(project => {
           parent.postMessage({ 
             pluginMessage: { 
               type: 'get-ux-debts', 
@@ -1168,7 +1226,6 @@
             } 
           }, '*');
         });
-        renderProjects();
       } else {
         projectsList.innerHTML = `<div class="error">${data.error}</div>`;
       }
@@ -1199,11 +1256,11 @@
             
             <div class="project-stats">
               <div class="stat-item">
-                <span class="stat-number">${stats.total}</span>
+                <span class="stat-number" id="total-${project.id}">${stats.total}</span>
                 <span class="stat-label">Total Debts</span>
               </div>
               <div class="stat-item">
-                <span class="stat-number">${stats.open}</span>
+                <span class="stat-number" id="open-${project.id}">${stats.open}</span>
                 <span class="stat-label">Open Issues</span>
               </div>
             </div>
@@ -1214,7 +1271,7 @@
             
             <div class="project-footer">
               <span>Updated ${new Date(project.updated_at).toLocaleDateString()}</span>
-              <span>${stats.resolved}/${stats.total} Resolved</span>
+              <span id="resolution-${project.id}">${stats.resolved}/${stats.total} Resolved</span>
             </div>
           </div>
         `;
@@ -1278,36 +1335,19 @@
     
     function handleDebtsLoaded(data) {
       if (data.success) {
-        const projectId = data.projectId || (selectedProject && selectedProject.id);
+        const debts = data.debts;
         
-        // Calculate and store project statistics
-        const debts = data.debts || [];
-        const stats = {
-          total: debts.length,
-          open: debts.filter(d => d.status === 'Open').length,
-          resolved: debts.filter(d => d.status === 'Resolved').length,
-          severities: {
-            critical: debts.filter(d => d.severity === 'Critical').length,
-            high: debts.filter(d => d.severity === 'High').length,
-            medium: debts.filter(d => d.severity === 'Medium').length,
-            low: debts.filter(d => d.severity === 'Low').length
-          }
-        };
-        
+        // Update project stats
+        const projectId = debts.length > 0 ? debts[0].project_id : null;
         if (projectId) {
-          projectStats[projectId] = stats;
+          updateProjectStats(projectId, debts);
         }
         
-        if (projectId === selectedProject?.id) {
-          // Update main project details view
+        // If this is for the currently selected project, update the debt list
+        if (selectedProject && projectId === selectedProject.id) {
           debtsLoading.classList.add('hidden');
           currentDebts = debts;
           renderDebts();
-        }
-        
-        // Update project cards in projects list if we're on that screen
-        if (!screens.projects.classList.contains('hidden')) {
-          updateProjectCard(projectId, stats);
         }
       } else {
         if (selectedProject) {
@@ -1317,16 +1357,31 @@
       }
     }
     
-    function updateProjectCard(projectId, stats) {
-      const totalElement = document.querySelector(`[data-project-id="${projectId}"] .stat-number`);
-      const openElement = document.querySelectorAll(`[data-project-id="${projectId}"] .stat-number`)[1];
-      const severityElement = document.getElementById(`severity-${projectId}`);
-      const resolutionElement = document.querySelector(`[data-project-id="${projectId}"] .project-footer span:last-child`);
+    function updateProjectStats(projectId, debts) {
+      const stats = {
+        total: debts.length,
+        open: debts.filter(d => d.status === 'Open').length,
+        resolved: debts.filter(d => d.status === 'Resolved').length,
+        severities: {
+          critical: debts.filter(d => d.severity === 'Critical').length,
+          high: debts.filter(d => d.severity === 'High').length,
+          medium: debts.filter(d => d.severity === 'Medium').length,
+          low: debts.filter(d => d.severity === 'Low').length
+        }
+      };
       
-      if (totalElement) totalElement.textContent = stats.total;
-      if (openElement) openElement.textContent = stats.open;
-      if (severityElement) severityElement.innerHTML = renderSeverityBadges(stats.severities);
-      if (resolutionElement) resolutionElement.textContent = `${stats.resolved}/${stats.total} Resolved`;
+      projectStats[projectId] = stats;
+      
+      // Update UI elements if they exist
+      const totalEl = document.getElementById(`total-${projectId}`);
+      const openEl = document.getElementById(`open-${projectId}`);
+      const resolutionEl = document.getElementById(`resolution-${projectId}`);
+      const severityEl = document.getElementById(`severity-${projectId}`);
+      
+      if (totalEl) totalEl.textContent = stats.total;
+      if (openEl) openEl.textContent = stats.open;
+      if (resolutionEl) resolutionEl.textContent = `${stats.resolved}/${stats.total} Resolved`;
+      if (severityEl) severityEl.innerHTML = renderSeverityBadges(stats.severities);
     }
     
     function renderDebts() {
@@ -1404,8 +1459,6 @@
     function openDebtModal(debt = null) {
       editingDebt = debt;
       modalTitle.textContent = debt ? 'Edit UX Debt' : 'Add UX Debt';
-      
-      // Update button text based on mode
       saveDebtText.textContent = debt ? 'Update UX Debt' : 'Save UX Debt';
       
       // Check if something is selected in Figma
@@ -1681,7 +1734,6 @@
       selectedProject = null;
       currentProjects = [];
       currentDebts = [];
-      projectStats = {};
       
       apiKeyInput.value = '';
       showScreen('apiSetup');

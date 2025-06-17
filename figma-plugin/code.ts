@@ -1,7 +1,7 @@
 // Figma plugin main code
 figma.showUI(__html__, { 
   width: 420, 
-  height: 700,
+  height: 800,
   themeColors: true 
 });
 
