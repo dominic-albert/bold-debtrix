@@ -439,7 +439,7 @@ function getFigmaContextData() {
       var pageName = figma.currentPage.name;
       var fileName = figma.root.name;
       
-      // Generate Figma URL with enhanced node linking
+      // Generate Figma URL with proper file key and node linking
       var url = 'https://www.figma.com/file/' + figma.fileKey + '/' + encodeURIComponent(fileName);
       
       // If nodes are selected, create a direct link to the first selected node
@@ -450,7 +450,7 @@ function getFigmaContextData() {
         url += '?node-id=' + encodeURIComponent(formattedNodeId);
         
         // Add viewport parameter to focus on the selected node
-        url += '&viewport=' + encodeURIComponent('0,0,1,1');
+        url += '&viewport=0,0,1,1';
       }
       
       resolve({
@@ -463,7 +463,7 @@ function getFigmaContextData() {
     } catch (error) {
       console.error('Error getting Figma context:', error);
       resolve({
-        url: 'https://www.figma.com/file/' + figma.fileKey,
+        url: 'https://www.figma.com/file/' + (figma.fileKey || 'unknown'),
         pageName: 'Unknown',
         fileName: 'Unknown',
         selectedNodes: 0,

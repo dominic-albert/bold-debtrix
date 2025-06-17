@@ -641,6 +641,53 @@
       color: #1e293b;
       line-height: 1.5;
     }
+
+    /* Action button styles for debt cards */
+    .debt-action-btn {
+      padding: 4px 8px;
+      border: none;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .debt-edit-btn {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+
+    .debt-edit-btn:hover {
+      background: #e5e7eb;
+      color: #1f2937;
+    }
+
+    .debt-delete-btn {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .debt-delete-btn:hover {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .debt-view-btn {
+      background: #f0f9ff;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+    }
+
+    .debt-view-btn:hover {
+      background: #e0f2fe;
+      color: #0c4a6e;
+    }
   </style>
 </head>
 <body>
@@ -842,7 +889,6 @@
       
       <div id="view-debt-content" class="debt-detail-content"></div>
       
-      <!-- Removed Edit and Delete buttons as requested -->
       <div class="action-buttons">
         <button id="close-detail-btn" class="button">Close</button>
       </div>
@@ -1266,7 +1312,27 @@
           <div class="debt-header">
             <div class="debt-title">${debt.title}</div>
             <div class="debt-actions">
-              <button class="button button-small button-secondary view-debt-btn" data-debt-id="${debt.id}">View</button>
+              <button class="debt-action-btn debt-view-btn view-debt-btn" data-debt-id="${debt.id}">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+                View
+              </button>
+              <button class="debt-action-btn debt-edit-btn edit-debt-btn" data-debt-id="${debt.id}">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                Edit
+              </button>
+              <button class="debt-action-btn debt-delete-btn delete-debt-btn" data-debt-id="${debt.id}">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3,6 5,6 21,6"/>
+                  <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
+                </svg>
+                Delete
+              </button>
             </div>
           </div>
           <div class="debt-meta">
@@ -1283,6 +1349,20 @@
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
           viewDebt(btn.dataset.debtId);
+        });
+      });
+
+      document.querySelectorAll('.edit-debt-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          editDebt(btn.dataset.debtId);
+        });
+      });
+
+      document.querySelectorAll('.delete-debt-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteDebt(btn.dataset.debtId);
         });
       });
     }
@@ -1520,6 +1600,28 @@
       `;
       
       viewDebtModal.classList.remove('hidden');
+    }
+    
+    function editDebt(debtId) {
+      const debt = currentDebts.find(d => d.id === debtId);
+      if (debt) {
+        openDebtModal(debt);
+      }
+    }
+    
+    function deleteDebt(debtId) {
+      const debt = currentDebts.find(d => d.id === debtId);
+      if (!debt) return;
+      
+      if (confirm(`Are you sure you want to delete "${debt.title}"? This action cannot be undone.`)) {
+        parent.postMessage({ 
+          pluginMessage: { 
+            type: 'delete-ux-debt', 
+            projectId: selectedProject.id,
+            debtId: debtId
+          } 
+        }, '*');
+      }
     }
     
     function closeViewDebtModal() {
