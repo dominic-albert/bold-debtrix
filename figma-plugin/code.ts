@@ -243,13 +243,13 @@ async function createUXDebt(projectId: string, debtData: any) {
     // Get Figma context
     const figmaContext = await getFigmaContextData();
     
-    const payload = {
-      ...debtData,
+    // Use Object.assign instead of spread operator for ES5 compatibility
+    const payload = Object.assign({}, debtData, {
       project_id: projectId,
       logged_by: userData.full_name,
       figma_url: figmaContext.url,
-      screen: debtData.screen || figmaContext.pageName,
-    };
+      screen: debtData.screen || figmaContext.pageName
+    });
     
     const response = await fetch(`${config.apiBaseUrl}/rest/v1/ux_debts`, {
       method: 'POST',

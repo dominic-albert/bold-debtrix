@@ -22,7 +22,9 @@ let jsContent = tsContent
   .replace(/await\s+/g, '')
   // Convert const/let to var for better compatibility
   .replace(/\bconst\b/g, 'var')
-  .replace(/\blet\b/g, 'var');
+  .replace(/\blet\b/g, 'var')
+  // Convert spread operator to Object.assign (already done in TS file)
+  .replace(/Object\.assign\(\{\},\s*([^,]+),\s*\{([^}]+)\}\)/g, 'Object.assign({}, $1, {$2})');
 
 // Write the JavaScript file
 fs.writeFileSync(path.join(__dirname, 'code.js'), jsContent);
