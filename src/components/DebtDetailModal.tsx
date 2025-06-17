@@ -45,6 +45,20 @@ function DebtDetailModal({ isOpen, onClose, debt, projectId, onEdit }: DebtDetai
     }
   };
 
+  const handleFigmaLinkClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (debt.figma_url) {
+      // Force open in new tab with proper URL
+      const link = document.createElement('a');
+      link.href = debt.figma_url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl my-8">
@@ -133,15 +147,13 @@ function DebtDetailModal({ isOpen, onClose, debt, projectId, onEdit }: DebtDetai
           {debt.figma_url && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Figma Link</label>
-              <a
-                href={debt.figma_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 transition-colors"
+              <button
+                onClick={handleFigmaLinkClick}
+                className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 transition-colors bg-purple-50 hover:bg-purple-100 px-3 py-2 rounded-lg border border-purple-200"
               >
                 <ExternalLink className="w-4 h-4" />
                 Open in Figma
-              </a>
+              </button>
             </div>
           )}
 

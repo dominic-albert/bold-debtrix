@@ -381,64 +381,107 @@ async function getFigmaContextData() {
     const pageName = figma.currentPage.name;
     const fileName = figma.root.name;
     
-    // Get the file key from the current document
-    let fileKey: string | null = null;
-    let url = 'https://www.figma.com/file/';
+    console.log('=== FIGMA CONTEXT DEBUG ===');
+    console.log('Page name:', pageName);
+    console.log('File name:', fileName);
+    console.log('Selection count:', selection.length);
+    console.log('Selected nodes:', selection.map(node => ({ id: node.id, name: node.name })));
     
-    // Try multiple methods to get the file key
+    // Get the file key - improved method for Figma plugin environment
+    let fileKey: string | null = null;
+    
     try {
-      // Method 1: Try to get from figma.fileKey (if available)
-      if (typeof (figma as any).fileKey !== 'undefined' && (figma as any).fileKey) {
+      // Method 1: Check if figma.fileKey is available (most reliable in plugin context)
+      if (typeof (figma as any).fileKey === 'string' && (figma as any).fileKey) {
         fileKey = (figma as any).fileKey;
+        console.log('File key from figma.fileKey:', fileKey);
       }
       
-      // Method 2: Try to get from the document URL if available
-      if (!fileKey && figma.root && (figma.root as any).getPluginData) {
-        const storedFileKey = (figma.root as any).getPluginData('fileKey');
-        if (storedFileKey) {
-          fileKey = storedFileKey;
+      // Method 2: Try to extract from document URL if available
+      if (!fileKey && typeof (figma as any).root?.getSharedPluginData === 'function') {
+        try {
+          const urlData = (figma as any).root.getSharedPluginData('figma', 'fileUrl');
+          if (urlData) {
+            const urlMatch = urlData.match(/\/file\/([a-zA-Z0-9]+)/);
+            if (urlMatch) {
+              fileKey = urlMatch[1];
+              console.log('File key from shared plugin data:', fileKey);
+            }
+          }
+        } catch (e) {
+          console.log('Could not get shared plugin data:', e);
         }
       }
       
-      // Method 3: Try to extract from current URL if in browser context
-      if (!fileKey && typeof window !== 'undefined' && window.location) {
-        const urlMatch = window.location.href.match(/\/file\/([a-zA-Z0-9]+)/);
-        if (urlMatch) {
-          fileKey = urlMatch[1];
-        }
-      }
-      
-      // Method 4: Check if we can access the document's metadata
+      // Method 3: Try to get from root ID (fallback)
       if (!fileKey && figma.root && figma.root.id) {
-        // Sometimes the file key might be derivable from the root ID
         const rootId = figma.root.id;
-        if (rootId && rootId.length > 10) {
-          fileKey = rootId.split(':')[0] || rootId.substring(0, 22);
+        console.log('Root ID:', rootId);
+        
+        // Extract potential file key from root ID
+        if (rootId.includes(':')) {
+          fileKey = rootId.split(':')[0];
+        } else if (rootId.length >= 22) {
+          fileKey = rootId.substring(0, 22);
+        }
+        console.log('File key from root ID:', fileKey);
+      }
+      
+      // Method 4: Try to access document metadata
+      if (!fileKey && typeof (figma as any).root?.getPluginData === 'function') {
+        try {
+          const storedFileKey = (figma as any).root.getPluginData('fileKey');
+          if (storedFileKey) {
+            fileKey = storedFileKey;
+            console.log('File key from plugin data:', fileKey);
+          }
+        } catch (e) {
+          console.log('Could not get plugin data:', e);
         }
       }
+      
     } catch (e) {
-      console.log('Could not determine file key:', e);
+      console.error('Error determining file key:', e);
     }
     
-    // Build the URL
+    console.log('Final file key:', fileKey);
+    
+    // Build the URL with improved logic
+    let url = 'https://www.figma.com/design/';
+    
     if (fileKey) {
-      url += `${fileKey}/${encodeURIComponent(fileName)}`;
+      // Use the design URL format which is more reliable
+      url += `${fileKey}/${encodeURIComponent(fileName.replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '-'))}`;
       
-      // If nodes are selected, create a direct link to the first selected node
+      // If nodes are selected, create a direct link to the selection
       if (selection.length > 0) {
-        const nodeId = selection[0].id;
-        // Convert node ID to URL format (replace colons with dashes)
-        const formattedNodeId = nodeId.replace(/:/g, '-');
-        url += `?node-id=${encodeURIComponent(formattedNodeId)}`;
+        const nodeIds = selection.map(node => {
+          // Convert node ID to URL format (replace colons with dashes)
+          return node.id.replace(/:/g, '-');
+        });
         
-        // Add viewport parameter to focus on the selected node
-        url += '&viewport=0,0,1,1';
+        // Use the first selected node as primary, others as additional context
+        url += `?node-id=${encodeURIComponent(nodeIds[0])}`;
+        
+        // Add additional selected nodes if any
+        if (nodeIds.length > 1) {
+          url += `&t=${encodeURIComponent(nodeIds.slice(1).join(','))}`;
+        }
+        
+        console.log('Generated URL with selection:', url);
+      } else {
+        // No selection, link to the page
+        url += `?page-id=${encodeURIComponent(figma.currentPage.id.replace(/:/g, '-'))}`;
+        console.log('Generated URL for page:', url);
       }
     } else {
       // Fallback: create a generic Figma URL
       url = 'https://www.figma.com/files/recent';
       console.warn('Could not determine file key, using fallback URL');
     }
+    
+    console.log('Final generated URL:', url);
+    console.log('=== END FIGMA CONTEXT DEBUG ===');
     
     return {
       url,
@@ -451,7 +494,8 @@ async function getFigmaContextData() {
         hasFileKey: !!fileKey,
         figmaFileKeyAvailable: typeof (figma as any).fileKey !== 'undefined',
         figmaFileKeyValue: (figma as any).fileKey || 'undefined',
-        rootId: figma.root ? figma.root.id : 'no root'
+        rootId: figma.root ? figma.root.id : 'no root',
+        generatedUrl: url
       }
     };
   } catch (error) {
@@ -468,7 +512,8 @@ async function getFigmaContextData() {
         hasFileKey: false,
         figmaFileKeyAvailable: false,
         figmaFileKeyValue: 'error',
-        rootId: 'error'
+        rootId: 'error',
+        generatedUrl: 'fallback'
       }
     };
   }

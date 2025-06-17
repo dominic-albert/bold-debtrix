@@ -69,6 +69,20 @@ function DebtListView({ searchTerm }: DebtListViewProps) {
     setShowDetailModal(true);
   };
 
+  const handleFigmaLinkClick = (e: React.MouseEvent, figmaUrl: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Force open in new tab with proper URL
+    const link = document.createElement('a');
+    link.href = figmaUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (filteredDebts.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
@@ -128,16 +142,14 @@ function DebtListView({ searchTerm }: DebtListViewProps) {
                         {debt.description}
                       </div>
                       {debt.figma_url && (
-                        <a
-                          href={debt.figma_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 mt-1"
-                          onClick={(e) => e.stopPropagation()}
+                        <button
+                          onClick={(e) => handleFigmaLinkClick(e, debt.figma_url)}
+                          className="inline-flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 mt-1 bg-purple-50 hover:bg-purple-100 px-2 py-1 rounded transition-colors"
+                          title="Open in Figma"
                         >
                           <ExternalLink className="w-3 h-3" />
                           Figma
-                        </a>
+                        </button>
                       )}
                     </div>
                   </td>
