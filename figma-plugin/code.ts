@@ -243,13 +243,20 @@ async function createUXDebt(projectId: string, debtData: any) {
     // Get Figma context
     const figmaContext = await getFigmaContextData();
     
-    // Use Object.assign instead of spread operator for ES5 compatibility
-    const payload = Object.assign({}, debtData, {
+    // Create payload without spread operator - manually assign each property
+    const payload = {
+      title: debtData.title,
+      screen: debtData.screen || figmaContext.pageName,
+      type: debtData.type,
+      severity: debtData.severity,
+      status: debtData.status,
+      description: debtData.description,
+      recommendation: debtData.recommendation,
+      assignee: debtData.assignee,
       project_id: projectId,
       logged_by: userData.full_name,
-      figma_url: figmaContext.url,
-      screen: debtData.screen || figmaContext.pageName
-    });
+      figma_url: figmaContext.url
+    };
     
     const response = await fetch(`${config.apiBaseUrl}/rest/v1/ux_debts`, {
       method: 'POST',
@@ -397,23 +404,7 @@ async function getFigmaContextData() {
         console.log('File key from figma.fileKey:', fileKey);
       }
       
-      // Method 2: Try to extract from document URL if available
-      if (!fileKey && typeof (figma as any).root?.getSharedPluginData === 'function') {
-        try {
-          const urlData = (figma as any).root.getSharedPluginData('figma', 'fileUrl');
-          if (urlData) {
-            const urlMatch = urlData.match(/\/file\/([a-zA-Z0-9]+)/);
-            if (urlMatch) {
-              fileKey = urlMatch[1];
-              console.log('File key from shared plugin data:', fileKey);
-            }
-          }
-        } catch (e) {
-          console.log('Could not get shared plugin data:', e);
-        }
-      }
-      
-      // Method 3: Try to get from root ID (fallback)
+      // Method 2: Try to get from root ID (fallback)
       if (!fileKey && figma.root && figma.root.id) {
         const rootId = figma.root.id;
         console.log('Root ID:', rootId);
@@ -425,19 +416,6 @@ async function getFigmaContextData() {
           fileKey = rootId.substring(0, 22);
         }
         console.log('File key from root ID:', fileKey);
-      }
-      
-      // Method 4: Try to access document metadata
-      if (!fileKey && typeof (figma as any).root?.getPluginData === 'function') {
-        try {
-          const storedFileKey = (figma as any).root.getPluginData('fileKey');
-          if (storedFileKey) {
-            fileKey = storedFileKey;
-            console.log('File key from plugin data:', fileKey);
-          }
-        } catch (e) {
-          console.log('Could not get plugin data:', e);
-        }
       }
       
     } catch (e) {
