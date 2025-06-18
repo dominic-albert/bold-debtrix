@@ -2,1778 +2,1101 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Debtrix</title>
+  <title>Debtrix - UX Debt Tracker</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
+      font-size: 12px;
       line-height: 1.4;
       color: #333;
       background: #f8f9fa;
       height: 100vh;
       overflow: hidden;
     }
-    
+
     .container {
-      padding: 16px;
-      max-width: 420px;
       height: 100vh;
-      overflow-y: auto;
-      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
-    
-    /* Custom sleek scrollbar */
-    .container::-webkit-scrollbar {
-      width: 4px;
-    }
-    
-    .container::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    
-    .container::-webkit-scrollbar-thumb {
-      background: rgba(139, 92, 246, 0.3);
-      border-radius: 2px;
-    }
-    
-    .container::-webkit-scrollbar-thumb:hover {
-      background: rgba(139, 92, 246, 0.5);
-    }
-    
+
     .header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid #e1e5e9;
-    }
-    
-    .header-with-back {
-      justify-content: space-between;
-    }
-    
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .back-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #6b7280;
-      transition: all 0.2s;
-    }
-    
-    .back-button:hover {
-      background: #f3f4f6;
-      color: #374151;
-    }
-    
-    .logo {
-      width: 24px;
-      height: 24px;
-      background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       color: white;
-      font-weight: bold;
-      font-size: 12px;
-    }
-    
-    .title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #1f2937;
-    }
-    
-    .subtitle {
-      font-size: 14px;
-      color: #6b7280;
-      margin-top: 4px;
-    }
-    
-    .form-group {
-      margin-bottom: 16px;
-    }
-    
-    .label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
-      color: #374151;
-    }
-    
-    .input, .select, .textarea {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      font-size: 14px;
-      background: white;
-    }
-    
-    .input:focus, .select:focus, .textarea:focus {
-      outline: none;
-      border-color: #8b5cf6;
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-    }
-    
-    .textarea {
-      resize: vertical;
-      min-height: 60px;
-    }
-    
-    .button {
-      width: 100%;
-      padding: 10px 16px;
-      background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    
-    .button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-    }
-    
-    .button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-    
-    .button-secondary {
-      background: #f3f4f6;
-      color: #374151;
-      border: 1px solid #d1d5db;
-    }
-    
-    .button-secondary:hover {
-      background: #e5e7eb;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    .button-small {
-      padding: 6px 12px;
-      font-size: 12px;
-      width: auto;
-    }
-    
-    .button-danger {
-      background: #dc2626;
-      color: white;
-    }
-    
-    .button-danger:hover {
-      background: #b91c1c;
-      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-    }
-    
-    .error {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #dc2626;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 13px;
-      margin-bottom: 16px;
-    }
-    
-    .success {
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      color: #16a34a;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 13px;
-      margin-bottom: 16px;
-    }
-    
-    .warning {
-      background: #fffbeb;
-      border: 1px solid #fed7aa;
-      color: #d97706;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 13px;
-      margin-bottom: 16px;
-    }
-    
-    .loading {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid #ffffff;
-      border-radius: 50%;
-      border-top-color: transparent;
-      animation: spin 1s ease-in-out infinite;
-      margin-right: 8px;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    .hidden {
-      display: none !important;
-    }
-    
-    .project-item {
       padding: 16px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: white;
-      position: relative;
-    }
-    
-    .project-item:hover {
-      border-color: #8b5cf6;
-      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
-      transform: translateY(-1px);
-    }
-    
-    .project-item.selected {
-      border-color: #8b5cf6;
-      background: #f8fafc;
-    }
-    
-    .project-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    
-    .project-color {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
+      text-align: center;
       flex-shrink: 0;
     }
-    
-    .project-title {
+
+    .header h1 {
+      font-size: 16px;
       font-weight: 600;
-      color: #1f2937;
-      font-size: 15px;
-    }
-    
-    .project-description {
-      font-size: 12px;
-      color: #6b7280;
-      margin-bottom: 12px;
-      line-height: 1.4;
-    }
-    
-    .project-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    
-    .stat-item {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      padding: 8px;
-      text-align: center;
-    }
-    
-    .stat-number {
-      font-size: 18px;
-      font-weight: 700;
-      color: #1e293b;
-      display: block;
-    }
-    
-    .stat-label {
-      font-size: 10px;
-      color: #64748b;
-      text-transform: uppercase;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-    }
-    
-    .severity-badges {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
-    }
-    
-    .severity-badge {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      padding: 2px 6px;
-      border-radius: 10px;
-      font-size: 10px;
-      font-weight: 500;
-    }
-    
-    .severity-critical { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-    .severity-high { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
-    .severity-medium { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
-    .severity-low { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-    
-    .severity-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-    }
-    
-    .dot-critical { background: #dc2626; }
-    .dot-high { background: #ea580c; }
-    .dot-medium { background: #d97706; }
-    .dot-low { background: #16a34a; }
-    
-    .project-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-      color: #64748b;
-      padding-top: 8px;
-      border-top: 1px solid #e2e8f0;
-    }
-    
-    .debt-item {
-      padding: 12px;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      background: white;
-      position: relative;
-    }
-    
-    .debt-item:hover {
-      border-color: #d1d5db;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-    
-    .debt-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 8px;
-    }
-    
-    .debt-title {
-      font-weight: 500;
-      color: #1f2937;
-      flex: 1;
-      margin-right: 8px;
-    }
-    
-    .debt-actions {
-      display: flex;
-      gap: 4px;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    
-    .debt-item:hover .debt-actions {
-      opacity: 1;
-    }
-    
-    .debt-meta {
-      display: flex;
-      gap: 8px;
-      font-size: 11px;
-      margin-bottom: 8px;
-    }
-    
-    .debt-description {
-      font-size: 12px;
-      color: #6b7280;
-      line-height: 1.4;
-    }
-    
-    .badge {
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 500;
-    }
-    
-    .badge-critical { background: #fef2f2; color: #dc2626; }
-    .badge-high { background: #fff7ed; color: #ea580c; }
-    .badge-medium { background: #fffbeb; color: #d97706; }
-    .badge-low { background: #f0fdf4; color: #16a34a; }
-    
-    .badge-open { background: #fef2f2; color: #dc2626; }
-    .badge-in-progress { background: #fffbeb; color: #d97706; }
-    .badge-resolved { background: #f0fdf4; color: #16a34a; }
-    
-    .figma-context {
-      background: #f0f9ff;
-      border: 1px solid #bae6fd;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 16px;
-      font-size: 12px;
-      color: #0369a1;
-    }
-
-    .figma-context-header {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #0c4a6e;
-    }
-
-    .figma-context-details {
-      space-y: 4px;
-    }
-
-    .figma-context-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       margin-bottom: 4px;
     }
 
-    .figma-context-label {
-      font-weight: 500;
-      color: #0369a1;
+    .header p {
+      font-size: 11px;
+      opacity: 0.9;
     }
 
-    .figma-context-value {
-      color: #0c4a6e;
-      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
-    .figma-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      color: #8b5cf6;
-      text-decoration: none;
+    /* Custom scrollbar */
+    .content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .content::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 2px;
+    }
+
+    .content::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 2px;
+    }
+
+    .content::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+
+    .section {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid #e1e5e9;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .section h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
       font-size: 11px;
       font-weight: 500;
-      padding: 4px 8px;
+      margin-bottom: 4px;
+      color: #555;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
       border-radius: 4px;
-      background: rgba(139, 92, 246, 0.1);
-      border: 1px solid rgba(139, 92, 246, 0.2);
+      font-size: 11px;
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
       transition: all 0.2s;
+      width: 100%;
     }
 
-    .figma-link:hover {
-      background: rgba(139, 92, 246, 0.15);
-      border-color: rgba(139, 92, 246, 0.3);
+    .btn:hover {
       transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 
-    .figma-link svg {
-      width: 12px;
-      height: 12px;
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
     }
 
-    .config-section {
-      background: #f0f9ff;
-      border: 1px solid #bae6fd;
-      border-radius: 8px;
-      padding: 12px;
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+    }
+
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 10px;
+    }
+
+    .tabs {
+      display: flex;
+      background: #f8f9fa;
+      border-radius: 6px;
+      padding: 2px;
       margin-bottom: 16px;
     }
 
-    .config-title {
-      font-weight: 600;
-      color: #0369a1;
-      margin-bottom: 8px;
+    .tab {
+      flex: 1;
+      padding: 8px 12px;
+      text-align: center;
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #666;
     }
 
-    .config-input {
-      margin-bottom: 8px;
+    .tab.active {
+      background: white;
+      color: #667eea;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
-    .config-input input {
-      font-size: 12px;
-      padding: 6px 8px;
+    .tab-content {
+      display: none;
     }
 
-    .config-help {
+    .tab-content.active {
+      display: block;
+    }
+
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #f5c6cb;
+    }
+
+    .success {
+      background: #d4edda;
+      color: #155724;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #c3e6cb;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
       font-size: 11px;
-      color: #0369a1;
-      margin-top: 4px;
     }
-    
-    .action-buttons {
+
+    .debt-item {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+
+    .debt-item:hover {
+      background: #e9ecef;
+      cursor: pointer;
+    }
+
+    .debt-title {
+      font-weight: 600;
+      font-size: 11px;
+      margin-bottom: 4px;
+      color: #333;
+    }
+
+    .debt-meta {
       display: flex;
       gap: 8px;
-      margin-top: 16px;
+      margin-bottom: 6px;
     }
-    
-    .action-buttons .button {
-      flex: 1;
+
+    .debt-tag {
+      background: #667eea;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 500;
     }
-    
-    .empty-state {
+
+    .debt-tag.severity-critical { background: #dc3545; }
+    .debt-tag.severity-high { background: #fd7e14; }
+    .debt-tag.severity-medium { background: #ffc107; color: #333; }
+    .debt-tag.severity-low { background: #28a745; }
+
+    .debt-description {
+      font-size: 10px;
+      color: #666;
+      line-height: 1.3;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 6px;
       text-align: center;
-      padding: 32px 16px;
-      color: #6b7280;
+      border: 1px solid #e9ecef;
     }
-    
-    .empty-state-icon {
-      width: 48px;
-      height: 48px;
-      background: #f3f4f6;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-      color: #9ca3af;
+
+    .stat-number {
+      font-size: 18px;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 2px;
     }
-    
+
+    .stat-label {
+      font-size: 9px;
+      color: #666;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .project-item {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .project-item:hover {
+      background: #e9ecef;
+      transform: translateY(-1px);
+    }
+
+    .project-item.selected {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .project-title {
+      font-weight: 600;
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    .project-description {
+      font-size: 10px;
+      opacity: 0.8;
+      line-height: 1.3;
+    }
+
     .modal {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0,0,0,0.5);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
     }
-    
+
     .modal-content {
       background: white;
       border-radius: 8px;
       padding: 20px;
-      width: 90%;
-      max-width: 400px;
-      max-height: 85vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+      max-width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
-    
+
+    .modal-content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .modal-content::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 2px;
+    }
+
+    .modal-content::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 2px;
+    }
+
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
       padding-bottom: 12px;
-      border-bottom: 1px solid #e5e7eb;
-      flex-shrink: 0;
+      border-bottom: 1px solid #e9ecef;
     }
-    
+
     .modal-title {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 600;
-      color: #1f2937;
+      color: #333;
     }
-    
-    .close-button {
+
+    .close-btn {
       background: none;
       border: none;
+      font-size: 18px;
       cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
-      color: #6b7280;
-    }
-    
-    .close-button:hover {
-      background: #f3f4f6;
-      color: #374151;
-    }
-    
-    .modal-form {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      max-height: 65vh;
-      padding-right: 8px;
-      margin-right: -8px;
-    }
-    
-    /* Custom sleek scrollbar for modal */
-    .modal-form::-webkit-scrollbar {
-      width: 4px;
-    }
-    
-    .modal-form::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    
-    .modal-form::-webkit-scrollbar-thumb {
-      background: rgba(139, 92, 246, 0.3);
-      border-radius: 2px;
-    }
-    
-    .modal-form::-webkit-scrollbar-thumb:hover {
-      background: rgba(139, 92, 246, 0.5);
-    }
-    
-    .modal-footer {
-      flex-shrink: 0;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid #e5e7eb;
-    }
-    
-    .selection-warning {
-      background: #fffbeb;
-      border: 1px solid #fed7aa;
-      color: #d97706;
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 13px;
-      margin-bottom: 16px;
+      color: #666;
+      padding: 0;
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
+      justify-content: center;
+    }
+
+    .close-btn:hover {
+      color: #333;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .flex {
+      display: flex;
       gap: 8px;
     }
 
-    .debt-detail-content {
-      max-height: 65vh;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding-right: 8px;
-      margin-right: -8px;
-    }
-    
-    /* Custom sleek scrollbar for debt detail */
-    .debt-detail-content::-webkit-scrollbar {
-      width: 4px;
-    }
-    
-    .debt-detail-content::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    
-    .debt-detail-content::-webkit-scrollbar-thumb {
-      background: rgba(139, 92, 246, 0.3);
-      border-radius: 2px;
-    }
-    
-    .debt-detail-content::-webkit-scrollbar-thumb:hover {
-      background: rgba(139, 92, 246, 0.5);
+    .flex-1 {
+      flex: 1;
     }
 
-    .debt-detail-section {
-      margin-bottom: 16px;
+    .text-center {
+      text-align: center;
     }
 
-    .debt-detail-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: #374151;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+    .mt-2 { margin-top: 8px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mt-4 { margin-top: 16px; }
+    .mb-4 { margin-bottom: 16px; }
 
-    .debt-detail-value {
-      color: #1f2937;
-      line-height: 1.5;
-    }
-
-    .debt-detail-meta {
+    .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .debt-detail-badges {
-      display: flex;
       gap: 8px;
-      margin-bottom: 16px;
     }
 
-    .debt-detail-description {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      padding: 12px;
-      color: #1e293b;
-      line-height: 1.5;
+    .debt-actions {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
     }
 
-    /* Action button styles for debt cards */
-    .debt-action-btn {
+    .debt-actions button {
       padding: 4px 8px;
+      font-size: 9px;
+      border-radius: 3px;
       border: none;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 500;
       cursor: pointer;
       transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 4px;
     }
 
-    .debt-edit-btn {
-      background: #f3f4f6;
-      color: #374151;
-      border: 1px solid #d1d5db;
+    .edit-btn {
+      background: #17a2b8;
+      color: white;
     }
 
-    .debt-edit-btn:hover {
-      background: #e5e7eb;
-      color: #1f2937;
+    .edit-btn:hover {
+      background: #138496;
     }
 
-    .debt-delete-btn {
-      background: #fef2f2;
-      color: #dc2626;
-      border: 1px solid #fecaca;
+    .delete-btn {
+      background: #dc3545;
+      color: white;
     }
 
-    .debt-delete-btn:hover {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
-
-    .debt-view-btn {
-      background: #f0f9ff;
-      color: #0369a1;
-      border: 1px solid #bae6fd;
-    }
-
-    .debt-view-btn:hover {
-      background: #e0f2fe;
-      color: #0c4a6e;
+    .delete-btn:hover {
+      background: #c82333;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Configuration Setup -->
-    <div id="config-setup" class="screen">
-      <div class="header">
-        <div class="logo">D</div>
-        <div class="title">Debtrix</div>
-      </div>
-      
-      <div class="config-section">
-        <div class="config-title">Plugin Configuration</div>
-        <div class="config-input">
-          <label class="label">Supabase URL</label>
-          <input type="text" id="supabase-url" class="input" placeholder="https://your-project.supabase.co">
-          <div class="config-help">Your Supabase project URL</div>
-        </div>
-        <div class="config-input">
-          <label class="label">Supabase Anon Key</label>
-          <input type="text" id="supabase-anon-key" class="input" placeholder="Your anon key">
-          <div class="config-help">Your Supabase anonymous key</div>
-        </div>
-        <button id="save-config-btn" class="button">
-          <span class="button-text">Save Configuration</span>
-        </button>
-      </div>
+    <div class="header">
+      <h1>Debtrix</h1>
+      <p>UX Debt Tracker for Figma</p>
     </div>
-    
-    <!-- API Key Setup -->
-    <div id="api-setup" class="screen hidden">
-      <div class="header">
-        <div class="logo">D</div>
-        <div class="title">Debtrix</div>
+
+    <div class="content">
+      <!-- Configuration Section -->
+      <div id="configSection" class="section">
+        <h2>Setup</h2>
+        <div class="form-group">
+          <label for="apiBaseUrl">API Base URL</label>
+          <input type="text" id="apiBaseUrl" placeholder="https://your-project.supabase.co" />
+        </div>
+        <div class="form-group">
+          <label for="anonKey">Anonymous Key</label>
+          <input type="text" id="anonKey" placeholder="Your Supabase anon key" />
+        </div>
+        <div class="form-group">
+          <label for="apiKey">API Key</label>
+          <input type="password" id="apiKey" placeholder="Your Debtrix API key" />
+        </div>
+        <button class="btn" onclick="verifyApiKey()">Connect to Debtrix</button>
+        <div id="configError" class="error hidden"></div>
+        <div id="configSuccess" class="success hidden"></div>
       </div>
-      
-      <div class="form-group">
-        <label class="label">API Key</label>
-        <input type="password" id="api-key-input" class="input" placeholder="Paste your API key here">
-      </div>
-      <button id="verify-key-btn" class="button">
-        <span class="button-text">Connect to Debtrix</span>
-      </button>
-      <div id="api-error" class="error hidden"></div>
-      
-      <div style="margin-top: 16px; padding: 12px; background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 6px; font-size: 12px; color: #0369a1;">
-        <strong>How to get your API key:</strong><br>
-        1. Go to Debtrix web app<br>
-        2. Navigate to Settings → API Access<br>
-        3. Generate and copy your API key<br>
-        4. Paste it above
-      </div>
-      
-      <button id="back-to-config-btn" class="button button-secondary" style="margin-top: 12px;">
-        Back to Configuration
-      </button>
-    </div>
-    
-    <!-- Projects List -->
-    <div id="projects-screen" class="screen hidden">
-      <div class="header">
-        <div class="header-left">
-          <div>
-            <div class="title">Your Projects</div>
-            <div class="subtitle">Select a project to manage UX debt</div>
+
+      <!-- Main App -->
+      <div id="mainApp" class="hidden">
+        <div class="tabs">
+          <button class="tab active" onclick="showTab('projects')">Projects</button>
+          <button class="tab" onclick="showTab('add')">Add Debt</button>
+          <button class="tab" onclick="showTab('list')">List</button>
+        </div>
+
+        <!-- Projects Tab -->
+        <div id="projectsTab" class="tab-content active">
+          <div class="section">
+            <h2>Select Project</h2>
+            <div id="projectsList">
+              <div class="loading">Loading projects...</div>
+            </div>
+          </div>
+          
+          <!-- Stats Section -->
+          <div id="statsSection" class="section hidden">
+            <h2>Project Stats</h2>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-number" id="totalDebts">0</div>
+                <div class="stat-label">Total Debts</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number" id="openDebts">0</div>
+                <div class="stat-label">Open Issues</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Debt Tab -->
+        <div id="addTab" class="tab-content">
+          <div class="section">
+            <h2>Log UX Debt</h2>
+            <div id="addDebtForm">
+              <div class="form-group">
+                <label for="debtTitle">Title *</label>
+                <input type="text" id="debtTitle" placeholder="Brief description of the issue" required />
+              </div>
+              
+              <div class="grid-2">
+                <div class="form-group">
+                  <label for="debtScreen">Screen/Component *</label>
+                  <input type="text" id="debtScreen" placeholder="Where is this issue?" required />
+                </div>
+                <div class="form-group">
+                  <label for="debtType">Type *</label>
+                  <select id="debtType" required>
+                    <option value="Heuristic">Heuristic</option>
+                    <option value="Accessibility">Accessibility</option>
+                    <option value="Performance">Performance</option>
+                    <option value="Visual">Visual</option>
+                    <option value="Usability">Usability</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid-2">
+                <div class="form-group">
+                  <label for="debtSeverity">Severity *</label>
+                  <select id="debtSeverity" required>
+                    <option value="Low">Low</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="debtAssignee">Assignee</label>
+                  <input type="text" id="debtAssignee" placeholder="Who should fix this?" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="debtDescription">Description *</label>
+                <textarea id="debtDescription" placeholder="Detailed description of the UX issue..." required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="debtRecommendation">Recommendation *</label>
+                <textarea id="debtRecommendation" placeholder="How should this be fixed?" required></textarea>
+              </div>
+
+              <button class="btn" onclick="createDebt()" id="createDebtBtn">Log UX Debt</button>
+              <div id="addDebtError" class="error hidden"></div>
+              <div id="addDebtSuccess" class="success hidden"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- List Tab -->
+        <div id="listTab" class="tab-content">
+          <div class="section">
+            <h2>UX Debts</h2>
+            <div id="debtsList">
+              <div class="loading">Select a project first</div>
+            </div>
           </div>
         </div>
       </div>
-      
-      <div id="projects-loading" class="hidden">Loading projects...</div>
-      <div id="projects-list"></div>
-      
-      <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb;">
-        <button id="logout-btn" class="button button-secondary">Disconnect</button>
-      </div>
-    </div>
-    
-    <!-- Project Details -->
-    <div id="project-details-screen" class="screen hidden">
-      <div class="header header-with-back">
-        <div class="header-left">
-          <button id="back-to-projects-btn" class="back-button">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="m15 18-6-6 6-6"/>
-            </svg>
-          </button>
-          <div>
-            <div class="title" id="project-title">Project Name</div>
-            <div class="subtitle" id="project-subtitle">UX Debt Management</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="action-buttons">
-        <button id="add-debt-btn" class="button">
-          <span>+ Add UX Debt</span>
-        </button>
-      </div>
-      
-      <div id="debts-loading" class="hidden" style="margin-top: 16px;">Loading UX debts...</div>
-      <div id="debts-list" style="margin-top: 16px;"></div>
     </div>
   </div>
 
-  <!-- Add/Edit Debt Modal - STARTS HIDDEN -->
-  <div id="debt-modal" class="modal hidden">
+  <!-- Debt Detail Modal -->
+  <div id="debtModal" class="modal hidden">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="modal-title" id="modal-title">Add UX Debt</div>
-        <button id="close-modal-btn" class="close-button">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m18 6-12 12"/>
-            <path d="m6 6 12 12"/>
-          </svg>
-        </button>
+        <h3 class="modal-title" id="modalTitle">UX Debt Details</h3>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
       </div>
-      
-      <div class="modal-form">
-        <div id="selection-warning" class="selection-warning hidden">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m21 16-4 4-4-4"/>
-            <path d="M17 20V4"/>
-            <path d="m3 8 4-4 4 4"/>
-            <path d="M7 4v16"/>
-          </svg>
-          Please select a component or frame in Figma first to provide better context for this UX debt.
-        </div>
-        
-        <div id="figma-context-display" class="figma-context"></div>
-        
-        <div class="form-group">
-          <label class="label">Title *</label>
-          <input type="text" id="debt-title" class="input" placeholder="Brief description of the issue">
-        </div>
-        
-        <div class="form-group">
-          <label class="label">Type</label>
-          <select id="debt-type" class="select">
-            <option value="Heuristic">Heuristic</option>
-            <option value="Accessibility">Accessibility</option>
-            <option value="Performance">Performance</option>
-            <option value="Visual">Visual</option>
-            <option value="Usability">Usability</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="label">Severity</label>
-          <select id="debt-severity" class="select">
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-            <option value="Critical">Critical</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="label">Status</label>
-          <select id="debt-status" class="select">
-            <option value="Open">Open</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Resolved">Resolved</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label class="label">Description *</label>
-          <textarea id="debt-description" class="textarea" placeholder="Detailed description of the UX issue..."></textarea>
-        </div>
-        
-        <div class="form-group">
-          <label class="label">Recommendation *</label>
-          <textarea id="debt-recommendation" class="textarea" placeholder="How should this be fixed?"></textarea>
-        </div>
-      </div>
-      
-      <div class="modal-footer">
-        <div class="action-buttons">
-          <button id="cancel-debt-btn" class="button button-secondary">Cancel</button>
-          <button id="save-debt-btn" class="button">
-            <span class="button-text" id="save-debt-text">Save UX Debt</span>
-          </button>
-        </div>
-        
-        <div id="debt-error" class="error hidden"></div>
-        <div id="debt-success" class="success hidden"></div>
+      <div id="modalContent">
+        <!-- Content will be populated dynamically -->
       </div>
     </div>
   </div>
-  
-  <!-- View Debt Modal - STARTS HIDDEN -->
-  <div id="view-debt-modal" class="modal hidden">
+
+  <!-- Edit Debt Modal -->
+  <div id="editModal" class="modal hidden">
     <div class="modal-content">
       <div class="modal-header">
-        <div class="modal-title">UX Debt Details</div>
-        <button id="close-view-modal-btn" class="close-button">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m18 6-12 12"/>
-            <path d="m6 6 12 12"/>
-          </svg>
-        </button>
+        <h3 class="modal-title">Edit UX Debt</h3>
+        <button class="close-btn" onclick="closeEditModal()">&times;</button>
       </div>
-      
-      <div id="view-debt-content" class="debt-detail-content"></div>
-      
-      <div class="modal-footer">
-        <div class="action-buttons">
-          <button id="close-detail-btn" class="button">Close</button>
+      <div id="editModalContent">
+        <div class="form-group">
+          <label for="editTitle">Title *</label>
+          <input type="text" id="editTitle" required />
         </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="editScreen">Screen/Component *</label>
+            <input type="text" id="editScreen" required />
+          </div>
+          <div class="form-group">
+            <label for="editType">Type *</label>
+            <select id="editType" required>
+              <option value="Heuristic">Heuristic</option>
+              <option value="Accessibility">Accessibility</option>
+              <option value="Performance">Performance</option>
+              <option value="Visual">Visual</option>
+              <option value="Usability">Usability</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label for="editSeverity">Severity *</label>
+            <select id="editSeverity" required>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="editStatus">Status</label>
+            <select id="editStatus">
+              <option value="Open">Open</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="editAssignee">Assignee</label>
+          <input type="text" id="editAssignee" />
+        </div>
+
+        <div class="form-group">
+          <label for="editDescription">Description *</label>
+          <textarea id="editDescription" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="editRecommendation">Recommendation *</label>
+          <textarea id="editRecommendation" required></textarea>
+        </div>
+
+        <div class="flex">
+          <button class="btn btn-secondary flex-1" onclick="closeEditModal()">Cancel</button>
+          <button class="btn flex-1" onclick="updateDebt()" id="updateDebtBtn">Update Debt</button>
+        </div>
+        <div id="editDebtError" class="error hidden"></div>
+        <div id="editDebtSuccess" class="success hidden"></div>
       </div>
     </div>
   </div>
 
   <script>
+    // Configuration
+    const API_BASE_URL = 'https://your-project.supabase.co';
+    const ANON_KEY = 'your-anon-key';
+
     // State
+    let currentConfig = null;
     let currentUser = null;
-    let currentProjects = [];
-    let selectedProject = null;
+    let currentProject = null;
     let currentDebts = [];
-    let figmaContext = null;
-    let apiBaseUrl = '';
-    let anonKey = '';
     let editingDebt = null;
-    let viewingDebt = null;
-    let projectStats = {};
-    
-    // DOM elements
-    const screens = {
-      config: document.getElementById('config-setup'),
-      apiSetup: document.getElementById('api-setup'),
-      projects: document.getElementById('projects-screen'),
-      projectDetails: document.getElementById('project-details-screen')
-    };
-    
-    // Config elements
-    const supabaseUrlInput = document.getElementById('supabase-url');
-    const supabaseAnonKeyInput = document.getElementById('supabase-anon-key');
-    const saveConfigBtn = document.getElementById('save-config-btn');
-    const backToConfigBtn = document.getElementById('back-to-config-btn');
-    
-    // API elements
-    const apiKeyInput = document.getElementById('api-key-input');
-    const verifyKeyBtn = document.getElementById('verify-key-btn');
-    const apiError = document.getElementById('api-error');
-    
-    // Projects
-    const projectsList = document.getElementById('projects-list');
-    const projectsLoading = document.getElementById('projects-loading');
-    const backToProjectsBtn = document.getElementById('back-to-projects-btn');
-    
-    // Project details
-    const projectTitle = document.getElementById('project-title');
-    const projectSubtitle = document.getElementById('project-subtitle');
-    const addDebtBtn = document.getElementById('add-debt-btn');
-    const debtsList = document.getElementById('debts-list');
-    const debtsLoading = document.getElementById('debts-loading');
-    
-    // Modals
-    const debtModal = document.getElementById('debt-modal');
-    const viewDebtModal = document.getElementById('view-debt-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const selectionWarning = document.getElementById('selection-warning');
-    const figmaContextDisplay = document.getElementById('figma-context-display');
-    const closeModalBtn = document.getElementById('close-modal-btn');
-    const closeViewModalBtn = document.getElementById('close-view-modal-btn');
-    const closeDetailBtn = document.getElementById('close-detail-btn');
-    const cancelDebtBtn = document.getElementById('cancel-debt-btn');
-    const saveDebtBtn = document.getElementById('save-debt-btn');
-    const saveDebtText = document.getElementById('save-debt-text');
-    const debtError = document.getElementById('debt-error');
-    const debtSuccess = document.getElementById('debt-success');
-    const viewDebtContent = document.getElementById('view-debt-content');
-    
-    const logoutBtn = document.getElementById('logout-btn');
-    
-    // Event listeners
-    saveConfigBtn.addEventListener('click', saveConfiguration);
-    backToConfigBtn.addEventListener('click', () => showScreen('config'));
-    verifyKeyBtn.addEventListener('click', verifyApiKey);
-    backToProjectsBtn.addEventListener('click', () => showScreen('projects'));
-    addDebtBtn.addEventListener('click', () => openDebtModal());
-    closeModalBtn.addEventListener('click', closeDebtModal);
-    closeViewModalBtn.addEventListener('click', closeViewDebtModal);
-    closeDetailBtn.addEventListener('click', closeViewDebtModal);
-    cancelDebtBtn.addEventListener('click', closeDebtModal);
-    saveDebtBtn.addEventListener('click', saveDebt);
-    logoutBtn.addEventListener('click', logout);
-    
+
     // Initialize
-    init();
-    
-    function init() {
-      // Ensure all modals start hidden
-      hideAllModals();
-      
-      loadConfiguration();
-      parent.postMessage({ pluginMessage: { type: 'get-figma-context' } }, '*');
-      
-      // Listen for messages from plugin code
-      window.onmessage = (event) => {
-        const { type, ...data } = event.data.pluginMessage || {};
-        
-        switch (type) {
-          case 'api-key-loaded':
-            if (apiBaseUrl && anonKey) {
-              apiKeyInput.value = data.apiKey;
-              showScreen('apiSetup');
-              verifyApiKey();
-            }
-            break;
-          case 'api-key-verified':
-            handleApiKeyVerified(data);
-            break;
-          case 'projects-loaded':
-            handleProjectsLoaded(data);
-            break;
-          case 'ux-debts-loaded':
-            handleDebtsLoaded(data);
-            break;
-          case 'ux-debt-created':
-            handleDebtSaved(data);
-            break;
-          case 'ux-debt-updated':
-            handleDebtSaved(data);
-            break;
-          case 'ux-debt-deleted':
-            handleDebtDeleted(data);
-            break;
-          case 'figma-context':
-            handleFigmaContext(data.context);
-            break;
-          case 'config-loaded':
-            if (data.config) {
-              apiBaseUrl = data.config.apiBaseUrl;
-              anonKey = data.config.anonKey;
-              supabaseUrlInput.value = apiBaseUrl;
-              supabaseAnonKeyInput.value = anonKey;
-              if (apiBaseUrl && anonKey) {
-                showScreen('apiSetup');
-              }
-            }
-            break;
-        }
-      };
-    }
-    
-    function hideAllModals() {
-      // Ensure all modals are hidden on startup
-      if (debtModal) debtModal.classList.add('hidden');
-      if (viewDebtModal) viewDebtModal.classList.add('hidden');
-    }
-    
-    function showScreen(screenName) {
-      // Hide all modals first
-      hideAllModals();
-      
-      // Hide all screens
-      Object.values(screens).forEach(screen => screen.classList.add('hidden'));
-      
-      // Show the requested screen
-      if (screens[screenName]) {
-        screens[screenName].classList.remove('hidden');
-      }
-    }
-    
-    function loadConfiguration() {
+    window.onload = function() {
+      loadConfig();
+    };
+
+    function loadConfig() {
       parent.postMessage({ pluginMessage: { type: 'load-config' } }, '*');
     }
-    
-    function saveConfiguration() {
-      const url = supabaseUrlInput.value.trim();
-      const key = supabaseAnonKeyInput.value.trim();
-      
-      if (!url || !key) {
-        alert('Please fill in both Supabase URL and Anon Key');
-        return;
-      }
-      
-      if (!url.startsWith('https://') || !url.includes('.supabase.co')) {
-        alert('Please enter a valid Supabase URL (https://your-project.supabase.co)');
-        return;
-      }
-      
-      apiBaseUrl = url;
-      anonKey = key;
-      
-      setLoading(saveConfigBtn, true);
-      
-      parent.postMessage({ 
-        pluginMessage: { 
-          type: 'save-config',
-          config: { apiBaseUrl: url, anonKey: key }
-        } 
-      }, '*');
-      
-      setTimeout(() => {
-        setLoading(saveConfigBtn, false);
-        showScreen('apiSetup');
-      }, 500);
-    }
-    
+
     function verifyApiKey() {
-      const apiKey = apiKeyInput.value.trim();
-      if (!apiKey) {
-        showError(apiError, 'Please enter your API key');
+      const apiBaseUrl = document.getElementById('apiBaseUrl').value.trim();
+      const anonKey = document.getElementById('anonKey').value.trim();
+      const apiKey = document.getElementById('apiKey').value.trim();
+
+      if (!apiBaseUrl || !anonKey || !apiKey) {
+        showError('configError', 'Please fill in all fields');
         return;
       }
-      
-      if (!apiBaseUrl || !anonKey) {
-        showError(apiError, 'Please configure Supabase settings first');
-        return;
-      }
-      
-      setLoading(verifyKeyBtn, true);
-      hideError(apiError);
-      
-      parent.postMessage({ 
-        pluginMessage: { 
-          type: 'verify-api-key', 
-          apiKey,
-          apiBaseUrl,
-          anonKey
-        } 
-      }, '*');
+
+      // Save config
+      const config = { apiBaseUrl, anonKey };
+      parent.postMessage({ pluginMessage: { type: 'save-config', config } }, '*');
+
+      // Verify API key
+      parent.postMessage({ pluginMessage: { type: 'verify-api-key', apiKey, apiBaseUrl, anonKey } }, '*');
     }
-    
-    function handleApiKeyVerified(data) {
-      setLoading(verifyKeyBtn, false);
-      
-      if (data.success) {
-        currentUser = data.user;
-        showScreen('projects');
+
+    function showTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.getElementById(tabName + 'Tab').classList.add('active');
+
+      // Load data based on tab
+      if (tabName === 'projects') {
         loadProjects();
-      } else {
-        showError(apiError, data.error || 'Invalid API key');
+      } else if (tabName === 'list' && currentProject) {
+        loadDebts();
       }
     }
-    
+
     function loadProjects() {
-      projectsLoading.classList.remove('hidden');
       parent.postMessage({ pluginMessage: { type: 'get-projects' } }, '*');
     }
-    
-    function handleProjectsLoaded(data) {
-      projectsLoading.classList.add('hidden');
-      
-      if (data.success) {
-        currentProjects = data.projects;
-        renderProjects();
-        
-        // Load stats for each project
-        data.projects.forEach(project => {
-          parent.postMessage({ 
-            pluginMessage: { 
-              type: 'get-ux-debts', 
-              projectId: project.id 
-            } 
-          }, '*');
-        });
-      } else {
-        projectsList.innerHTML = `<div class="error">${data.error}</div>`;
-      }
-    }
-    
-    function renderProjects() {
-      if (currentProjects.length === 0) {
-        projectsList.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">📁</div>
-            <p>No projects found</p>
-            <p style="font-size: 12px; margin-top: 8px;">Create a project in the web app first.</p>
-          </div>
-        `;
-        return;
-      }
-      
-      projectsList.innerHTML = currentProjects.map(project => {
-        const stats = projectStats[project.id] || { total: 0, open: 0, resolved: 0, severities: {} };
-        
-        return `
-          <div class="project-item" data-project-id="${project.id}">
-            <div class="project-header">
-              <div class="project-color" style="background-color: ${getProjectColorValue(project.color)}"></div>
-              <div class="project-title">${project.title}</div>
-            </div>
-            <div class="project-description">${project.description}</div>
-            
-            <div class="project-stats">
-              <div class="stat-item">
-                <span class="stat-number" id="total-${project.id}">${stats.total}</span>
-                <span class="stat-label">Total Debts</span>
-              </div>
-              <div class="stat-item">
-                <span class="stat-number" id="open-${project.id}">${stats.open}</span>
-                <span class="stat-label">Open Issues</span>
-              </div>
-            </div>
-            
-            <div class="severity-badges" id="severity-${project.id}">
-              ${renderSeverityBadges(stats.severities)}
-            </div>
-            
-            <div class="project-footer">
-              <span>Updated ${new Date(project.updated_at).toLocaleDateString()}</span>
-              <span id="resolution-${project.id}">${stats.resolved}/${stats.total} Resolved</span>
-            </div>
-          </div>
-        `;
-      }).join('');
-      
-      // Add click handlers
-      document.querySelectorAll('.project-item').forEach(item => {
-        item.addEventListener('click', () => selectProject(item.dataset.projectId));
-      });
-    }
-    
-    function renderSeverityBadges(severities) {
-      let html = '';
-      if (severities.critical > 0) {
-        html += `<div class="severity-badge severity-critical"><div class="severity-dot dot-critical"></div>${severities.critical} Critical</div>`;
-      }
-      if (severities.high > 0) {
-        html += `<div class="severity-badge severity-high"><div class="severity-dot dot-high"></div>${severities.high} High</div>`;
-      }
-      if (severities.medium > 0) {
-        html += `<div class="severity-badge severity-medium"><div class="severity-dot dot-medium"></div>${severities.medium} Medium</div>`;
-      }
-      if (severities.low > 0) {
-        html += `<div class="severity-badge severity-low"><div class="severity-dot dot-low"></div>${severities.low} Low</div>`;
-      }
-      return html;
-    }
-    
-    function getProjectColorValue(colorClass) {
-      const colorMap = {
-        'bg-purple-500': '#8b5cf6',
-        'bg-blue-500': '#3b82f6',
-        'bg-emerald-500': '#10b981',
-        'bg-orange-500': '#f97316',
-        'bg-rose-500': '#f43f5e',
-        'bg-indigo-500': '#6366f1'
-      };
-      return colorMap[colorClass] || '#8b5cf6';
-    }
-    
-    function selectProject(projectId) {
-      selectedProject = currentProjects.find(p => p.id === projectId);
-      
-      if (selectedProject) {
-        projectTitle.textContent = selectedProject.title;
-        projectSubtitle.textContent = selectedProject.description;
-        showScreen('projectDetails');
-        loadDebts(projectId);
-      }
-    }
-    
-    function loadDebts(projectId) {
-      debtsLoading.classList.remove('hidden');
-      parent.postMessage({ 
-        pluginMessage: { 
-          type: 'get-ux-debts', 
-          projectId 
-        } 
-      }, '*');
-    }
-    
-    function handleDebtsLoaded(data) {
-      if (data.success) {
-        const debts = data.debts;
-        
-        // Update project stats
-        const projectId = debts.length > 0 ? debts[0].project_id : null;
-        if (projectId) {
-          updateProjectStats(projectId, debts);
-        }
-        
-        // If this is for the currently selected project, update the debt list
-        if (selectedProject && projectId === selectedProject.id) {
-          debtsLoading.classList.add('hidden');
-          currentDebts = debts;
-          renderDebts();
-        }
-      } else {
-        if (selectedProject) {
-          debtsLoading.classList.add('hidden');
-          debtsList.innerHTML = `<div class="error">${data.error}</div>`;
-        }
-      }
-    }
-    
-    function updateProjectStats(projectId, debts) {
-      const stats = {
-        total: debts.length,
-        open: debts.filter(d => d.status === 'Open').length,
-        resolved: debts.filter(d => d.status === 'Resolved').length,
-        severities: {
-          critical: debts.filter(d => d.severity === 'Critical').length,
-          high: debts.filter(d => d.severity === 'High').length,
-          medium: debts.filter(d => d.severity === 'Medium').length,
-          low: debts.filter(d => d.severity === 'Low').length
-        }
-      };
-      
-      projectStats[projectId] = stats;
-      
-      // Update UI elements if they exist
-      const totalEl = document.getElementById(`total-${projectId}`);
-      const openEl = document.getElementById(`open-${projectId}`);
-      const resolutionEl = document.getElementById(`resolution-${projectId}`);
-      const severityEl = document.getElementById(`severity-${projectId}`);
-      
-      if (totalEl) totalEl.textContent = stats.total;
-      if (openEl) openEl.textContent = stats.open;
-      if (resolutionEl) resolutionEl.textContent = `${stats.resolved}/${stats.total} Resolved`;
-      if (severityEl) severityEl.innerHTML = renderSeverityBadges(stats.severities);
-    }
-    
-    function renderDebts() {
-      if (currentDebts.length === 0) {
-        debtsList.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">📝</div>
-            <p>No UX debts found</p>
-            <p style="font-size: 12px; margin-top: 8px;">Click "Add UX Debt" to log your first issue.</p>
-          </div>
-        `;
-        return;
-      }
-      
-      debtsList.innerHTML = currentDebts.map(debt => `
-        <div class="debt-item" data-debt-id="${debt.id}">
-          <div class="debt-header">
-            <div class="debt-title">${debt.title}</div>
-            <div class="debt-actions">
-              <button class="debt-action-btn debt-view-btn view-debt-btn" data-debt-id="${debt.id}">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-                View
-              </button>
-              <button class="debt-action-btn debt-edit-btn edit-debt-btn" data-debt-id="${debt.id}">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
-                Edit
-              </button>
-              <button class="debt-action-btn debt-delete-btn delete-debt-btn" data-debt-id="${debt.id}">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="3,6 5,6 21,6"/>
-                  <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"/>
-                </svg>
-                Delete
-              </button>
-            </div>
-          </div>
-          <div class="debt-meta">
-            <span class="badge badge-${debt.severity.toLowerCase()}">${debt.severity}</span>
-            <span class="badge badge-${debt.status.toLowerCase().replace(' ', '-')}">${debt.status}</span>
-            <span>${debt.type}</span>
-          </div>
-          <div class="debt-description">${debt.description}</div>
-        </div>
-      `).join('');
-      
-      // Add event listeners
-      document.querySelectorAll('.view-debt-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          viewDebt(btn.dataset.debtId);
-        });
-      });
 
-      document.querySelectorAll('.edit-debt-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          editDebt(btn.dataset.debtId);
-        });
-      });
+    function selectProject(project) {
+      currentProject = project;
+      
+      // Update UI
+      document.querySelectorAll('.project-item').forEach(item => item.classList.remove('selected'));
+      event.target.closest('.project-item').classList.add('selected');
+      
+      // Show stats section
+      document.getElementById('statsSection').classList.remove('hidden');
+      
+      // Load debts for this project
+      loadDebts();
+    }
 
-      document.querySelectorAll('.delete-debt-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          deleteDebt(btn.dataset.debtId);
-        });
-      });
+    function loadDebts() {
+      if (!currentProject) return;
+      
+      parent.postMessage({ pluginMessage: { type: 'get-ux-debts', projectId: currentProject.id } }, '*');
     }
-    
-    function openDebtModal(debt = null) {
-      editingDebt = debt;
-      modalTitle.textContent = debt ? 'Edit UX Debt' : 'Add UX Debt';
-      saveDebtText.textContent = debt ? 'Update UX Debt' : 'Save UX Debt';
-      
-      // Check if something is selected in Figma
-      if (!debt && (!figmaContext || figmaContext.selectedNodes === 0)) {
-        selectionWarning.classList.remove('hidden');
-      } else {
-        selectionWarning.classList.add('hidden');
-      }
-      
-      updateFigmaContext();
-      
-      if (debt) {
-        // Populate form with existing debt data
-        document.getElementById('debt-title').value = debt.title;
-        document.getElementById('debt-type').value = debt.type;
-        document.getElementById('debt-severity').value = debt.severity;
-        document.getElementById('debt-status').value = debt.status;
-        document.getElementById('debt-description').value = debt.description;
-        document.getElementById('debt-recommendation').value = debt.recommendation;
-      } else {
-        // Clear form
-        document.getElementById('debt-title').value = '';
-        document.getElementById('debt-type').value = 'Heuristic';
-        document.getElementById('debt-severity').value = 'Medium';
-        document.getElementById('debt-status').value = 'Open';
-        document.getElementById('debt-description').value = '';
-        document.getElementById('debt-recommendation').value = '';
-      }
-      
-      hideError(debtError);
-      hideSuccess(debtSuccess);
-      debtModal.classList.remove('hidden');
-    }
-    
-    function closeDebtModal() {
-      debtModal.classList.add('hidden');
-      editingDebt = null;
-    }
-    
-    function updateFigmaContext() {
-      if (figmaContext) {
-        const nodeLink = figmaContext.selectedNodes > 0 ? 
-          `<a href="${figmaContext.url}" target="_blank" class="figma-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="m18 13 6-6-6-6"/>
-              <path d="M2 5h16"/>
-            </svg>
-            Open Selected Node
-          </a>` : 
-          `<a href="${figmaContext.url}" target="_blank" class="figma-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="m18 13 6-6-6-6"/>
-              <path d="M2 5h16"/>
-            </svg>
-            Open File
-          </a>`;
 
-        figmaContextDisplay.innerHTML = `
-          <div class="figma-context-header">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-              <circle cx="9" cy="9" r="2"/>
-              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-            </svg>
-            Figma Context
-          </div>
-          <div class="figma-context-details">
-            <div class="figma-context-item">
-              <span class="figma-context-label">File:</span>
-              <span class="figma-context-value">${figmaContext.fileName}</span>
-            </div>
-            <div class="figma-context-item">
-              <span class="figma-context-label">Page:</span>
-              <span class="figma-context-value">${figmaContext.pageName}</span>
-            </div>
-            <div class="figma-context-item">
-              <span class="figma-context-label">Selected:</span>
-              <span class="figma-context-value">${figmaContext.selectedNodes} node(s)</span>
-            </div>
-            ${figmaContext.selectedNodeNames.length > 0 ? `
-              <div class="figma-context-item">
-                <span class="figma-context-label">Nodes:</span>
-                <span class="figma-context-value">${figmaContext.selectedNodeNames.join(', ')}</span>
-              </div>
-            ` : ''}
-            <div style="margin-top: 8px;">
-              ${nodeLink}
-            </div>
-          </div>
-        `;
-      }
-    }
-    
-    function handleFigmaContext(context) {
-      figmaContext = context;
-      updateFigmaContext();
-    }
-    
-    function saveDebt() {
-      if (!selectedProject) {
-        showError(debtError, 'Please select a project first');
+    function createDebt() {
+      if (!currentProject) {
+        showError('addDebtError', 'Please select a project first');
         return;
       }
-      
-      const title = document.getElementById('debt-title').value.trim();
-      const type = document.getElementById('debt-type').value;
-      const severity = document.getElementById('debt-severity').value;
-      const status = document.getElementById('debt-status').value;
-      const description = document.getElementById('debt-description').value.trim();
-      const recommendation = document.getElementById('debt-recommendation').value.trim();
-      
-      if (!title || !description || !recommendation) {
-        showError(debtError, 'Please fill in all required fields');
+
+      const title = document.getElementById('debtTitle').value.trim();
+      const screen = document.getElementById('debtScreen').value.trim();
+      const type = document.getElementById('debtType').value;
+      const severity = document.getElementById('debtSeverity').value;
+      const assignee = document.getElementById('debtAssignee').value.trim();
+      const description = document.getElementById('debtDescription').value.trim();
+      const recommendation = document.getElementById('debtRecommendation').value.trim();
+
+      if (!title || !screen || !description || !recommendation) {
+        showError('addDebtError', 'Please fill in all required fields');
         return;
       }
-      
-      setLoading(saveDebtBtn, true);
-      hideError(debtError);
-      hideSuccess(debtSuccess);
-      
+
       const debtData = {
         title,
+        screen,
+        type,
+        severity,
+        status: 'Open',
+        assignee: assignee || null,
+        description,
+        recommendation
+      };
+
+      document.getElementById('createDebtBtn').disabled = true;
+      document.getElementById('createDebtBtn').textContent = 'Creating...';
+
+      parent.postMessage({ pluginMessage: { type: 'create-ux-debt', projectId: currentProject.id, debtData } }, '*');
+    }
+
+    function updateDebt() {
+      if (!editingDebt) return;
+
+      const title = document.getElementById('editTitle').value.trim();
+      const screen = document.getElementById('editScreen').value.trim();
+      const type = document.getElementById('editType').value;
+      const severity = document.getElementById('editSeverity').value;
+      const status = document.getElementById('editStatus').value;
+      const assignee = document.getElementById('editAssignee').value.trim();
+      const description = document.getElementById('editDescription').value.trim();
+      const recommendation = document.getElementById('editRecommendation').value.trim();
+
+      if (!title || !screen || !description || !recommendation) {
+        showError('editDebtError', 'Please fill in all required fields');
+        return;
+      }
+
+      const debtData = {
+        title,
+        screen,
         type,
         severity,
         status,
+        assignee: assignee || null,
         description,
-        recommendation,
-        screen: figmaContext?.pageName || 'Unknown'
+        recommendation
       };
-      
-      if (editingDebt) {
-        // Update existing debt
-        parent.postMessage({ 
-          pluginMessage: { 
-            type: 'update-ux-debt', 
-            projectId: selectedProject.id,
-            debtId: editingDebt.id,
-            debtData
-          } 
-        }, '*');
-      } else {
-        // Create new debt
-        parent.postMessage({ 
-          pluginMessage: { 
-            type: 'create-ux-debt', 
-            projectId: selectedProject.id,
-            debtData
-          } 
-        }, '*');
-      }
+
+      document.getElementById('updateDebtBtn').disabled = true;
+      document.getElementById('updateDebtBtn').textContent = 'Updating...';
+
+      parent.postMessage({ 
+        pluginMessage: { 
+          type: 'update-ux-debt', 
+          projectId: currentProject.id, 
+          debtId: editingDebt.id, 
+          debtData 
+        } 
+      }, '*');
     }
-    
-    function handleDebtSaved(data) {
-      setLoading(saveDebtBtn, false);
+
+    function editDebt(debt) {
+      editingDebt = debt;
       
-      if (data.success) {
-        showSuccess(debtSuccess, editingDebt ? 'UX debt updated successfully!' : 'UX debt created successfully!');
-        
-        setTimeout(() => {
-          closeDebtModal();
-          if (selectedProject) {
-            loadDebts(selectedProject.id);
-          }
-        }, 1500);
-      } else {
-        showError(debtError, data.error || 'Failed to save UX debt');
-      }
+      // Populate form
+      document.getElementById('editTitle').value = debt.title;
+      document.getElementById('editScreen').value = debt.screen;
+      document.getElementById('editType').value = debt.type;
+      document.getElementById('editSeverity').value = debt.severity;
+      document.getElementById('editStatus').value = debt.status;
+      document.getElementById('editAssignee').value = debt.assignee || '';
+      document.getElementById('editDescription').value = debt.description;
+      document.getElementById('editRecommendation').value = debt.recommendation;
+      
+      // Show modal
+      document.getElementById('editModal').classList.remove('hidden');
     }
-    
-    function viewDebt(debtId) {
-      viewingDebt = currentDebts.find(d => d.id === debtId);
-      if (!viewingDebt) return;
-      
-      viewDebtContent.innerHTML = `
-        <div class="debt-detail-section">
-          <div class="debt-detail-label">Title</div>
-          <div class="debt-detail-value" style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">${viewingDebt.title}</div>
-        </div>
-        
-        <div class="debt-detail-meta">
-          <div>
-            <div class="debt-detail-label">Screen/Component</div>
-            <div class="debt-detail-value">${viewingDebt.screen}</div>
-          </div>
-          <div>
-            <div class="debt-detail-label">Type</div>
-            <div class="debt-detail-value">${viewingDebt.type}</div>
-          </div>
-        </div>
-        
-        <div class="debt-detail-badges">
-          <span class="badge badge-${viewingDebt.severity.toLowerCase()}">${viewingDebt.severity}</span>
-          <span class="badge badge-${viewingDebt.status.toLowerCase().replace(' ', '-')}">${viewingDebt.status}</span>
-        </div>
-        
-        <div class="debt-detail-section">
-          <div class="debt-detail-label">Description</div>
-          <div class="debt-detail-description">${viewingDebt.description}</div>
-        </div>
-        
-        <div class="debt-detail-section">
-          <div class="debt-detail-label">Recommendation</div>
-          <div class="debt-detail-description">${viewingDebt.recommendation}</div>
-        </div>
-        
-        <div class="debt-detail-meta">
-          <div>
-            <div class="debt-detail-label">Logged By</div>
-            <div class="debt-detail-value">${viewingDebt.logged_by}</div>
-          </div>
-          <div>
-            <div class="debt-detail-label">Created</div>
-            <div class="debt-detail-value">${new Date(viewingDebt.created_at).toLocaleDateString()}</div>
-          </div>
-        </div>
-        
-        ${viewingDebt.figma_url ? `
-          <div class="debt-detail-section">
-            <div class="debt-detail-label">Figma Link</div>
-            <a href="${viewingDebt.figma_url}" target="_blank" class="figma-link">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="m18 13 6-6-6-6"/>
-                <path d="M2 5h16"/>
-              </svg>
-              Open in Figma
-            </a>
-          </div>
-        ` : ''}
-      `;
-      
-      viewDebtModal.classList.remove('hidden');
-    }
-    
-    function editDebt(debtId) {
-      const debt = currentDebts.find(d => d.id === debtId);
-      if (debt) {
-        openDebtModal(debt);
-      }
-    }
-    
-    function deleteDebt(debtId) {
-      const debt = currentDebts.find(d => d.id === debtId);
-      if (!debt) return;
-      
-      if (confirm(`Are you sure you want to delete "${debt.title}"? This action cannot be undone.`)) {
+
+    function deleteDebt(debt) {
+      if (confirm(`Are you sure you want to delete "${debt.title}"?`)) {
         parent.postMessage({ 
           pluginMessage: { 
             type: 'delete-ux-debt', 
-            projectId: selectedProject.id,
-            debtId: debtId
+            projectId: currentProject.id, 
+            debtId: debt.id 
           } 
         }, '*');
       }
     }
-    
-    function closeViewDebtModal() {
-      viewDebtModal.classList.add('hidden');
-      viewingDebt = null;
-    }
-    
-    function handleDebtDeleted(data) {
-      if (data.success) {
-        if (selectedProject) {
-          loadDebts(selectedProject.id);
-        }
-      } else {
-        alert('Failed to delete UX debt: ' + (data.error || 'Unknown error'));
-      }
-    }
-    
-    function logout() {
-      currentUser = null;
-      selectedProject = null;
-      currentProjects = [];
-      currentDebts = [];
+
+    function viewDebt(debt) {
+      const modalContent = document.getElementById('modalContent');
+      modalContent.innerHTML = `
+        <div class="form-group">
+          <label>Title</label>
+          <div style="font-weight: 600;">${debt.title}</div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Screen</label>
+            <div>${debt.screen}</div>
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <div class="debt-tag">${debt.type}</div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Severity</label>
+            <div class="debt-tag severity-${debt.severity.toLowerCase()}">${debt.severity}</div>
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <div>${debt.status}</div>
+          </div>
+        </div>
+        ${debt.assignee ? `
+          <div class="form-group">
+            <label>Assignee</label>
+            <div>${debt.assignee}</div>
+          </div>
+        ` : ''}
+        <div class="form-group">
+          <label>Description</label>
+          <div style="background: #f8f9fa; padding: 8px; border-radius: 4px; font-size: 10px; line-height: 1.4;">${debt.description}</div>
+        </div>
+        <div class="form-group">
+          <label>Recommendation</label>
+          <div style="background: #f8f9fa; padding: 8px; border-radius: 4px; font-size: 10px; line-height: 1.4;">${debt.recommendation}</div>
+        </div>
+        ${debt.figma_url ? `
+          <div class="form-group">
+            <label>Figma Link</label>
+            <div><a href="${debt.figma_url}" target="_blank" style="color: #667eea; text-decoration: none;">Open in Figma</a></div>
+          </div>
+        ` : ''}
+        <div class="form-group">
+          <label>Created</label>
+          <div style="font-size: 10px; color: #666;">${new Date(debt.created_at).toLocaleString()}</div>
+        </div>
+      `;
       
-      apiKeyInput.value = '';
-      showScreen('apiSetup');
+      document.getElementById('modalTitle').textContent = 'UX Debt Details';
+      document.getElementById('debtModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('debtModal').classList.add('hidden');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.add('hidden');
+      editingDebt = null;
       
-      parent.postMessage({ pluginMessage: { type: 'logout' } }, '*');
+      // Reset form
+      document.getElementById('updateDebtBtn').disabled = false;
+      document.getElementById('updateDebtBtn').textContent = 'Update Debt';
+      hideError('editDebtError');
+      hideSuccess('editDebtSuccess');
     }
-    
-    // Utility functions
-    function setLoading(button, loading) {
-      const text = button.querySelector('.button-text');
-      if (loading) {
-        button.disabled = true;
-        if (text) {
-          text.innerHTML = '<span class="loading"></span>Loading...';
-        }
-      } else {
-        button.disabled = false;
-        if (text) {
-          text.textContent = button.dataset.originalText || text.textContent.replace('Loading...', '').trim();
-        }
-      }
-    }
-    
-    function showError(element, message) {
+
+    function showError(elementId, message) {
+      const element = document.getElementById(elementId);
       element.textContent = message;
       element.classList.remove('hidden');
     }
-    
-    function hideError(element) {
-      element.classList.add('hidden');
+
+    function hideError(elementId) {
+      document.getElementById(elementId).classList.add('hidden');
     }
-    
-    function showSuccess(element, message) {
+
+    function showSuccess(elementId, message) {
+      const element = document.getElementById(elementId);
       element.textContent = message;
       element.classList.remove('hidden');
     }
-    
-    function hideSuccess(element) {
-      element.classList.add('hidden');
+
+    function hideSuccess(elementId) {
+      document.getElementById(elementId).classList.add('hidden');
     }
+
+    function clearForm() {
+      document.getElementById('debtTitle').value = '';
+      document.getElementById('debtScreen').value = '';
+      document.getElementById('debtType').value = 'Heuristic';
+      document.getElementById('debtSeverity').value = 'Medium';
+      document.getElementById('debtAssignee').value = '';
+      document.getElementById('debtDescription').value = '';
+      document.getElementById('debtRecommendation').value = '';
+    }
+
+    function updateStats() {
+      if (!currentDebts) return;
+      
+      const totalDebts = currentDebts.length;
+      const openDebts = currentDebts.filter(debt => debt.status === 'Open').length;
+      
+      document.getElementById('totalDebts').textContent = totalDebts;
+      document.getElementById('openDebts').textContent = openDebts;
+    }
+
+    // Message handler
+    window.onmessage = (event) => {
+      const { type, success, error, config, user, projects, debts, debt } = event.data.pluginMessage;
+
+      switch (type) {
+        case 'config-loaded':
+          if (config) {
+            currentConfig = config;
+            document.getElementById('apiBaseUrl').value = config.apiBaseUrl || API_BASE_URL;
+            document.getElementById('anonKey').value = config.anonKey || ANON_KEY;
+          }
+          break;
+
+        case 'api-key-verified':
+          if (success) {
+            currentUser = user;
+            document.getElementById('configSection').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            showSuccess('configSuccess', 'Connected successfully!');
+            loadProjects();
+          } else {
+            showError('configError', error || 'Failed to verify API key');
+          }
+          break;
+
+        case 'api-key-loaded':
+          document.getElementById('apiKey').value = event.data.pluginMessage.apiKey;
+          break;
+
+        case 'projects-loaded':
+          if (success) {
+            const projectsList = document.getElementById('projectsList');
+            if (projects.length === 0) {
+              projectsList.innerHTML = '<div class="text-center" style="color: #666; font-size: 11px;">No projects found</div>';
+            } else {
+              projectsList.innerHTML = projects.map(project => `
+                <div class="project-item" onclick="selectProject(${JSON.stringify(project).replace(/"/g, '&quot;')})">
+                  <div class="project-title">${project.title}</div>
+                  <div class="project-description">${project.description}</div>
+                </div>
+              `).join('');
+            }
+          } else {
+            showError('configError', error || 'Failed to load projects');
+          }
+          break;
+
+        case 'ux-debts-loaded':
+          if (success) {
+            currentDebts = debts;
+            updateStats();
+            
+            const debtsList = document.getElementById('debtsList');
+            if (debts.length === 0) {
+              debtsList.innerHTML = '<div class="text-center" style="color: #666; font-size: 11px;">No UX debts found</div>';
+            } else {
+              debtsList.innerHTML = debts.map(debt => `
+                <div class="debt-item" onclick="viewDebt(${JSON.stringify(debt).replace(/"/g, '&quot;')})">
+                  <div class="debt-title">${debt.title}</div>
+                  <div class="debt-meta">
+                    <span class="debt-tag">${debt.type}</span>
+                    <span class="debt-tag severity-${debt.severity.toLowerCase()}">${debt.severity}</span>
+                    <span class="debt-tag">${debt.status}</span>
+                  </div>
+                  <div class="debt-description">${debt.description.substring(0, 100)}${debt.description.length > 100 ? '...' : ''}</div>
+                  <div class="debt-actions">
+                    <button class="edit-btn" onclick="event.stopPropagation(); editDebt(${JSON.stringify(debt).replace(/"/g, '&quot;')})">Edit</button>
+                    <button class="delete-btn" onclick="event.stopPropagation(); deleteDebt(${JSON.stringify(debt).replace(/"/g, '&quot;')})">Delete</button>
+                  </div>
+                </div>
+              `).join('');
+            }
+          } else {
+            showError('configError', error || 'Failed to load UX debts');
+          }
+          break;
+
+        case 'ux-debt-created':
+          document.getElementById('createDebtBtn').disabled = false;
+          document.getElementById('createDebtBtn').textContent = 'Log UX Debt';
+          
+          if (success) {
+            showSuccess('addDebtSuccess', 'UX debt created successfully!');
+            clearForm();
+            loadDebts(); // Refresh the list
+            setTimeout(() => hideSuccess('addDebtSuccess'), 3000);
+          } else {
+            showError('addDebtError', error || 'Failed to create UX debt');
+          }
+          break;
+
+        case 'ux-debt-updated':
+          document.getElementById('updateDebtBtn').disabled = false;
+          document.getElementById('updateDebtBtn').textContent = 'Update Debt';
+          
+          if (success) {
+            showSuccess('editDebtSuccess', 'UX debt updated successfully!');
+            loadDebts(); // Refresh the list
+            setTimeout(() => {
+              closeEditModal();
+            }, 1000);
+          } else {
+            showError('editDebtError', error || 'Failed to update UX debt');
+          }
+          break;
+
+        case 'ux-debt-deleted':
+          if (success) {
+            loadDebts(); // Refresh the list
+          } else {
+            alert(error || 'Failed to delete UX debt');
+          }
+          break;
+
+        case 'error':
+          showError('configError', error || 'An error occurred');
+          break;
+      }
+    };
   </script>
 </body>
 </html>

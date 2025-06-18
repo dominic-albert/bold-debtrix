@@ -28,6 +28,16 @@ function Navbar() {
     { name: 'Settings', path: '/settings', icon: Settings },
   ];
 
+  // Generate initials from user name
+  const getInitials = (name: string) => {
+    if (!name) return 'U';
+    const names = name.trim().split(' ');
+    if (names.length === 1) {
+      return names[0].charAt(0).toUpperCase();
+    }
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+  };
+
   return (
     <nav className="bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,16 +81,9 @@ function Navbar() {
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                {user?.avatar ? (
-                  <img 
-                    src={user.avatar} 
-                    alt={user.name} 
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <User className="w-4 h-4 text-white" />
-                )}
+              {/* Default Avatar with Initials */}
+              <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                {getInitials(user?.name || '')}
               </div>
               <div className="hidden md:block text-left">
                 <div className="text-sm font-medium text-gray-900">{user?.name}</div>

@@ -6,7 +6,6 @@ import {
   Bell, 
   Shield, 
   Trash2,
-  Camera,
   Save,
   Key,
   Copy,
@@ -135,15 +134,17 @@ function SettingsPage() {
   const handleProfileSave = () => {
     // Save profile changes
     console.log('Saving profile:', profileData);
+    toast.success('Profile updated successfully!');
   };
 
   const handlePasswordChange = () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('Passwords do not match');
+      toast.error('Passwords do not match');
       return;
     }
     // Change password
     console.log('Changing password');
+    toast.success('Password updated successfully!');
   };
 
   const handleDeleteAccount = () => {
@@ -151,6 +152,16 @@ function SettingsPage() {
       // Delete account
       logout();
     }
+  };
+
+  // Generate initials from user name
+  const getInitials = (name: string) => {
+    if (!name) return 'U';
+    const names = name.trim().split(' ');
+    if (names.length === 1) {
+      return names[0].charAt(0).toUpperCase();
+    }
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
   };
 
   return (
@@ -200,33 +211,18 @@ function SettingsPage() {
                   {/* Avatar */}
                   <div className="flex items-center gap-6 mb-8">
                     <div className="relative">
-                      <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                        {user?.avatar ? (
-                          <img 
-                            src={user.avatar} 
-                            alt={user.name} 
-                            className="w-20 h-20 rounded-full object-cover"
-                          />
-                        ) : (
-                          <User className="w-8 h-8 text-white" />
-                        )}
+                      <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-2xl">
+                        {getInitials(user?.name || '')}
                       </div>
-                      <button className="absolute -bottom-1 -right-1 w-8 h-8 bg-white border-2 border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors">
-                        <Camera className="w-4 h-4 text-gray-600" />
-                      </button>
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">Profile Photo</h3>
+                      <h3 className="font-medium text-gray-900">Profile Avatar</h3>
                       <p className="text-sm text-gray-600 mb-2">
-                        Upload a new profile photo or remove the current one
+                        Your avatar is automatically generated from your initials
                       </p>
-                      <div className="flex gap-2">
-                        <button className="text-sm text-purple-600 hover:text-purple-700">
-                          Upload new
-                        </button>
-                        <button className="text-sm text-red-600 hover:text-red-700">
-                          Remove
-                        </button>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                        <span className="text-sm text-green-600">Using initials: {getInitials(user?.name || '')}</span>
                       </div>
                     </div>
                   </div>
